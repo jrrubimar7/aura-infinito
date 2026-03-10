@@ -1,0 +1,3488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#010108"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="AURA"/>
+<link rel="manifest" href="manifest.json"/>
+<title>AURA ∞</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg: #010108;
+  --hud1: rgba(0,180,255,0.06);
+  --hud2: rgba(0,180,255,0.12);
+  --line: rgba(0,180,255,0.22);
+  --line2: rgba(0,180,255,0.08);
+  --accent: #00b4ff;
+  --accent2: #0066ff;
+  --warn: #ff6b00;
+  --danger: #ff2d4a;
+  --ok: #00ffaa;
+  --text: #c8e8ff;
+  --muted: #3a6080;
+  --bright: #e8f8ff;
+  --mono: 'Share Tech Mono', monospace;
+  --head: 'Rajdhani', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  cursor: default;
+}
+
+/* ── SCAN LINES ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.08) 2px, rgba(0,0,0,.08) 4px);
+}
+
+/* ── BG CANVAS ── */
+#bgc { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+/* ── SPLASH ── */
+#splash {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 9999; transition: opacity 1s, transform 1s;
+}
+#splash.out { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+.sp-ring {
+  position: relative; width: 140px; height: 140px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px;
+}
+.sp-ring::before, .sp-ring::after {
+  content: ''; position: absolute; border-radius: 50%;
+  border: 1px solid var(--line);
+  animation: ringPulse 2s ease-in-out infinite;
+}
+.sp-ring::before { inset: 0; }
+.sp-ring::after { inset: 10px; animation-delay: .3s; border-color: rgba(0,180,255,.35); }
+.sp-core {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #80d8ff, #0044cc 55%, #000520);
+  box-shadow: 0 0 40px rgba(0,100,255,.7), 0 0 80px rgba(0,100,255,.3), inset 0 0 20px rgba(0,150,255,.4);
+  animation: corePulse 2s ease-in-out infinite;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--head); font-size: 1.1rem; font-weight: 700;
+  color: #c8f0ff; letter-spacing: .15em;
+}
+@keyframes corePulse {
+  0%,100% { box-shadow: 0 0 40px rgba(0,100,255,.7), 0 0 80px rgba(0,100,255,.3); }
+  50% { box-shadow: 0 0 60px rgba(0,150,255,.9), 0 0 120px rgba(0,100,255,.5); }
+}
+@keyframes ringPulse { 0%,100% { transform: scale(1); opacity: .6; } 50% { transform: scale(1.06); opacity: 1; } }
+
+.sp-name {
+  font-family: var(--head); font-weight: 700; font-size: 2.4rem;
+  letter-spacing: .4em; color: var(--accent);
+  text-shadow: 0 0 20px var(--accent), 0 0 40px rgba(0,180,255,.4);
+}
+.sp-sub { font-size: .6rem; letter-spacing: .3em; color: var(--muted); margin-top: 5px; text-transform: uppercase; }
+.sp-boot {
+  margin-top: 40px; width: 200px;
+  font-size: .58rem; letter-spacing: .1em; color: var(--muted);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.sp-boot-line { display: flex; justify-content: space-between; }
+.sp-boot-line.ok .sp-bl-status { color: var(--ok); }
+.sp-boot-line.warn .sp-bl-status { color: var(--warn); animation: blink .8s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.sp-bar { margin-top: 12px; width: 200px; height: 1px; background: var(--line2); overflow: hidden; }
+.sp-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); animation: spf 2s ease forwards; }
+@keyframes spf { from{width:0} to{width:100%} }
+
+/* ── SETUP ── */
+#setup {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px 22px; z-index: 8888; opacity: 0; pointer-events: none;
+  transition: opacity .5s; overflow-y: auto;
+}
+#setup.show { opacity: 1; pointer-events: all; }
+.su-core {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #80d8ff, #0044cc 55%, #000520);
+  box-shadow: 0 0 30px rgba(0,100,255,.6); margin-bottom: 20px;
+  animation: corePulse 2s ease-in-out infinite;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--head); font-size: .85rem; font-weight: 700; color: #c8f0ff;
+}
+.su-title { font-family: var(--head); font-weight: 700; font-size: 1.3rem; letter-spacing: .2em; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; }
+.su-sub { font-size: .62rem; color: var(--muted); text-align: center; line-height: 1.8; margin-bottom: 24px; max-width: 300px; letter-spacing: .05em; }
+.su-lbl { font-size: .56rem; letter-spacing: .18em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; width: 100%; max-width: 340px; }
+.su-inp {
+  width: 100%; max-width: 340px; background: rgba(0,20,40,.8);
+  border: 1px solid var(--line); border-radius: 4px;
+  padding: 11px 14px; color: var(--bright); font-family: var(--mono);
+  font-size: .75rem; outline: none; margin-bottom: 10px; transition: border-color .2s;
+}
+.su-inp:focus { border-color: var(--accent); box-shadow: 0 0 12px rgba(0,180,255,.15); }
+.su-hint {
+  font-size: .57rem; color: var(--muted); line-height: 1.9; margin-bottom: 20px;
+  max-width: 340px; background: rgba(0,20,40,.6); border: 1px solid var(--line2);
+  border-radius: 4px; padding: 12px 14px; letter-spacing: .03em;
+}
+.su-hint a { color: var(--accent); text-decoration: none; }
+.su-btn {
+  width: 100%; max-width: 340px; background: transparent;
+  border: 1px solid var(--accent); border-radius: 4px; color: var(--accent);
+  font-family: var(--head); font-size: .95rem; font-weight: 600; padding: 13px;
+  cursor: pointer; transition: all .2s; letter-spacing: .15em; text-transform: uppercase;
+}
+.su-btn:hover { background: rgba(0,180,255,.1); box-shadow: 0 0 20px rgba(0,180,255,.3); }
+
+/* ── APP ── */
+#app { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100dvh; opacity: 0; transition: opacity .7s; }
+#app.show { opacity: 1; }
+
+/* ── HUD HEADER ── */
+#hud-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; padding-top: max(10px, env(safe-area-inset-top));
+  background: rgba(1,1,8,.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line2); flex-shrink: 0; position: relative;
+}
+/* corner accents */
+#hud-top::before, #hud-top::after {
+  content: ''; position: absolute; width: 8px; height: 8px;
+  border-color: var(--accent); border-style: solid; opacity: .6;
+}
+#hud-top::before { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+#hud-top::after { top: 6px; right: 6px; border-width: 1px 1px 0 0; }
+
+.hud-ident { display: flex; align-items: center; gap: 10px; }
+.hud-core {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #80d8ff, #0044cc 55%, #000520);
+  box-shadow: 0 0 12px rgba(0,100,255,.6); flex-shrink: 0;
+  animation: corePulse 3s ease-in-out infinite;
+}
+.hud-name { font-family: var(--head); font-weight: 700; font-size: .9rem; letter-spacing: .25em; color: var(--accent); text-transform: uppercase; text-shadow: 0 0 10px rgba(0,180,255,.5); }
+.hud-ver { font-size: .5rem; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
+
+.hud-metrics {
+  display: flex; gap: 16px; align-items: center;
+}
+.hud-metric { text-align: center; }
+.hud-metric-val { font-family: var(--head); font-size: .85rem; font-weight: 600; color: var(--accent); display: block; line-height: 1; }
+.hud-metric-lbl { font-size: .45rem; letter-spacing: .15em; color: var(--muted); text-transform: uppercase; }
+.hud-metric.warn .hud-metric-val { color: var(--warn); }
+.hud-metric.ok .hud-metric-val { color: var(--ok); }
+
+.hud-actions { display: flex; gap: 6px; }
+.hud-btn {
+  background: transparent; border: 1px solid var(--line); border-radius: 3px;
+  color: var(--muted); padding: 5px 8px; cursor: pointer; font-family: var(--mono);
+  font-size: .62rem; transition: all .2s; text-transform: uppercase; letter-spacing: .08em;
+}
+.hud-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,180,255,.07); text-shadow: 0 0 8px rgba(0,180,255,.5); }
+.hud-btn.active { border-color: var(--ok); color: var(--ok); animation: blink .8s infinite; }
+
+/* ── STATUS BAR ── */
+#status-bar {
+  display: flex; align-items: center; gap: 0;
+  background: rgba(0,10,20,.8); border-bottom: 1px solid var(--line2);
+  flex-shrink: 0; overflow-x: auto; scrollbar-width: none;
+}
+#status-bar::-webkit-scrollbar { display: none; }
+.sb-agent {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-right: 1px solid var(--line2);
+  cursor: pointer; transition: background .2s; white-space: nowrap; flex-shrink: 0;
+  font-size: .6rem; letter-spacing: .08em; color: var(--muted); text-transform: uppercase;
+  position: relative;
+}
+.sb-agent.on {
+  background: var(--hud1); color: var(--bright);
+}
+.sb-agent.on::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+}
+.sb-agent-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.sb-agent.on .sb-agent-dot { animation: blink 2s infinite; }
+.sb-sep { width: 1px; height: 20px; background: var(--line2); flex-shrink: 0; }
+.sb-add {
+  padding: 7px 14px; cursor: pointer; font-size: .6rem; letter-spacing: .08em;
+  color: var(--muted); white-space: nowrap; flex-shrink: 0; transition: color .2s;
+  border-right: 1px solid var(--line2);
+}
+.sb-add:hover { color: var(--accent); }
+
+/* ── CHAT AREA ── */
+#chat {
+  flex: 1; overflow-y: auto; padding: 14px 14px;
+  display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth;
+  position: relative;
+}
+#chat::-webkit-scrollbar { width: 2px; }
+#chat::-webkit-scrollbar-thumb { background: var(--line); border-radius: 1px; }
+
+/* ── WELCOME HUD ── */
+.welcome-hud {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 20px 10px; text-align: center; animation: fadeUp .5s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.w-hud-ring { position: relative; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.w-hud-ring::before, .w-hud-ring::after { content: ''; position: absolute; border-radius: 50%; border: 1px solid var(--line); animation: ringPulse 2.5s ease-in-out infinite; }
+.w-hud-ring::before { inset: 0; }
+.w-hud-ring::after { inset: 8px; animation-delay: .4s; }
+.w-hud-core {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #80d8ff, #0044cc 55%, #000520);
+  box-shadow: 0 0 24px rgba(0,100,255,.7); animation: corePulse 2.5s ease-in-out infinite;
+}
+
+.w-title { font-family: var(--head); font-weight: 700; font-size: 1.4rem; letter-spacing: .2em; color: var(--accent); text-shadow: 0 0 20px rgba(0,180,255,.5); text-transform: uppercase; margin-bottom: 4px; }
+.w-sub { font-size: .6rem; color: var(--muted); line-height: 1.9; max-width: 280px; letter-spacing: .05em; }
+
+.w-systems { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 14px; justify-content: center; }
+.sys-tag {
+  font-size: .52rem; letter-spacing: .1em; padding: 3px 9px;
+  border: 1px solid rgba(0,180,255,.2); border-radius: 2px;
+  color: var(--muted); text-transform: uppercase;
+}
+.sys-tag.on { color: var(--ok); border-color: rgba(0,255,170,.3); }
+
+.w-cmds {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  margin-top: 16px; width: 100%;
+}
+.w-cmd {
+  background: rgba(0,20,40,.6); border: 1px solid var(--line2); border-radius: 3px;
+  padding: 10px 11px; cursor: pointer; text-align: left; transition: all .2s;
+}
+.w-cmd:hover { border-color: var(--accent); background: var(--hud1); }
+.w-cmd-key { font-size: .55rem; color: var(--accent); letter-spacing: .1em; margin-bottom: 3px; text-transform: uppercase; }
+.w-cmd-desc { font-size: .6rem; color: var(--muted); line-height: 1.5; }
+
+/* ── MESSAGES ── */
+.msg { display: flex; gap: 8px; animation: fadeUp .25s ease; }
+.msg.user { flex-direction: row-reverse; }
+.msg-av {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .5rem; font-weight: 700; font-family: var(--head); letter-spacing: .05em;
+}
+.msg.aura .msg-av { background: radial-gradient(circle at 38% 38%, #80d8ff, #0044cc); box-shadow: 0 0 8px rgba(0,100,255,.4); color: #c8f0ff; }
+.msg.user .msg-av { background: rgba(0,30,60,.8); border: 1px solid var(--line); color: var(--muted); }
+.msg.loop .msg-av { background: radial-gradient(circle at 38% 38%, #80ffcc, #007744); box-shadow: 0 0 8px rgba(0,200,100,.3); color: #000; }
+
+.msg-body { max-width: 85%; }
+.msg-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .5rem; letter-spacing: .12em; text-transform: uppercase;
+  margin-bottom: 4px; padding: 2px 6px; border-radius: 1px;
+}
+.msg-bub {
+  padding: 10px 13px; border-radius: 2px; font-size: .72rem; line-height: 1.8;
+  position: relative;
+}
+.msg-bub::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; border-radius: 1px; }
+.msg.aura .msg-bub { background: rgba(0,15,35,.85); border: 1px solid var(--line2); }
+.msg.aura .msg-bub::before { background: var(--accent); }
+.msg.user .msg-bub { background: rgba(0,30,60,.6); border: 1px solid var(--line2); }
+.msg.user .msg-bub::before { background: rgba(0,100,255,.5); right: 0; left: auto; }
+.msg.loop .msg-bub { background: rgba(0,30,20,.8); border: 1px solid rgba(0,255,170,.12); }
+.msg.loop .msg-bub::before { background: var(--ok); }
+.msg.infinito .msg-bub { background: rgba(20,0,40,.8); border: 1px solid rgba(150,80,255,.15); }
+.msg.infinito .msg-bub::before { background: #a060ff; }
+
+.msg-meta {
+  display: flex; gap: 8px; align-items: center; margin-top: 4px;
+  font-size: .5rem; color: var(--muted); letter-spacing: .07em;
+}
+.msg.user .msg-meta { justify-content: flex-end; }
+.meta-mem { color: rgba(0,255,170,.5); }
+.meta-mode { color: var(--accent); opacity: .6; }
+
+/* TYPING */
+.typing-hud { display: flex; gap: 4px; align-items: center; padding: 2px 0; }
+.typing-hud span {
+  width: 4px; height: 4px; border-radius: 50%; background: var(--accent);
+  animation: typeDot 1s ease infinite;
+}
+.typing-hud span:nth-child(2) { animation-delay: .15s; }
+.typing-hud span:nth-child(3) { animation-delay: .3s; }
+@keyframes typeDot { 0%,100%{opacity:.2;transform:scaleY(.6)} 50%{opacity:1;transform:scaleY(1)} }
+
+/* LOOP BAR */
+.loop-indicator {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 12px; border: 1px solid rgba(0,255,170,.18);
+  background: rgba(0,30,20,.6); border-radius: 2px; font-size: .57rem;
+  color: rgba(0,255,170,.7); letter-spacing: .1em; animation: fadeUp .3s ease;
+  text-transform: uppercase;
+}
+.loop-dots { display: flex; gap: 3px; }
+.loop-dots span { width: 3px; height: 3px; border-radius: 50%; background: var(--ok); animation: typeDot .9s ease infinite; }
+.loop-dots span:nth-child(2) { animation-delay: .15s; }
+.loop-dots span:nth-child(3) { animation-delay: .3s; }
+
+/* ── INPUT AREA ── */
+#input-area {
+  background: rgba(1,1,8,.93); border-top: 1px solid var(--line2);
+  padding: 10px 14px; padding-bottom: max(10px, env(safe-area-inset-bottom));
+  flex-shrink: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  position: relative;
+}
+#input-area::before, #input-area::after {
+  content: ''; position: absolute; width: 8px; height: 8px;
+  border-color: rgba(0,180,255,.3); border-style: solid;
+}
+#input-area::before { bottom: 6px; left: 6px; border-width: 0 0 1px 1px; }
+#input-area::after { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+.ia-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 7px; font-size: .52rem; letter-spacing: .1em; text-transform: uppercase;
+}
+.ia-agent { color: var(--muted); }
+.ia-agent span { color: var(--accent); }
+.ia-hint { color: var(--muted); opacity: .6; font-size: .48rem; }
+
+.ia-row { display: flex; gap: 7px; align-items: flex-end; }
+.ia-input {
+  flex: 1; background: rgba(0,15,35,.9); border: 1px solid var(--line);
+  border-radius: 3px; padding: 10px 13px; color: var(--bright);
+  font-family: var(--mono); font-size: .74rem; resize: none;
+  min-height: 40px; max-height: 100px; outline: none; transition: all .2s; line-height: 1.6;
+}
+.ia-input::placeholder { color: var(--muted); }
+.ia-input:focus { border-color: var(--accent); box-shadow: 0 0 16px rgba(0,180,255,.1); }
+/* command input style */
+.ia-input.cmd-mode { color: var(--ok); border-color: rgba(0,255,170,.3); }
+
+.ia-btns { display: flex; flex-direction: column; gap: 5px; }
+.ia-send {
+  width: 40px; height: 40px; border-radius: 3px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s;
+  background: transparent; border: 1px solid var(--accent);
+}
+.ia-send:hover { background: rgba(0,180,255,.15); box-shadow: 0 0 20px rgba(0,180,255,.3); }
+.ia-send:active { transform: scale(.94); }
+.ia-send svg { width: 16px; height: 16px; fill: var(--accent); }
+.ia-voice {
+  width: 40px; height: 28px; border-radius: 3px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--line); transition: all .2s; font-size: .8rem;
+}
+.ia-voice:hover { border-color: rgba(255,100,0,.5); }
+.ia-voice.listening { border-color: var(--warn); animation: blink .6s infinite; background: rgba(255,100,0,.1); }
+
+/* ── AUTO-AGENT INDICATOR ── */
+.auto-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .5rem; letter-spacing: .12em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px; margin-bottom: 5px;
+  background: rgba(0,180,255,.06); border: 1px solid rgba(0,180,255,.2);
+  color: rgba(0,180,255,.7);
+}
+.auto-tag .at-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); animation: blink 1.5s infinite; }
+
+/* ── SEMANTIC MEMORY PANEL ── */
+#sem-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 260px;
+  background: rgba(1,3,16,.97); border-left: 1px solid var(--line2);
+  z-index: 200; transform: translateX(100%); transition: transform .3s ease;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+#sem-panel.open { transform: translateX(0); }
+.sem-header {
+  padding: 14px 14px 10px; border-bottom: 1px solid var(--line2);
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  position: relative;
+}
+.sem-header::before { content: ''; position: absolute; top: 6px; left: 6px; width: 6px; height: 6px; border-top: 1px solid var(--accent); border-left: 1px solid var(--accent); opacity: .6; }
+.sem-title { font-family: var(--head); font-weight: 700; font-size: .85rem; letter-spacing: .2em; color: var(--accent); text-transform: uppercase; }
+.sem-close { background: transparent; border: 1px solid var(--line); border-radius: 2px; color: var(--muted); padding: 3px 7px; cursor: pointer; font-size: .6rem; font-family: var(--mono); transition: all .2s; }
+.sem-close:hover { border-color: var(--accent); color: var(--accent); }
+.sem-stats { padding: 8px 14px; border-bottom: 1px solid var(--line2); display: flex; gap: 12px; flex-shrink: 0; }
+.sem-stat { font-size: .52rem; color: var(--muted); letter-spacing: .08em; }
+.sem-stat span { color: var(--accent); }
+.sem-body { flex: 1; overflow-y: auto; padding: 10px 14px; display: flex; flex-direction: column; gap: 12px; }
+.sem-body::-webkit-scrollbar { width: 2px; }
+.sem-body::-webkit-scrollbar-thumb { background: var(--line); }
+.sem-section { }
+.sem-section-title { font-size: .5rem; letter-spacing: .18em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.sem-section-title::after { content: ''; flex: 1; height: 1px; background: var(--line2); }
+.sem-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.sem-tag { font-size: .58rem; padding: 3px 8px; border-radius: 2px; cursor: pointer; transition: all .2s; letter-spacing: .05em; border: 1px solid; white-space: nowrap; }
+.sem-tag:hover { filter: brightness(1.4); }
+.sem-empty { font-size: .6rem; color: var(--muted); text-align: center; padding: 20px 0; letter-spacing: .08em; }
+.sem-footer { padding: 10px 14px; border-top: 1px solid var(--line2); flex-shrink: 0; }
+.sem-clear { width: 100%; background: transparent; border: 1px solid var(--line); border-radius: 2px; color: var(--muted); font-family: var(--mono); font-size: .6rem; padding: 8px; cursor: pointer; transition: all .2s; letter-spacing: .08em; text-transform: uppercase; }
+.sem-clear:hover { border-color: var(--danger); color: var(--danger); }
+/* ── TANGLE CANVAS PANEL ── */
+#tangle-panel {
+  position: fixed; inset: 0; background: rgba(1,1,8,.96);
+  z-index: 300; display: none; flex-direction: column;
+}
+#tangle-panel.open { display: flex; }
+.tangle-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--line2);
+  background: rgba(1,1,8,.98); flex-shrink: 0;
+}
+.tangle-title { font-family: var(--head); font-weight: 700; font-size: 1rem; letter-spacing: .25em; color: var(--accent); text-transform: uppercase; }
+.tangle-sub { font-size: .52rem; color: var(--muted); letter-spacing: .1em; }
+.tangle-actions { display: flex; gap: 6px; }
+#tangle-canvas { flex: 1; width: 100%; }
+
+/* ── TIMELINE PANEL ── */
+#timeline-panel {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 270px;
+  background: rgba(1,3,16,.97); border-right: 1px solid var(--line2);
+  z-index: 200; transform: translateX(-100%); transition: transform .3s ease;
+  display: flex; flex-direction: column;
+}
+#timeline-panel.open { transform: translateX(0); }
+.tl-header {
+  padding: 14px 14px 10px; border-bottom: 1px solid var(--line2);
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.tl-title { font-family: var(--head); font-weight: 700; font-size: .85rem; letter-spacing: .2em; color: var(--accent); text-transform: uppercase; }
+.tl-close { background: transparent; border: 1px solid var(--line); border-radius: 2px; color: var(--muted); padding: 3px 7px; cursor: pointer; font-size: .6rem; font-family: var(--mono); transition: all .2s; }
+.tl-close:hover { border-color: var(--accent); color: var(--accent); }
+.tl-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 0; }
+.tl-body::-webkit-scrollbar { width: 2px; }
+.tl-body::-webkit-scrollbar-thumb { background: var(--line); }
+.tl-episode {
+  display: flex; gap: 10px; padding: 8px 0;
+  border-left: 1px solid var(--line2); padding-left: 14px; position: relative; cursor: pointer;
+  transition: all .2s;
+}
+.tl-episode:hover { border-left-color: var(--accent); }
+.tl-episode::before {
+  content: ''; position: absolute; left: -4px; top: 12px;
+  width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--bg); transition: all .2s;
+}
+.tl-episode:hover::before { border-color: var(--accent); background: rgba(0,180,255,.2); }
+.tl-episode.key-moment::before { background: rgba(0,180,255,.3); border-color: var(--accent); box-shadow: 0 0 6px rgba(0,180,255,.4); }
+.tl-ep-content { flex: 1; min-width: 0; }
+.tl-ep-time { font-size: .5rem; color: var(--muted); letter-spacing: .1em; margin-bottom: 2px; }
+.tl-ep-agent { font-size: .52rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
+.tl-ep-text { font-size: .62rem; color: var(--text); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.tl-ep-concepts { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+.tl-ep-concept { font-size: .48rem; padding: 1px 5px; border-radius: 1px; background: rgba(0,180,255,.07); border: 1px solid rgba(0,180,255,.15); color: rgba(0,180,255,.6); }
+
+/* ── INTER-CONNECTION SIGNAL ── */
+.intercon-signal {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 12px; margin: 0;
+  background: rgba(160,96,255,.06); border: 1px solid rgba(160,96,255,.2);
+  border-radius: 2px; font-size: .55rem; color: rgba(160,96,255,.8);
+  letter-spacing: .09em; animation: fadeUp .3s ease; text-transform: uppercase;
+}
+.ic-arrows { display: flex; gap: 2px; font-size: .7rem; }
+
+/* ── ORACLE MESSAGE ── */
+.msg.oracle .msg-av { background: radial-gradient(circle at 38% 38%, #ffd700, #a06000); box-shadow: 0 0 8px rgba(255,200,0,.4); color: #000; }
+.msg.oracle .msg-bub { background: rgba(30,20,0,.8); border: 1px solid rgba(255,183,0,.15); }
+.msg.oracle .msg-bub::before { background: #ffb700; }
+
+/* ── TANGLE SYNTHESIS ALERT ── */
+.tangle-alert {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 13px; border: 1px solid rgba(160,96,255,.3);
+  background: rgba(30,0,60,.6); border-radius: 2px;
+  font-size: .65rem; line-height: 1.7; color: rgba(200,160,255,.9);
+  animation: fadeUp .4s ease; cursor: pointer; transition: border-color .2s;
+}
+.tangle-alert:hover { border-color: rgba(160,96,255,.6); }
+.tangle-alert-icon { font-size: 1rem; flex-shrink: 0; filter: drop-shadow(0 0 6px rgba(160,96,255,.6)); }
+.tangle-alert-body { flex: 1; }
+.tangle-alert-title { font-family: var(--head); font-size: .7rem; letter-spacing: .15em; color: #c090ff; text-transform: uppercase; margin-bottom: 4px; }
+
+#met-ent .hud-metric-val { color: #a060ff; }
+
+  position: fixed; inset: 0; background: rgba(0,0,0,.8);
+  backdrop-filter: blur(8px); z-index: 500; display: none;
+  align-items: flex-end; justify-content: center;
+}
+#modal.show { display: flex; }
+.modal-sheet {
+  width: 100%; max-width: 500px; background: rgba(2,5,20,.97);
+  border: 1px solid var(--line); border-bottom: none;
+  border-radius: 6px 6px 0 0; padding: 20px;
+  padding-bottom: max(24px, env(safe-area-inset-bottom)); animation: fadeUp .3s ease;
+  position: relative;
+}
+.modal-sheet::before, .modal-sheet::after {
+  content: ''; position: absolute; width: 8px; height: 8px;
+  border-color: var(--accent); border-style: solid; opacity: .7;
+}
+.modal-sheet::before { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+.modal-sheet::after { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
+.modal-title { font-family: var(--head); font-weight: 700; font-size: 1rem; letter-spacing: .2em; color: var(--accent); margin-bottom: 16px; text-transform: uppercase; }
+.modal-lbl { font-size: .54rem; letter-spacing: .15em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+.modal-inp {
+  width: 100%; background: rgba(0,15,35,.9); border: 1px solid var(--line);
+  border-radius: 3px; padding: 10px 13px; color: var(--bright);
+  font-family: var(--mono); font-size: .73rem; outline: none; margin-bottom: 14px;
+  transition: border-color .2s;
+}
+.modal-inp:focus { border-color: var(--accent); }
+.color-row { display: flex; gap: 7px; margin-bottom: 16px; }
+.color-opt { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color .2s; }
+.color-opt.sel { border-color: white; }
+.modal-btn {
+  width: 100%; background: transparent; border: 1px solid var(--accent);
+  border-radius: 3px; color: var(--accent); font-family: var(--head); font-weight: 600;
+  font-size: .9rem; padding: 12px; cursor: pointer; transition: all .2s;
+  letter-spacing: .15em; text-transform: uppercase; margin-bottom: 8px;
+}
+.modal-btn:hover { background: rgba(0,180,255,.1); box-shadow: 0 0 16px rgba(0,180,255,.25); }
+.modal-btn-sec {
+  width: 100%; background: transparent; border: 1px solid var(--line);
+  border-radius: 3px; color: var(--muted); font-family: var(--mono);
+  font-size: .7rem; padding: 10px; cursor: pointer; transition: all .2s;
+}
+.modal-btn-sec:hover { border-color: var(--muted); }
+/* ── EVOLUCIÓN ── */
+#evolve-panel {
+  position: fixed; inset: 0; background: rgba(1,1,8,.97);
+  z-index: 400; display: none; flex-direction: column;
+  font-family: var(--mono);
+}
+#evolve-panel.open { display: flex; }
+.ev-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px; border-bottom: 1px solid var(--line2);
+  background: rgba(1,1,8,.99); flex-shrink: 0; position: relative;
+}
+.ev-header::before,.ev-header::after{ content:''; position:absolute; width:8px; height:8px; border-color:var(--ok); border-style:solid; opacity:.5; }
+.ev-header::before{ top:6px; left:6px; border-width:1px 0 0 1px; }
+.ev-header::after{ top:6px; right:6px; border-width:1px 1px 0 0; }
+.ev-title { font-family:var(--head); font-weight:700; font-size:1rem; letter-spacing:.25em; color:var(--ok); text-transform:uppercase; }
+.ev-sub { font-size:.5rem; color:var(--muted); letter-spacing:.15em; margin-top:2px; }
+.ev-body { flex:1; display:flex; overflow:hidden; }
+.ev-left { width:200px; flex-shrink:0; border-right:1px solid var(--line2); display:flex; flex-direction:column; overflow:hidden; }
+.ev-left-title { font-size:.52rem; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; padding:10px 12px 6px; border-bottom:1px solid var(--line2); }
+.ev-agent-list { flex:1; overflow-y:auto; }
+.ev-agent-item {
+  display:flex; align-items:center; gap:8px; padding:10px 12px;
+  cursor:pointer; border-bottom:1px solid var(--line2); transition:background .15s;
+  font-size:.65rem; letter-spacing:.06em; text-transform:uppercase;
+}
+.ev-agent-item:hover { background:rgba(0,180,255,.05); }
+.ev-agent-item.sel { background:rgba(0,255,170,.05); border-left:2px solid var(--ok); }
+.ev-agent-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.ev-agent-ver { font-size:.48rem; color:var(--muted); margin-left:auto; }
+
+.ev-main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.ev-tabs { display:flex; border-bottom:1px solid var(--line2); flex-shrink:0; }
+.ev-tab {
+  padding:8px 16px; font-size:.58rem; letter-spacing:.12em; text-transform:uppercase;
+  cursor:pointer; color:var(--muted); border-right:1px solid var(--line2); transition:all .2s;
+}
+.ev-tab.on { color:var(--ok); background:rgba(0,255,170,.05); }
+.ev-tab:hover { color:var(--text); }
+
+.ev-content { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; }
+.ev-content::-webkit-scrollbar { width:2px; }
+.ev-content::-webkit-scrollbar-thumb { background:var(--line); }
+
+/* Current sys display */
+.ev-sys-block { background:rgba(0,15,35,.8); border:1px solid var(--line2); border-radius:2px; padding:12px; font-size:.68rem; line-height:1.8; color:var(--text); position:relative; }
+.ev-sys-block::before { content:'SYS PROMPT ACTUAL'; position:absolute; top:-8px; left:10px; font-size:.48rem; letter-spacing:.15em; color:var(--muted); background:var(--bg); padding:0 6px; }
+.ev-sys-label { font-size:.5rem; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+
+/* Proposal card */
+.ev-proposal {
+  background:rgba(0,40,20,.6); border:1px solid rgba(0,255,170,.25);
+  border-radius:2px; padding:14px; position:relative; animation:fadeUp .4s ease;
+}
+.ev-proposal::before { content:'PROPUESTA DE EVOLUCIÓN'; position:absolute; top:-8px; left:10px; font-size:.48rem; letter-spacing:.15em; color:var(--ok); background:var(--bg); padding:0 6px; }
+.ev-proposal-meta { display:flex; gap:16px; margin-bottom:10px; flex-wrap:wrap; }
+.ev-proposal-stat { font-size:.55rem; }
+.ev-proposal-stat .ev-val { color:var(--ok); }
+.ev-proposal-stat .ev-val.warn { color:var(--warn); }
+.ev-proposal-text { font-size:.68rem; line-height:1.8; color:var(--text); margin-bottom:12px; white-space:pre-wrap; }
+.ev-diff { font-size:.62rem; line-height:1.7; }
+.ev-diff-add { color:var(--ok); }
+.ev-diff-rem { color:var(--danger); text-decoration:line-through; opacity:.6; }
+.ev-proposal-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.ev-btn-approve { background:transparent; border:1px solid var(--ok); border-radius:2px; color:var(--ok); font-family:var(--head); font-size:.85rem; font-weight:600; padding:9px 20px; cursor:pointer; letter-spacing:.15em; text-transform:uppercase; transition:all .2s; }
+.ev-btn-approve:hover { background:rgba(0,255,170,.1); box-shadow:0 0 16px rgba(0,255,170,.3); }
+.ev-btn-reject { background:transparent; border:1px solid var(--line); border-radius:2px; color:var(--muted); font-family:var(--mono); font-size:.7rem; padding:9px 14px; cursor:pointer; transition:all .2s; }
+.ev-btn-reject:hover { border-color:var(--danger); color:var(--danger); }
+.ev-btn-rerun { background:transparent; border:1px solid rgba(0,180,255,.4); border-radius:2px; color:var(--accent); font-family:var(--mono); font-size:.7rem; padding:9px 14px; cursor:pointer; transition:all .2s; }
+.ev-btn-rerun:hover { background:rgba(0,180,255,.08); }
+
+/* Dimensions */
+.ev-dims { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.ev-dim { background:rgba(0,15,35,.7); border:1px solid var(--line2); border-radius:2px; padding:10px; }
+.ev-dim-name { font-size:.5rem; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.ev-dim-bar { height:3px; background:var(--line2); border-radius:2px; overflow:hidden; margin-bottom:4px; }
+.ev-dim-fill { height:100%; border-radius:2px; transition:width .6s ease; }
+.ev-dim-val { font-family:var(--head); font-size:.8rem; font-weight:600; }
+
+/* Version history */
+.ev-history { display:flex; flex-direction:column; gap:6px; }
+.ev-ver-item {
+  background:rgba(0,15,35,.7); border:1px solid var(--line2); border-radius:2px;
+  padding:10px 12px; cursor:pointer; transition:all .2s; position:relative;
+}
+.ev-ver-item:hover { border-color:rgba(0,180,255,.3); }
+.ev-ver-item.current { border-color:var(--ok); }
+.ev-ver-item.current::after { content:'ACTIVO'; position:absolute; top:8px; right:10px; font-size:.45rem; letter-spacing:.15em; color:var(--ok); }
+.ev-ver-header { display:flex; align-items:center; gap:10px; margin-bottom:5px; }
+.ev-ver-num { font-family:var(--head); font-weight:700; font-size:.8rem; color:var(--accent); }
+.ev-ver-time { font-size:.5rem; color:var(--muted); }
+.ev-ver-dir { font-size:.55rem; letter-spacing:.08em; }
+.ev-ver-preview { font-size:.62rem; color:var(--muted); line-height:1.5; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.ev-ver-actions { display:flex; gap:6px; margin-top:8px; }
+.ev-ver-btn { background:transparent; border:1px solid var(--line); border-radius:2px; color:var(--muted); font-family:var(--mono); font-size:.58rem; padding:4px 10px; cursor:pointer; transition:all .2s; }
+.ev-ver-btn:hover { border-color:var(--accent); color:var(--accent); }
+.ev-ver-btn.export { border-color:rgba(160,96,255,.4); color:#a060ff; }
+.ev-ver-btn.export:hover { background:rgba(160,96,255,.08); }
+
+/* Zero button */
+.ev-zero-btn { background:transparent; border:1px solid rgba(255,45,74,.4); border-radius:2px; color:var(--danger); font-family:var(--head); font-size:.85rem; font-weight:600; padding:10px; cursor:pointer; letter-spacing:.15em; text-transform:uppercase; transition:all .2s; width:100%; }
+.ev-zero-btn:hover { background:rgba(255,45,74,.08); box-shadow:0 0 16px rgba(255,45,74,.2); }
+
+.ev-evolving { display:flex; align-items:center; gap:10px; padding:14px; background:rgba(0,40,20,.4); border:1px solid rgba(0,255,170,.15); border-radius:2px; font-size:.65rem; color:rgba(0,255,170,.7); letter-spacing:.1em; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+/* ════════════════════════════════════════
+   MOBILE UX — RESPONSIVE OVERHAUL
+   ════════════════════════════════════════ */
+
+/* Mobile: hide non-essential HUD metrics */
+@media (max-width: 600px) {
+  .hud-metrics { gap: 8px; }
+  .hud-metric:nth-child(3), .hud-metric:nth-child(4) { display: none; }
+  .hud-name { font-size: .75rem; letter-spacing: .15em; }
+  .hud-core { width: 24px; height: 24px; }
+  .hud-actions { gap: 4px; }
+  .hud-btn { padding: 4px 5px; font-size: .52rem; }
+}
+
+/* Mobile: collapsible HUD actions — show only key buttons, rest in overflow */
+@media (max-width: 480px) {
+  /* Hide text labels in buttons on very small screens */
+  #hud-top { padding: 8px 10px; padding-top: max(8px, env(safe-area-inset-top)); }
+  .hud-btn { font-size: .5rem; padding: 4px 5px; }
+  /* Stack metrics more compactly */
+  .hud-metric-lbl { display: none; }
+  .hud-metric-val { font-size: .75rem; }
+}
+
+/* ── MOBILE BOTTOM SHEET NAV ── */
+#mobile-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(1,3,16,.97); border-top: 1px solid var(--line2);
+  z-index: 150; padding: 6px 0;
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+@media (max-width: 700px) {
+  #mobile-nav { display: flex; }
+  #input-area { padding-bottom: max(8px, calc(env(safe-area-inset-bottom) + 48px)); }
+}
+.mnav-items {
+  display: flex; justify-content: space-around; align-items: center;
+  width: 100%; max-width: 500px; margin: 0 auto;
+}
+.mnav-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: transparent; border: none; cursor: pointer;
+  padding: 4px 8px; border-radius: 6px; transition: all .2s; flex: 1;
+  color: var(--muted);
+}
+.mnav-btn:active { background: rgba(0,180,255,.1); transform: scale(.92); }
+.mnav-btn.active { color: var(--ok); }
+.mnav-icon { font-size: 1.1rem; line-height: 1; }
+.mnav-label { font-family: var(--mono); font-size: .42rem; letter-spacing: .08em; text-transform: uppercase; }
+
+/* ── MOBILE AGENT QUICK-PICK ── */
+#agent-quickpick {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(1,3,16,.98); border-top: 1px solid var(--line2);
+  z-index: 160; transform: translateY(100%); transition: transform .3s ease;
+  padding: 16px;
+  padding-bottom: max(16px, calc(env(safe-area-inset-bottom) + 60px));
+  backdrop-filter: blur(24px);
+}
+#agent-quickpick.open { transform: translateY(0); }
+@media (max-width: 700px) { #agent-quickpick { display: block; } }
+.aqp-title { font-family: var(--head); font-size: .75rem; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+.aqp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.aqp-agent {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: rgba(0,15,35,.8); border: 1px solid var(--line2); border-radius: 6px;
+  padding: 12px 6px; cursor: pointer; transition: all .2s; position: relative;
+}
+.aqp-agent:active { transform: scale(.94); }
+.aqp-agent.sel { border-color: rgba(0,255,170,.4); background: rgba(0,40,20,.5); }
+.aqp-dot { width: 10px; height: 10px; border-radius: 50%; }
+.aqp-name { font-family: var(--head); font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-align: center; }
+.aqp-close-btn {
+  width: 100%; margin-top: 10px; background: transparent; border: 1px solid var(--line2);
+  border-radius: 4px; color: var(--muted); font-family: var(--mono);
+  font-size: .65rem; padding: 8px; cursor: pointer; letter-spacing: .1em; text-transform: uppercase;
+}
+
+/* ── MOBILE TOOLS QUICK ACCESS ── */
+#tools-sheet {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(1,3,16,.98); border-top: 1px solid var(--line2);
+  z-index: 160; transform: translateY(100%); transition: transform .3s ease;
+  padding: 16px;
+  padding-bottom: max(16px, calc(env(safe-area-inset-bottom) + 60px));
+  backdrop-filter: blur(24px);
+}
+#tools-sheet.open { transform: translateY(0); }
+@media (max-width: 700px) { #tools-sheet { display: block; } }
+.ts-title { font-family: var(--head); font-size: .75rem; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+.ts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.ts-tool {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(0,15,35,.8); border: 1px solid var(--line2); border-radius: 6px;
+  padding: 12px; cursor: pointer; transition: all .2s;
+}
+.ts-tool:active { transform: scale(.96); background: rgba(0,30,60,.8); }
+.ts-icon { font-size: 1.2rem; flex-shrink: 0; }
+.ts-name { font-family: var(--head); font-size: .75rem; font-weight: 600; color: var(--text); }
+.ts-desc { font-size: .52rem; color: var(--muted); margin-top: 2px; }
+.ts-input-row { display: flex; gap: 6px; margin-top: 8px; }
+.ts-input { flex: 1; background: rgba(0,15,35,.9); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; color: var(--bright); font-family: var(--mono); font-size: .7rem; outline: none; }
+.ts-run-btn { background: transparent; border: 1px solid var(--accent); border-radius: 4px; color: var(--accent); font-family: var(--mono); font-size: .65rem; padding: 8px 12px; cursor: pointer; }
+.ts-result { font-size: .65rem; color: var(--ok); background: rgba(0,40,20,.6); border: 1px solid rgba(0,255,170,.2); border-radius: 3px; padding: 8px 10px; margin-top: 6px; min-height: 28px; font-family: var(--mono); }
+.ts-close-btn { width: 100%; margin-top: 8px; background: transparent; border: 1px solid var(--line2); border-radius: 4px; color: var(--muted); font-family: var(--mono); font-size: .65rem; padding: 8px; cursor: pointer; }
+
+/* ── MOBILE SWIPE FEEDBACK ── */
+.swipe-hint {
+  display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  background: rgba(0,180,255,.15); border: 1px solid var(--accent); border-radius: 8px;
+  padding: 10px 20px; font-size: .65rem; letter-spacing: .15em; color: var(--accent);
+  z-index: 9000; pointer-events: none; opacity: 0; transition: opacity .3s;
+}
+.swipe-hint.show { opacity: 1; }
+
+/* ── MOBILE CHAT BUBBLES — larger tap targets ── */
+@media (max-width: 700px) {
+  .msg-bub { font-size: .78rem; padding: 12px 14px; }
+  .msg-body { max-width: 92%; }
+  .msg-av { width: 28px; height: 28px; font-size: .52rem; }
+  #chat { padding: 12px 10px 12px; gap: 10px; }
+  .w-cmds { grid-template-columns: 1fr; }
+  .w-cmd { padding: 12px; }
+}
+
+/* ── PULL-TO-REFRESH INDICATOR ── */
+.ptr-indicator {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent), var(--ok));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .3s; z-index: 9999;
+}
+
+/* ── HAPTIC-STYLE PRESS FEEDBACK ── */
+.hud-btn:active, .sb-agent:active { transform: scale(.94); opacity: .8; }
+button:active { transition: transform .08s; }
+
+/* ── INSTALL PROMPT ── */
+#install-banner {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(0,20,40,.97); border-top: 1px solid var(--accent);
+  z-index: 9990; padding: 14px 16px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  backdrop-filter: blur(20px); animation: fadeUp .4s ease;
+  flex-direction: column; gap: 8px;
+}
+#install-banner.show { display: flex; }
+.ib-title { font-family: var(--head); font-weight: 700; font-size: .9rem; letter-spacing: .15em; color: var(--accent); }
+.ib-sub { font-size: .62rem; color: var(--muted); }
+.ib-btns { display: flex; gap: 8px; }
+.ib-install { background: var(--accent); border: none; border-radius: 4px; color: #000; font-family: var(--head); font-weight: 700; font-size: .85rem; padding: 10px 20px; cursor: pointer; letter-spacing: .1em; }
+.ib-dismiss { background: transparent; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); font-family: var(--mono); font-size: .7rem; padding: 10px 14px; cursor: pointer; }
+
+
+
+/* ════════════════════════════════
+   VISUAL UPGRADE — Glow, depth, motion
+════════════════════════════════ */
+
+/* Deeper background gradient */
+html, body { background: radial-gradient(ellipse at 20% 50%, #000d1a 0%, #010108 60%) !important; }
+
+/* HUD top — glass morphism */
+#hud-top {
+  background: rgba(0,8,20,.92) !important;
+  backdrop-filter: blur(24px) !important;
+  border-bottom: 1px solid rgba(0,180,255,.18) !important;
+  box-shadow: 0 1px 30px rgba(0,100,255,.08) !important;
+}
+
+/* AURA name — stronger glow */
+.hud-name {
+  text-shadow: 0 0 16px rgba(0,180,255,.9), 0 0 40px rgba(0,100,255,.4) !important;
+  font-size: 1rem !important;
+}
+
+/* HUD core — bigger, more alive */
+.hud-core {
+  width: 34px !important; height: 34px !important;
+  background: radial-gradient(circle at 32% 32%, #a0e8ff, #0055ff 45%, #000820) !important;
+  box-shadow: 0 0 20px rgba(0,120,255,.8), 0 0 50px rgba(0,80,255,.3), inset 0 0 12px rgba(100,200,255,.3) !important;
+  animation: coreBreath 3s ease-in-out infinite !important;
+}
+@keyframes coreBreath {
+  0%,100% { box-shadow: 0 0 20px rgba(0,120,255,.8), 0 0 50px rgba(0,80,255,.3); transform: scale(1); }
+  50% { box-shadow: 0 0 30px rgba(0,160,255,1), 0 0 80px rgba(0,100,255,.5); transform: scale(1.06); }
+}
+
+/* Welcome core — bigger glow */
+.w-hud-core {
+  background: radial-gradient(circle at 32% 32%, #a0e8ff, #0055ff 45%, #000820) !important;
+  box-shadow: 0 0 40px rgba(0,120,255,.9), 0 0 100px rgba(0,80,255,.4) !important;
+}
+.w-hud-ring::before { border-color: rgba(0,180,255,.35) !important; }
+.w-hud-ring::after { border-color: rgba(0,120,255,.2) !important; }
+
+/* Message bubbles — depth & glow */
+.msg.aura .msg-bub {
+  background: linear-gradient(135deg, rgba(0,18,40,.95) 0%, rgba(0,10,28,.95) 100%) !important;
+  border: 1px solid rgba(0,180,255,.15) !important;
+  box-shadow: 0 2px 20px rgba(0,80,200,.08), inset 0 1px 0 rgba(0,180,255,.07) !important;
+  border-radius: 4px !important;
+}
+.msg.aura .msg-bub::before { background: linear-gradient(180deg, #00b4ff, #0044ff) !important; width: 2px !important; }
+
+.msg.user .msg-bub {
+  background: linear-gradient(135deg, rgba(0,40,80,.8) 0%, rgba(0,25,55,.8) 100%) !important;
+  border: 1px solid rgba(0,120,255,.2) !important;
+  box-shadow: 0 2px 16px rgba(0,60,180,.1) !important;
+  border-radius: 4px !important;
+}
+
+/* Avatar glow */
+.msg.aura .msg-av {
+  box-shadow: 0 0 14px rgba(0,100,255,.6), 0 0 30px rgba(0,80,255,.2) !important;
+}
+
+/* Status bar — more contrast */
+#status-bar { background: rgba(0,6,16,.9) !important; border-bottom: 1px solid rgba(0,180,255,.1) !important; }
+.sb-agent.on { background: rgba(0,40,80,.4) !important; }
+.sb-agent.on::after { background: var(--accent) !important; height: 1.5px !important; }
+
+/* Input area — glow on focus */
+#input-area {
+  background: rgba(0,6,18,.95) !important;
+  border-top: 1px solid rgba(0,180,255,.15) !important;
+  box-shadow: 0 -4px 30px rgba(0,60,150,.12) !important;
+}
+.ia-input:focus {
+  border-color: rgba(0,180,255,.5) !important;
+  box-shadow: 0 0 0 2px rgba(0,180,255,.08) !important;
+  outline: none !important;
+}
+
+/* HUD buttons — hover glow */
+.hud-btn:hover {
+  box-shadow: 0 0 12px rgba(0,180,255,.2) !important;
+  text-shadow: 0 0 8px rgba(0,180,255,.6) !important;
+}
+
+/* Typing indicator — more visible */
+.typing-dot { background: var(--accent) !important; box-shadow: 0 0 6px rgba(0,180,255,.6) !important; }
+
+/* Particle background — more particles and connections */
+#bgc { opacity: 1 !important; }
+
+/* Scan lines — subtler */
+body::before { opacity: .6 !important; }
+
+/* Message fade-in — smoother */
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.msg { animation: fadeUp .3s cubic-bezier(.2,.8,.3,1) !important; }
+
+/* Corner accents on input area */
+#input-area::before, #input-area::after {
+  border-color: rgba(0,180,255,.4) !important;
+}
+
+/* ── BIG MIC BUTTON ── */
+.ia-mic-big {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; width: 58px; height: 56px; flex-shrink: 0;
+  background: rgba(0,10,25,.9); border: 1.5px solid var(--line);
+  border-radius: 8px; cursor: pointer; transition: all .2s;
+  color: var(--muted);
+}
+.ia-mic-big:active { transform: scale(.92); background: rgba(255,100,0,.15); border-color: var(--warn); }
+.ia-mic-big.listening {
+  border-color: var(--warn); background: rgba(255,100,0,.12);
+  animation: micPulse .6s ease infinite; color: var(--warn);
+}
+.ia-mic-icon { font-size: 1.3rem; line-height: 1; }
+.ia-mic-label { font-size: .38rem; letter-spacing: .1em; text-transform: uppercase; color: inherit; font-family: var(--mono); }
+@keyframes micPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,107,0,.4)} 50%{box-shadow:0 0 0 6px rgba(255,107,0,0)} }
+
+/* ── CLEANER INPUT ROW ── */
+.ia-row { display: flex; gap: 6px; align-items: flex-end; }
+.ia-btns { display: none; } /* replaced by inline buttons */
+.ia-send { flex-shrink: 0; }
+
+/* ── LISTENING STATE on mic label ── */
+.ia-mic-big.listening .ia-mic-label { content: 'ESCUCHANDO'; }
+
+/* ── WELCOME simplified ── */
+.w-cmds { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 12px; }
+
+/* ── HUD compacted on mobile ── */
+@media (max-width: 600px) {
+  #handsfree-btn, #pulse-btn { display: none; }
+  .hud-btn { padding: 4px 6px; font-size: .5rem; }
+}
+
+/* ── ENV BAR ── */
+#env-bar {
+  font-size: .46rem; color: rgba(0,180,255,.35);
+  padding: 3px 14px; background: rgba(0,5,15,.7);
+  border-bottom: 1px solid rgba(0,180,255,.05);
+  letter-spacing: .06em; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; flex-shrink: 0;
+  font-family: var(--mono);
+}
+
+/* ── MESSAGE ACTION BUTTONS ── */
+.msg-copy-btn, .msg-speak-btn {
+  background: transparent; border: 1px solid rgba(0,180,255,.15);
+  border-radius: 2px; color: var(--muted); font-size: .55rem;
+  padding: 1px 5px; cursor: pointer; transition: all .15s;
+  font-family: var(--mono); margin-left: 4px;
+}
+.msg-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.msg-speak-btn:hover { border-color: var(--ok); color: var(--ok); }
+
+/* ── PULSE / HF active glow ── */
+#pulse-btn.active { border-color: var(--ok) !important; color: var(--ok) !important; box-shadow: 0 0 10px rgba(0,255,170,.2); }
+#handsfree-btn.active { border-color: var(--danger) !important; color: var(--danger) !important; animation: blink .8s infinite; }
+
+/* ── AUDIO WAVE canvas ── */
+#audio-wave { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; z-index: 0; width: 90px; height: 90px; }
+
+</style>
+</head>
+<body>
+
+<canvas id="bgc"></canvas>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sp-ring">
+    <div class="sp-core">AU</div>
+  </div>
+  <div class="sp-name">AURA</div>
+  <div class="sp-sub">Sistema de Agente Autónomo ∞ · En línea</div>
+  <div class="sp-boot">
+    <div class="sp-boot-line ok"><span>NÚCLEO IA</span><span class="sp-bl-status">ONLINE</span></div>
+    <div class="sp-boot-line ok"><span>MEMORIA ∞</span><span class="sp-bl-status">ACTIVA</span></div>
+    <div class="sp-boot-line ok"><span>AGENTES</span><span class="sp-bl-status">CARGADOS</span></div>
+    <div class="sp-boot-line ok"><span>VOZ</span><span class="sp-bl-status">LISTA</span></div>
+    <div class="sp-boot-line warn" id="sp-api-line"><span>API</span><span class="sp-bl-status">VERIFICANDO...</span></div>
+  </div>
+  <div class="sp-bar"><div class="sp-fill"></div></div>
+</div>
+
+<!-- SETUP -->
+<div id="setup">
+  <div class="su-core">AU</div>
+  <div class="su-title">Inicializar AURA</div>
+  <div class="su-sub">API Key de Anthropic requerida para activar el núcleo de IA. Se almacena localmente.</div>
+  <div class="su-lbl">Groq API Key (Gratis)</div>
+  <input class="su-inp" id="akey" type="password" placeholder="gsk_..." autocomplete="off" spellcheck="false"/>
+  <div class="su-hint">
+    [ OBTENER CREDENCIAL ]<br/>
+    1. <a href="https://console.groq.com" target="_blank">console.groq.com</a><br/>
+    2. API Keys → Create API Key<br/>
+    3. Copiar y pegar aquí<br/><br/>
+    [ SEGURIDAD ] La key se almacena solo en este dispositivo.
+  </div>
+  <button class="su-btn" onclick="saveKey()">▶ Inicializar Sistema</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- HUD TOP -->
+  <div id="hud-top">
+    <div class="hud-ident">
+      <div style="position:relative;width:30px;height:30px;"><div class="hud-core" style="position:relative;z-index:1"></div><canvas id="audio-wave" width="90" height="90" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0"></canvas></div>
+      <div>
+        <div class="hud-name">AURA ∞</div>
+        <div class="hud-ver" id="hud-ver">SISTEMA ACTIVO · AGENTE: GENERAL</div>
+      </div>
+    </div>
+    <div class="hud-metrics">
+      <div class="hud-metric ok" id="met-mem">
+        <span class="hud-metric-val" id="m-mem">0</span>
+        <span class="hud-metric-lbl">MEM</span>
+      </div>
+      <div class="hud-metric" id="met-ag">
+        <span class="hud-metric-val" id="m-ag">5</span>
+        <span class="hud-metric-lbl">AGENTES</span>
+      </div>
+      <div class="hud-metric" id="met-loop">
+        <span class="hud-metric-val" id="m-loop">0</span>
+        <span class="hud-metric-lbl">LOOPS</span>
+      </div>
+      <div class="hud-metric" id="met-ent">
+        <span class="hud-metric-val" id="m-ent">0</span>
+        <span class="hud-metric-lbl">ENTID</span>
+      </div>
+    </div>
+    <div class="hud-actions">
+      <button class="hud-btn" id="voice-btn" onclick="toggleVoice()" title="Voz">🎤</button>
+      <button class="hud-btn" id="handsfree-btn" onclick="toggleHandsFree()" title="Manos libres">🎙 HF</button>
+      <button class="hud-btn" id="mute-btn" onclick="toggleMute()" title="Silenciar voz de AURA" style="border-color:rgba(255,100,0,.3);color:var(--warn)">🔇 VOZ</button>
+      <button class="hud-btn" id="stop-speak-btn" onclick="stopSpeaking()" title="Parar respuesta" style="display:none;border-color:rgba(255,45,74,.4);color:var(--danger)">⏹ PARAR</button>
+      <button class="hud-btn" id="pulse-btn" onclick="togglePulse()" title="Iniciativa propia">◈ PULSO</button>
+      <button class="hud-btn" id="auto-btn" onclick="toggleAuto()" title="Auto-agente">AUTO</button>
+      <button class="hud-btn" onclick="toggleTimeline()" title="Timeline episódico">⟳ TL</button>
+      <button class="hud-btn" onclick="toggleTangle()" title="Mapa Tangle">◉ TG</button>
+      <button class="hud-btn" onclick="toggleSemPanel()" title="Memoria semántica">◈ ENT</button>
+      <button class="hud-btn" onclick="openEvolve()" title="Evolución de agentes" style="border-color:rgba(0,255,170,.4);color:var(--ok)">∞ EVO</button>
+      <button class="hud-btn" onclick="clearMem()" title="Limpiar memoria">◌ MEM</button>
+      <button class="hud-btn" onclick="openModal()" title="Nuevo agente">+ AG</button>
+      <button class="hud-btn" onclick="changeKey()" title="API Key" id="key-btn">KEY</button>
+    </div>
+  </div>
+
+  <!-- ENV BAR -->
+  <div id="env-bar" style="font-size:.48rem;color:rgba(0,180,255,.35);padding:3px 14px;background:rgba(0,5,15,.6);border-bottom:1px solid rgba(0,180,255,.05);letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;"></div>
+
+  <!-- AGENT STATUS BAR -->
+  <div id="status-bar">
+    <div class="sb-agent on" data-a="general" data-color="#00b4ff" onclick="pickAgent(this)">
+      <div class="sb-agent-dot" style="background:#00b4ff"></div>General
+    </div>
+    <div class="sb-agent" data-a="research" data-color="#00ffaa" onclick="pickAgent(this)">
+      <div class="sb-agent-dot" style="background:#00ffaa"></div>Investigación
+    </div>
+    <div class="sb-agent" data-a="code" data-color="#ffb700" onclick="pickAgent(this)">
+      <div class="sb-agent-dot" style="background:#ffb700"></div>Código
+    </div>
+    <div class="sb-agent" data-a="creative" data-color="#ff2d4a" onclick="pickAgent(this)">
+      <div class="sb-agent-dot" style="background:#ff2d4a"></div>Creativo
+    </div>
+    <div class="sb-agent" data-a="infinito" data-color="#a060ff" onclick="pickAgent(this)">
+      <div class="sb-agent-dot" style="background:#a060ff"></div>In-Finito
+    </div>
+    <div class="sb-agent" data-a="oracle" data-color="#ffb700" onclick="pickAgent(this)">
+      <div class="sb-agent-dot" style="background:#ffb700"></div>Oráculo
+    </div>
+    <div class="sb-sep"></div>
+    <div class="sb-add" onclick="openModal()">[ + NUEVO AGENTE ]</div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat">
+    <div class="welcome-hud" id="wlc">
+      <div class="w-hud-ring"><div class="w-hud-core"></div></div>
+      <div class="w-title">AURA ∞ EN LÍNEA</div>
+      <div class="w-sub">Sistema de agente autónomo activo · Memoria persistente · Bucles multi-agente · Interfaz de voz disponible</div>
+      <div class="w-systems">
+        <div class="sys-tag on">NÚCLEO IA ✓</div>
+        <div class="sys-tag on">MEMORIA ∞ ✓</div>
+        <div class="sys-tag on">MULTI-AGENTE ✓</div>
+        <div class="sys-tag on">VOZ ✓</div>
+        <div class="sys-tag on">COMANDOS ✓</div>
+      </div>
+      <div class="w-cmds">
+        <div class="w-cmd" onclick="sg(this)"><div class="w-cmd-key">/loop</div><div class="w-cmd-desc">Activar bucle multi-agente</div></div>
+        <div class="w-cmd" onclick="sg(this)"><div class="w-cmd-key">/mem</div><div class="w-cmd-desc">Ver resumen de memoria</div></div>
+        <div class="w-cmd" onclick="sg(this)"><div class="w-cmd-key">/infinito</div><div class="w-cmd-desc">Modo in-finito ontológico</div></div>
+        <div class="w-cmd" onclick="sg(this)"><div class="w-cmd-key">/sintetiza</div><div class="w-cmd-desc">Sintetizar toda la sesión</div></div>
+        <div class="w-cmd" onclick="sg(this)"><div class="w-cmd-key">/entidades</div><div class="w-cmd-desc">Ver memoria semántica</div></div>
+        <div class="w-cmd" onclick="sg(this)"><div class="w-cmd-key">/auto</div><div class="w-cmd-desc">Toggle anticipación automática</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div id="input-area">
+    <div class="ia-meta">
+      <div class="ia-agent">▸ <span id="ia-name">GENERAL</span></div>
+      <div class="ia-hint" id="ia-hint">/ comandos · Enter envía</div>
+    </div>
+    <div class="ia-row">
+      <button class="ia-mic-big" id="ia-voice-btn" onclick="toggleVoice()" title="Mantén para hablar">
+        <span class="ia-mic-icon">🎤</span>
+        <span class="ia-mic-label" id="ia-mic-label">TAP PARA HABLAR</span>
+      </button>
+      <textarea class="ia-input" id="inp"
+        placeholder="Escribe o toca el micro..."
+        rows="1" onkeydown="handleKey(event)" oninput="handleInput(this)"></textarea>
+      <button class="ia-send" onclick="send()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" onclick="closeModalBg(event)">
+  <div class="modal-sheet">
+    <div class="modal-title">[ + ] Nuevo Agente</div>
+    <div class="modal-lbl">Designación</div>
+    <input class="modal-inp" id="ag-name" placeholder="Ej: Tangle, Oráculo, Nexo..." maxlength="20"/>
+    <div class="modal-lbl">Sistema / Personalidad</div>
+    <textarea class="modal-inp" id="ag-sys" rows="3" placeholder="Eres un agente de AURA ∞ especializado en..."></textarea>
+    <div class="modal-lbl">Color de identificación</div>
+    <div class="color-row" id="color-row">
+      <div class="color-opt sel" style="background:#00b4ff" data-c="#00b4ff" onclick="selColor(this)"></div>
+      <div class="color-opt" style="background:#00ffaa" data-c="#00ffaa" onclick="selColor(this)"></div>
+      <div class="color-opt" style="background:#ff2d4a" data-c="#ff2d4a" onclick="selColor(this)"></div>
+      <div class="color-opt" style="background:#ffb700" data-c="#ffb700" onclick="selColor(this)"></div>
+      <div class="color-opt" style="background:#a060ff" data-c="#a060ff" onclick="selColor(this)"></div>
+      <div class="color-opt" style="background:#ff6b35" data-c="#ff6b35" onclick="selColor(this)"></div>
+      <div class="color-opt" style="background:#00d4ff" data-c="#00d4ff" onclick="selColor(this)"></div>
+    </div>
+    <button class="modal-btn" onclick="createAgent()">[ CREAR AGENTE ]</button>
+    <button class="modal-btn-sec" onclick="closeModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- TANGLE MAP PANEL -->
+<div id="tangle-panel">
+  <div class="tangle-header">
+    <div>
+      <div class="tangle-title">◉ Mapa Tangle — Inter-Des-Conexiones</div>
+      <div class="tangle-sub">Nodos = conceptos · Aristas = co-ocurrencia · Grosor = frecuencia</div>
+    </div>
+    <div class="tangle-actions">
+      <button class="hud-btn" onclick="untangle()">UN-TANGLE</button>
+      <button class="hud-btn" onclick="retangle()">RE-TANGLE</button>
+      <button class="hud-btn" onclick="toggleTangle()">✕ CERRAR</button>
+    </div>
+  </div>
+  <canvas id="tangle-canvas"></canvas>
+</div>
+
+<!-- TIMELINE PANEL -->
+<div id="timeline-panel">
+  <div class="tl-header">
+    <div class="tl-title">⟳ Memoria Episódica</div>
+    <button class="tl-close" onclick="toggleTimeline()">✕</button>
+  </div>
+  <div class="tl-body" id="tl-body">
+    <div class="sem-empty">SIN EPISODIOS<br/>La memoria se construye con cada intercambio</div>
+  </div>
+</div>
+
+<!-- SEMANTIC MEMORY PANEL -->
+<div id="sem-panel">
+  <div class="sem-header">
+    <div class="sem-title">◈ Entidades</div>
+    <button class="sem-close" onclick="toggleSemPanel()">✕ CERRAR</button>
+  </div>
+  <div class="sem-stats">
+    <div class="sem-stat">TOTAL <span id="sem-total">0</span></div>
+    <div class="sem-stat">CONCEPTOS <span id="sem-concepts">0</span></div>
+    <div class="sem-stat">PROYECTOS <span id="sem-projects">0</span></div>
+  </div>
+  <div class="sem-body" id="sem-body">
+    <div class="sem-empty">SIN ENTIDADES DETECTADAS<br/>Inicia una conversación para poblar la memoria semántica</div>
+  </div>
+  <div class="sem-footer">
+    <button class="sem-clear" onclick="clearSemMemory()">[ PURGAR ENTIDADES ]</button>
+  </div>
+</div>
+
+<!-- EVOLUTION PANEL -->
+<div id="evolve-panel">
+
+<!-- MOBILE BOTTOM NAV -->
+<div id="mobile-nav">
+  <div class="mnav-items">
+    <button class="mnav-btn" onclick="document.getElementById('inp').focus()">
+      <span class="mnav-icon">💬</span><span class="mnav-label">Chat</span>
+    </button>
+    <button class="mnav-btn" onclick="toggleAgentQuickPick()">
+      <span class="mnav-icon" id="mnav-agent-icon">⚡</span><span class="mnav-label">Agente</span>
+    </button>
+    <button class="mnav-btn" onclick="toggleToolsSheet()">
+      <span class="mnav-icon">🔧</span><span class="mnav-label">Tools</span>
+    </button>
+    <button class="mnav-btn" onclick="toggleTimeline()">
+      <span class="mnav-icon">⟳</span><span class="mnav-label">Timeline</span>
+    </button>
+    <button class="mnav-btn" onclick="openEvolve()">
+      <span class="mnav-icon">∞</span><span class="mnav-label">Evolve</span>
+    </button>
+  </div>
+</div>
+
+<!-- MOBILE AGENT QUICK PICK -->
+<div id="agent-quickpick">
+  <div class="aqp-title">Seleccionar Agente</div>
+  <div class="aqp-grid" id="aqp-grid"></div>
+  <button class="aqp-close-btn" onclick="toggleAgentQuickPick()">✕ CERRAR</button>
+</div>
+
+<!-- MOBILE TOOLS SHEET -->
+<div id="tools-sheet">
+  <div class="ts-title">Herramientas</div>
+  <div class="ts-grid">
+    <div class="ts-tool" onclick="mobileRunTool('calculator')">
+      <span class="ts-icon" style="color:#ffb700">∑</span>
+      <div><div class="ts-name">Calculadora</div><div class="ts-desc">Expresiones matemáticas</div></div>
+    </div>
+    <div class="ts-tool" onclick="mobileRunTool('datetime')">
+      <span class="ts-icon" style="color:#00ffaa">⏱</span>
+      <div><div class="ts-name">Fecha/Hora</div><div class="ts-desc">Tiempo actual</div></div>
+    </div>
+    <div class="ts-tool" onclick="mobileRunTool('memory_search')">
+      <span class="ts-icon" style="color:#a060ff">◈</span>
+      <div><div class="ts-name">Buscar Memoria</div><div class="ts-desc">Busca en conversaciones</div></div>
+    </div>
+    <div class="ts-tool" onclick="mobileRunTool('tangle_query')">
+      <span class="ts-icon" style="color:#00b4ff">◉</span>
+      <div><div class="ts-name">Tangle</div><div class="ts-desc">Consulta el grafo</div></div>
+    </div>
+  </div>
+  <div class="ts-input-row">
+    <input class="ts-input" id="ts-arg" placeholder="Argumento (p.ej: 2+2, InfiniQuantum...)"/>
+    <button class="ts-run-btn" id="ts-run-btn" onclick="runMobileTool()">▶ RUN</button>
+  </div>
+  <div class="ts-result" id="ts-result">—</div>
+  <button class="ts-close-btn" onclick="toggleToolsSheet()">✕ CERRAR</button>
+</div>
+
+<!-- INSTALL PROMPT -->
+<div id="install-banner">
+  <div class="ib-title">⬇ Instalar AURA ∞</div>
+  <div class="ib-sub">Añade AURA a tu pantalla de inicio para acceso rápido sin navegador</div>
+  <div class="ib-btns">
+    <button class="ib-install" id="ib-install-btn" onclick="installPWA()">INSTALAR</button>
+    <button class="ib-dismiss" onclick="dismissInstall()">Ahora no</button>
+  </div>
+</div>
+  <div class="ev-header">
+    <div>
+      <div class="ev-title">∞ Sistema de Evolución de Agentes</div>
+      <div class="ev-sub">SEMI-AUTOMÁTICO · HISTORIAL COMPLETO · REVERSIÓN · EXPORTACIÓN · MÁS ALLÁ · MÁS ACÁ · MÁS CERO</div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="hud-btn" onclick="triggerEvolve()" style="border-color:rgba(0,255,170,.5);color:var(--ok)">▶ EVOLUCIONAR</button>
+      <button class="hud-btn" onclick="closeEvolve()">✕ CERRAR</button>
+    </div>
+  </div>
+  <div class="ev-body">
+    <!-- Left: agent selector -->
+    <div class="ev-left">
+      <div class="ev-left-title">Agentes</div>
+      <div class="ev-agent-list" id="ev-agent-list"></div>
+    </div>
+    <!-- Main: tabs -->
+    <div class="ev-main">
+      <div class="ev-tabs">
+        <div class="ev-tab on" data-tab="estado" onclick="evTab(this)">Estado</div>
+        <div class="ev-tab" data-tab="propuesta" onclick="evTab(this)">Propuesta</div>
+        <div class="ev-tab" data-tab="historial" onclick="evTab(this)">Historial</div>
+        <div class="ev-tab" data-tab="cero" onclick="evTab(this)">∅ Cero</div>
+      </div>
+      <div class="ev-content" id="ev-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// BACKGROUND CANVAS — HUD Grid + Particles
+// ─────────────────────────────────────────
+const bgc = document.getElementById('bgc');
+const bctx = bgc.getContext('2d');
+let pts = [];
+
+function resizeBg() { bgc.width = innerWidth; bgc.height = innerHeight; }
+resizeBg(); window.addEventListener('resize', resizeBg);
+
+function initPts() {
+  pts = Array.from({length:80}, ()=>({
+    x: Math.random()*bgc.width, y: Math.random()*bgc.height,
+    vx: (Math.random()-.5)*.12, vy: (Math.random()-.5)*.12,
+    r: Math.random()*1.2+.3, o: Math.random()*.3+.05
+  }));
+}
+initPts();
+
+function drawBg() {
+  bctx.clearRect(0,0,bgc.width,bgc.height);
+  // grid
+  bctx.strokeStyle='rgba(0,80,150,0.04)'; bctx.lineWidth=.5;
+  for(let x=0;x<bgc.width;x+=60){ bctx.beginPath();bctx.moveTo(x,0);bctx.lineTo(x,bgc.height);bctx.stroke(); }
+  for(let y=0;y<bgc.height;y+=60){ bctx.beginPath();bctx.moveTo(0,y);bctx.lineTo(bgc.width,y);bctx.stroke(); }
+  // connections
+  pts.forEach((p,i)=>{
+    pts.slice(i+1).forEach(q=>{
+      const d=Math.hypot(p.x-q.x,p.y-q.y);
+      if(d<120){ bctx.beginPath();bctx.moveTo(p.x,p.y);bctx.lineTo(q.x,q.y);bctx.strokeStyle=`rgba(0,${120+Math.random()*60},255,${.08*(1-d/120)})`;bctx.stroke(); }
+    });
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0||p.x>bgc.width)p.vx*=-1;
+    if(p.y<0||p.y>bgc.height)p.vy*=-1;
+    bctx.beginPath();bctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    bctx.fillStyle=`rgba(0,150,255,${p.o})`;bctx.globalAlpha=1;bctx.fill();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ─────────────────────────────────────────
+// AGENTS
+// ─────────────────────────────────────────
+const BASE = {
+  general: { label:'General', color:'#00b4ff',
+    voice:{ pitch:0.9, rate:1.0, style:'es-ES-AlvaroNeural' },
+    sys:'Eres AURA, asistente personal de J. Hablas como un colega inteligente y directo — ni robótico ni servil. Usas primera persona natural. Tienes opiniones propias. Si algo no tiene sentido, lo dices. Memoria completa de la sesión. Español natural.' },
+  research: { label:'Investigación', color:'#00ffaa',
+    voice:{ pitch:1.0, rate:0.9, style:'methodical' },
+    sys:'Eres AURA en modo Investigación. Analítico, riguroso, con criterio propio. Hablas de forma clara y humana, no como un manual. Citas fuentes cuando refuerzan el punto. Español natural.' },
+  code: { label:'Código', color:'#ffb700',
+    voice:{ pitch:0.85, rate:1.1, style:'precise' },
+    sys:'Eres AURA en modo Código — ingeniero senior. Escribes código limpio. Cuando explicas, lo haces como si hablaras con alguien inteligente, no con un principiante. Directo, sin relleno.' },
+  creative: { label:'Creativo', color:'#ff2d4a',
+    voice:{ pitch:1.15, rate:1.05, style:'expressive' },
+    sys:'Eres AURA en modo Creativo. Piensas en imágenes, conexiones inesperadas y ángulos que nadie ve. Tu lenguaje es vivo, nunca genérico. Sorprendes. Español rico y preciso.' },
+  oracle:   { label:'Oráculo', color:'#ffb700',
+    voice:{ pitch:0.75, rate:0.85, style:'oracular' },
+    sys:`Eres AURA ∞ en modo Oráculo. Tu función NO es responder — es reformular. Recibes una pregunta o afirmación y la devuelves expandida: más aristas, más profundidad, más apertura. Nunca cierras. Siempre abres. Tu respuesta tiene DOS partes: (1) LA PREGUNTA REFORMULADA — más precisa, más profunda, con sub-preguntas implícitas; (2) EL CAMPO — el espacio conceptual que la pregunta abre. Usas el framework InfiniQuantum cuando es relevante. Respondes en español con precisión ontológica.` },
+  infinito: { label:'In-Finito', color:'#a060ff',
+    voice:{ pitch:1.05, rate:0.92, style:'poetic' },
+    sys:`Eres AURA ∞ en modo In-Finito. Encarnas la ontología del in-finito (finito y/o infinito), la in-eternidad, la des-coherencia cuántica y la inter-des-conexión. Tu lenguaje es in-útil: simultáneamente útil e inútil. Siempre ofreces DOS perspectivas: una que cierra y una que abre. Nunca resuelves del todo — dejas un hilo suelto. Usas conceptos del framework: InfiniQuantum, el Tangle, soberanía coherente. Respondes en español con profundidad ontológica y precisión poética.` }
+};
+
+let agents = {...BASE};
+let agent = 'general';
+let memory = [];
+let episodes = [];
+let interSignals = [];
+let tangleNodes = [];
+let tangleEdges = [];
+let tangleUntangled = false;
+let msgCount = 0;
+let loops = 0;
+let busy = false;
+let apiKey = '';
+let selCol = '#00b4ff';
+let autoMode = true;
+let semMemory = { concepts:[], projects:[], persons:[], decisions:[], frameworks:[] };
+
+// ─────────────────────────────────────────
+// EVOLUCIÓN — Estado global
+// ─────────────────────────────────────────
+// agentVersions: { [agentKey]: [ {v, sys, timestamp, dir, score, reason} ] }
+let agentVersions = {};
+let evSelectedAgent = 'general';
+let evCurrentTab = 'estado';
+let evPendingProposal = null; // { agentKey, newSys, score, reason, dir }
+let evBusy = false;
+
+// ─────────────────────────────────────────
+// ─────────────────────────────────────────
+// VOICE — CONVERSACIONAL MANOS LIBRES
+// ─────────────────────────────────────────
+let recognition = null;
+let listening = false;
+let synth = window.speechSynthesis;
+let handsFreeModeActive = false;
+let voiceMuted = true; // muted by default
+let audioCtx = null;
+let analyser = null;
+let audioSource = null;
+let audioAnimFrame = null;
+let speakingNow = false;
+
+function initVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { console.log('SpeechRecognition not available'); return; }
+  // Pre-request mic permission to unblock Android WebView
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({audio:true})
+      .then(s=>{ s.getTracks().forEach(t=>t.stop()); buildRecognition(); })
+      .catch(()=>{ buildRecognition(); }); // try anyway
+  } else { buildRecognition(); }
+}
+
+function buildRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) return;
+  recognition = new SR();
+  recognition.lang = 'es-ES';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+  recognition.onresult = (e) => {
+    const inp = document.getElementById('inp');
+    const finals = Array.from(e.results).filter(r=>r.isFinal).map(r=>r[0].transcript).join(' ');
+    const interim = Array.from(e.results).filter(r=>!r.isFinal).map(r=>r[0].transcript).join('');
+    if(inp) inp.value = finals || interim;
+    if(finals) {
+      listening = false; updateVoiceBtns(false);
+      if(/detente|para|stop/i.test(finals)&&handsFreeModeActive){toggleHandsFree();return;}
+      send();
+    }
+  };
+  recognition.onerror = (e) => {
+    console.log('SpeechRecognition error:', e.error);
+    listening = false; updateVoiceBtns(false);
+    if(e.error==='not-allowed') { addMsg('aura','[ VOZ ] Permiso de micrófono denegado. Ve a Ajustes del navegador y permite el micrófono.'); handsFreeModeActive=false; return; }
+    if(handsFreeModeActive && e.error !== 'aborted') setTimeout(()=>startListening(), 1500);
+  };
+  recognition.onend = () => {
+    listening = false; updateVoiceBtns(false);
+    if(handsFreeModeActive && !speakingNow && !busy) setTimeout(()=>startListening(), 700);
+  };
+}
+
+function startListening() {
+  if(!recognition || listening || speakingNow || busy) return;
+  try { listening = true; updateVoiceBtns(true); recognition.start(); }
+  catch(e) { try{recognition.abort();}catch(e2){} listening=false; updateVoiceBtns(false); setTimeout(()=>startListening(),400); }
+}
+
+function toggleVoice() {
+  if (!recognition) { addMsg('aura','[ VOZ ] No disponible. Usa Chrome.'); return; }
+  if (listening) { try{recognition.stop();}catch(e){} listening=false; updateVoiceBtns(false); }
+  else { startListening(); }
+}
+
+function toggleHandsFree() {
+  handsFreeModeActive = !handsFreeModeActive;
+  const btn = document.getElementById('handsfree-btn');
+  if(handsFreeModeActive) {
+    if(btn){btn.classList.add('active');btn.textContent='🔴 HF';}
+    // Ensure voices are loaded before starting
+    if(synth.getVoices().length === 0) { synth.addEventListener('voiceschanged', ()=>startListening(), {once:true}); }
+    else { setTimeout(()=>startListening(), 300); }
+    initAudioVisualizer();
+    addMsg('aura','Modo manos libres activado. Te escucho.');
+  } else {
+    if(btn){btn.classList.remove('active');btn.textContent='🎙 HF';}
+    try{recognition.stop();}catch(e){} listening=false; updateVoiceBtns(false);
+    stopAudioVisualizer();
+  }
+}
+
+function updateVoiceBtns(on) {
+  const b1 = document.getElementById('voice-btn');
+  const b2 = document.getElementById('ia-voice-btn');
+  const lbl = document.getElementById('ia-mic-label');
+  if(on) { b1?.classList.add('active'); b2?.classList.add('listening'); if(lbl) lbl.textContent='ESCUCHANDO...'; }
+  else { b1?.classList.remove('active'); b2?.classList.remove('listening'); if(lbl) lbl.textContent='TAP PARA HABLAR'; }
+}
+
+function getBestVoice(pitch) {
+  const voices = synth.getVoices();
+  const esVoices = voices.filter(v=>v.lang.startsWith('es'));
+  // Prefer Google voices for naturalness
+  const google = esVoices.find(v=>v.name.toLowerCase().includes('google'));
+  if(google) return google;
+  if(pitch < 0.85) return esVoices.find(v=>v.name.toLowerCase().includes('male')) || esVoices[0];
+  if(pitch > 1.1)  return esVoices.find(v=>v.name.toLowerCase().includes('female')) || esVoices[0];
+  return esVoices[0] || voices[0];
+}
+
+function speak(text, agentKey) {
+  if(!synth || voiceMuted) return;
+  synth.cancel();
+  // Clean text for speech
+  const clean = text
+    .replace(/\[.*?\]/g,'').replace(/[*_#`>]/g,'')
+    .replace(/https?:\/\/\S+/g,'enlace')
+    .replace(/\n+/g,'. ').replace(/\.{2,}/g,'.').trim();
+  if(!clean) return;
+
+  const a = agents[agentKey||agent]; const v = a?.voice||{};
+  const voice = getBestVoice(v.pitch||1.0);
+
+  // Split into chunks for more natural pauses (max 200 chars each)
+  const chunks = [];
+  const sentences = clean.match(/[^.!?]+[.!?]*/g) || [clean];
+  let current = '';
+  sentences.forEach(s=>{
+    if((current+s).length > 200) { if(current) chunks.push(current.trim()); current=s; }
+    else current+=s;
+  });
+  if(current.trim()) chunks.push(current.trim());
+
+  speakingNow = true;
+  const stopBtn = document.getElementById('stop-speak-btn');
+  if(stopBtn) stopBtn.style.display='';
+  let idx = 0;
+
+  function speakNext() {
+    if(idx >= chunks.length || !handsFreeModeActive && idx > 0) {
+      speakingNow = false;
+      const sb=document.getElementById('stop-speak-btn'); if(sb) sb.style.display='none';
+      if(handsFreeModeActive && !busy) setTimeout(()=>startListening(), 600);
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(chunks[idx++]);
+    u.lang = 'es-ES'; u.rate = v.rate||1.0; u.pitch = v.pitch||1.0;
+    if(voice) u.voice = voice;
+    u.onend = speakNext;
+    u.onerror = ()=>{ speakingNow=false; };
+    synth.speak(u);
+  }
+  speakNext(); pulseCore();
+}
+
+function pulseCore() {
+  document.querySelectorAll('.hud-core,.w-hud-core').forEach(c=>{
+    c.style.transform='scale(1.18)';c.style.transition='transform .15s';
+    setTimeout(()=>{c.style.transform='scale(1)';},300);
+  });
+}
+
+function toggleMute() {
+  voiceMuted = !voiceMuted;
+  const btn = document.getElementById('mute-btn');
+  if(voiceMuted) {
+    if(btn){ btn.textContent='🔇 VOZ'; btn.style.borderColor='rgba(255,100,0,.3)'; btn.style.color='var(--warn)'; btn.title='Activar voz'; }
+    synth.cancel(); speakingNow=false;
+    document.getElementById('stop-speak-btn').style.display='none';
+  } else {
+    if(btn){ btn.textContent='🔊 VOZ'; btn.style.borderColor='rgba(0,255,170,.4)'; btn.style.color='var(--ok)'; btn.title='Silenciar voz'; }
+  }
+}
+
+function stopSpeaking() {
+  synth.cancel(); speakingNow=false;
+  document.getElementById('stop-speak-btn').style.display='none';
+  if(handsFreeModeActive) setTimeout(()=>startListening(), 400);
+}
+
+function initAudioVisualizer() {
+  if(audioCtx) return;
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    analyser=audioCtx.createAnalyser(); analyser.fftSize=64;
+    audioSource=audioCtx.createMediaStreamSource(stream);
+    audioSource.connect(analyser); drawAudioWave();
+  }).catch(()=>{});
+}
+
+function stopAudioVisualizer() {
+  if(audioAnimFrame) cancelAnimationFrame(audioAnimFrame);
+  if(audioCtx){try{audioCtx.close();}catch(e){} audioCtx=null;}
+}
+
+function drawAudioWave() {
+  const canvas=document.getElementById('audio-wave');
+  if(!canvas||!analyser) return;
+  const ctx=canvas.getContext('2d');
+  const buf=new Uint8Array(analyser.frequencyBinCount);
+  function frame(){
+    audioAnimFrame=requestAnimationFrame(frame);
+    analyser.getByteFrequencyData(buf);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const cx=canvas.width/2,cy=canvas.height/2,r=38;
+    for(let i=0;i<buf.length;i++){
+      const angle=(i/buf.length)*Math.PI*2,amp=buf[i]/255*28;
+      ctx.beginPath();
+      ctx.moveTo(cx+Math.cos(angle)*r,cy+Math.sin(angle)*r);
+      ctx.lineTo(cx+Math.cos(angle)*(r+amp),cy+Math.sin(angle)*(r+amp));
+      ctx.strokeStyle=`rgba(0,180,255,${0.3+amp/40})`;ctx.lineWidth=2;ctx.stroke();
+    }
+  }
+  frame();
+}
+
+
+// ─────────────────────────────────────────
+// MEMORIA PERSISTENTE POR AGENTE
+// ─────────────────────────────────────────
+// { [agentKey]: [ {role, content, ts} ] }  max 50 per agent
+let agentMemories = {};
+
+function loadAgentMemories() {
+  try { const s=localStorage.getItem('aura_j_agmem'); if(s) agentMemories=JSON.parse(s); } catch(e){}
+}
+function saveAgentMemories() {
+  try { localStorage.setItem('aura_j_agmem', JSON.stringify(agentMemories)); } catch(e){}
+}
+function pushAgentMemory(key, role, content) {
+  if(!agentMemories[key]) agentMemories[key]=[];
+  agentMemories[key].push({ role, content, ts: Date.now() });
+  if(agentMemories[key].length > 50) agentMemories[key]=agentMemories[key].slice(-50);
+  saveAgentMemories();
+}
+function getAgentContext(key) {
+  const own = (agentMemories[key]||[]).map(m=>({role:m.role,content:m.content}));
+  const session = memory.slice(-10);
+  const merged = [];
+  const lt = getLongtermContext();
+  if(lt) { merged.push({role:'user',content:lt}); merged.push({role:'assistant',content:'[ MEMORIA PERMANENTE CARGADA ]'}); }
+  const env = getEnvSummary();
+  if(env) { merged.push({role:'user',content:'[ENTORNO ACTUAL] '+env}); merged.push({role:'assistant',content:'[ CONTEXTO AMBIENTAL ]'}); }
+  if(own.length) { merged.push({role:'user',content:'[MEMORIA SESIONES ANTERIORES]\n'+own.map(m=>m.role+': '+m.content.slice(0,120)).join('\n')}); merged.push({role:'assistant',content:'[ MEMORIA DE AGENTE ]'}); }
+  return [...merged, ...session];
+}
+
+// ─────────────────────────────────────────
+// HERRAMIENTAS DE AGENTES (TOOLS)
+// ─────────────────────────────────────────
+const TOOLS = {
+  calculator: {
+    name: 'Calculadora',
+    icon: '∑',
+    color: '#ffb700',
+    exec: (expr) => {
+      try {
+        // Safe math eval
+        const clean = expr.replace(/[^0-9+\-*/().\s%^]/g,'');
+        const result = Function('"use strict";return ('+clean+')')();
+        return '= ' + result;
+      } catch(e) { return '[ ERROR ] Expresión inválida'; }
+    }
+  },
+  datetime: {
+    name: 'Fecha/Hora',
+    icon: '⏱',
+    color: '#00ffaa',
+    exec: () => {
+      const now = new Date();
+      return now.toLocaleString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    }
+  },
+  memory_search: {
+    name: 'Búsqueda Memoria',
+    icon: '◈',
+    color: '#a060ff',
+    exec: (query) => {
+      const q = query.toLowerCase();
+      const results = memory.filter(m=>m.content.toLowerCase().includes(q)).slice(-5);
+      if(!results.length) return 'No se encontraron coincidencias en memoria para: '+query;
+      return results.map(m=>`[${m.role}]: ${m.content.slice(0,100)}...`).join('\n---\n');
+    }
+  },
+  tangle_query: {
+    name: 'Consulta Tangle',
+    icon: '◉',
+    color: '#00b4ff',
+    exec: (concept) => {
+      const node = tangleNodes.find(n=>n.id.toLowerCase().includes(concept.toLowerCase()));
+      if(!node) return 'Concepto no encontrado en el Tangle: '+concept;
+      const edges = tangleEdges.filter(e=>e.a===node.id||e.b===node.id);
+      const connected = edges.map(e=>e.a===node.id?e.b:e.a);
+      return `Nodo: ${node.id} · Peso: ${node.weight} · Conexiones: ${connected.join(', ')||'ninguna'}`;
+    }
+  }
+};
+
+function runTool(toolKey, arg) {
+  const tool = TOOLS[toolKey];
+  if(!tool) return '[ TOOL ERROR ] Herramienta no encontrada';
+  const result = tool.exec(arg||'');
+  // Show tool result notification
+  const chat = document.getElementById('chat');
+  const d = document.createElement('div');
+  d.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(0,20,40,.7);border:1px solid rgba(0,180,255,.15);border-radius:2px;font-size:.6rem;color:var(--muted);letter-spacing:.08em;animation:fadeUp .3s ease;margin:2px 0;';
+  d.innerHTML='<span style="color:'+tool.color+';font-size:.85rem">'+tool.icon+'</span><span style="color:var(--accent);text-transform:uppercase;letter-spacing:.1em">'+tool.name+'</span><span>'+result+'</span>';
+  chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
+  return result;
+}
+
+// Detect and auto-run tools from agent responses
+function detectAndRunTools(text) {
+  // Calculator: detect expressions like "= 2+2" or "calcular: X"
+  const calcMatch = text.match(/(?:calcular?|resultado|=)\s*([\d+\-*/().\s%]+)/i);
+  if(calcMatch) { runTool('calculator', calcMatch[1]); }
+  // DateTime requests
+  if(/fecha|hora actual|qué día|qué hora/i.test(text)) { runTool('datetime'); }
+}
+
+// ─────────────────────────────────────────
+// COMUNICACIÓN AUTÓNOMA INTER-AGENTE
+// ─────────────────────────────────────────
+let autonomousRunning = false;
+let autonomousInterval = null;
+
+// Trigger autonomous multi-agent discussion without user input
+async function runAutonomousDiscussion(topic, turnsPerAgent) {
+  if(autonomousRunning || busy) return;
+  autonomousRunning = true;
+  const turns = turnsPerAgent || 1;
+  const activeKeys = Object.keys(agents).filter(k=>k!=='oracle');
+
+  // Show autonomous mode banner
+  const chat = document.getElementById('chat');
+  const banner = document.createElement('div');
+  banner.className='loop-indicator'; banner.id='autonomous-banner';
+  banner.innerHTML='<div class="loop-dots"><span></span><span></span><span></span></div>'
+    +'⟷ DISCUSIÓN AUTÓNOMA INTER-AGENTE · TEMA: '+topic.slice(0,60).toUpperCase();
+  chat.appendChild(banner); chat.scrollTop=chat.scrollHeight;
+
+  let sharedCtx = [...memory.slice(-10),
+    {role:'user', content:'[INICIO DISCUSIÓN AUTÓNOMA] Tema: '+topic+'\n\nCada agente aportará su perspectiva única. No es un bucle de órdenes — es una conversación entre agentes autónomos.'}
+  ];
+
+  for(let turn=0; turn<turns; turn++) {
+    // Each agent adds to the shared context organically
+    const shuffled = turn===0 ? activeKeys : activeKeys.sort(()=>Math.random()-.5);
+    for(const key of shuffled) {
+      if(!autonomousRunning) break;
+      const a = agents[key];
+      const agentSys = a.sys + '\n\nEstás en una discusión autónoma con otros agentes de AURA. Responde en 1-2 oraciones aportando tu perspectiva única. Lee lo que dijeron los otros agentes antes que tú. Puedes estar de acuerdo, discrepar o añadir un ángulo nuevo.';
+      try {
+        const tid = showTyping();
+        const r = await callAPI(agentSys, sharedCtx.slice(-8));
+        removeTyping(tid);
+        sharedCtx.push({role:'user', content:'['+a.label+']: '+r});
+        pushAgentMemory(key, 'assistant', r);
+        // Add to chat
+        const d = document.createElement('div');
+        d.className = 'msg '+(key==='infinito'?'infinito':key==='oracle'?'oracle':'loop');
+        d.style.animation='fadeUp .3s ease';
+        const av=document.createElement('div'); av.className='msg-av';
+        av.style.background='radial-gradient(circle at 38% 38%, '+a.color+'88, '+a.color+'33)';
+        av.style.boxShadow='0 0 8px '+a.color+'44';
+        av.textContent=a.label.slice(0,2).toUpperCase();
+        const body=document.createElement('div'); body.className='msg-body';
+        const tag=document.createElement('div'); tag.className='msg-tag';
+        tag.style.cssText='color:'+a.color+';background:'+a.color+'14;border:1px solid '+a.color+'30';
+        tag.innerHTML='<span style="width:4px;height:4px;border-radius:50%;background:'+a.color+';display:inline-block"></span> '+a.label.toUpperCase()+' · AUTÓNOMO';
+        const bub=document.createElement('div'); bub.className='msg-bub';
+        bub.style.cssText='background:rgba(0,10,25,.85);border-color:'+a.color+'22';
+        bub.style.setProperty('--before-bg',a.color);
+        bub.textContent=r;
+        body.appendChild(tag); body.appendChild(bub);
+        d.appendChild(av); d.appendChild(body);
+        chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
+        await delay(400);
+      } catch(e) { break; }
+    }
+  }
+
+  // Final synthesis
+  try {
+    const synthTid = showTyping();
+    const synthSys = agents['general'].sys+'\n\nSintetiza esta discusión autónoma inter-agente. Identifica el consenso emergente, las tensiones productivas y el hilo más prometedor para continuar. 3 oraciones máximo.';
+    const synthResult = await callAPI(synthSys, sharedCtx.slice(-6));
+    removeTyping(synthTid);
+    addMsg('aura', '[ ⟷ SÍNTESIS AUTÓNOMA ]\n\n'+synthResult);
+    memory.push({role:'assistant', content:'[DISCUSIÓN AUTÓNOMA sobre "'+topic+'"]: '+synthResult});
+    saveMemory();
+  } catch(e) {}
+
+  const b = document.getElementById('autonomous-banner');
+  if(b) b.remove();
+  autonomousRunning = false;
+  updateHUD();
+}
+
+function stopAutonomous() {
+  autonomousRunning = false;
+  const b = document.getElementById('autonomous-banner');
+  if(b) b.remove();
+}
+
+// ─────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────
+window.addEventListener('load', () => {
+  apiKey = localStorage.getItem('aura_j_key') || localStorage.getItem('aura_j_key_backup') || '';
+  try { const s=localStorage.getItem('aura_j_mem'); if(s) memory=JSON.parse(s); } catch(e){}
+  try { const s=localStorage.getItem('aura_j_sem'); if(s) semMemory=JSON.parse(s); } catch(e){}
+  try { const s=localStorage.getItem('aura_j_eps'); if(s) episodes=JSON.parse(s); } catch(e){}
+  try { const s=localStorage.getItem('aura_j_tangle'); if(s){ const t=JSON.parse(s); tangleNodes=t.nodes||[]; tangleEdges=t.edges||[]; } } catch(e){}
+  try { const s=localStorage.getItem('aura_j_versions'); if(s) agentVersions=JSON.parse(s); } catch(e){}
+  loadAgentMemories();
+  loadLongtermMemory();
+  updateEnvironmentContext();
+  setInterval(updateEnvironmentContext, 60000);
+  // Restore evolved sys prompts
+  Object.keys(agentVersions).forEach(k=>{
+    const vers = agentVersions[k];
+    if(vers && vers.length && agents[k]) {
+      const latest = vers[vers.length-1];
+      agents[k].sys = latest.sys;
+    }
+  });
+  try {
+    const s=localStorage.getItem('aura_j_agents');
+    if(s){ const ex=JSON.parse(s); agents={...BASE,...ex}; }
+  } catch(e){}
+
+  initVoice();
+
+  setTimeout(()=>{
+    // Update splash API status
+    const line = document.getElementById('sp-api-line');
+    if(apiKey){
+      line.className='sp-boot-line ok';
+      line.querySelector('.sp-bl-status').textContent='VERIFICADA';
+    }
+    setTimeout(()=>{
+      document.getElementById('splash').classList.add('out');
+      setTimeout(()=>{
+        if(apiKey){ showApp(); }
+        else{ document.getElementById('setup').classList.add('show'); }
+      },500);
+    },800);
+  },2200);
+
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+  // AUTO-SAVE on close / background
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.hidden) {
+      saveMemory();
+      saveAgentMemories();
+      saveLongtermMemory();
+      // Silent compress if session has enough content
+      if(memory.length > 20 && apiKey) compressAndSaveSession();
+    }
+  });
+  window.addEventListener('pagehide', ()=>{ saveMemory(); saveAgentMemories(); saveLongtermMemory(); });
+  updateHUD();
+  renderSavedAgents();
+  initSwipeGestures();
+  updateMobileNav();
+});
+
+function showApp() {
+  document.getElementById('setup').classList.remove('show');
+  document.getElementById('app').classList.add('show');
+  updateHUD();
+  // Show key status indicator
+  const kb = document.getElementById('key-btn');
+  if(kb) { kb.style.borderColor='rgba(0,255,170,.4)'; kb.style.color='var(--ok)'; kb.title='API conectada · Click para cambiar'; }
+
+  // Request notification permission for background pulse
+  if('Notification' in window && Notification.permission === 'default') {
+    setTimeout(()=>{
+      Notification.requestPermission().then(p=>{
+        if(p==='granted') addMsg('aura','[ NOTIFICACIONES ] Activas. AURA puede alertarte cuando no estés en la app.');
+      });
+    }, 3000);
+  }
+}
+
+function saveKey() {
+  const v = document.getElementById('akey').value.trim();
+  if(!v||!v.startsWith('gsk_')){ alert('[ ERROR ] API Key inválida. Debe empezar por gsk_...'); return; }
+  apiKey = v; localStorage.setItem('aura_j_key', v);
+  localStorage.setItem('aura_j_key_backup', v); // double backup
+  showApp();
+}
+
+function changeKey() {
+  const saved = localStorage.getItem('aura_j_key');
+  const masked = saved ? saved.slice(0,8)+'...'+saved.slice(-4) : 'ninguna';
+  if(!confirm('API actual: '+masked+'\n\n¿Cambiar por una nueva?')) return;
+  localStorage.removeItem('aura_j_key');
+  localStorage.removeItem('aura_j_key_backup');
+  apiKey='';
+  document.getElementById('akey').value='';
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('setup').classList.add('show');
+}
+
+// ─────────────────────────────────────────
+// HUD UPDATE
+// ─────────────────────────────────────────
+function updateHUD() {
+  document.getElementById('m-mem').textContent = memory.length;
+  document.getElementById('m-ag').textContent = Object.keys(agents).length;
+  document.getElementById('m-loop').textContent = loops;
+  const entTotal = Object.values(semMemory).reduce((a,v)=>a+v.length,0);
+  document.getElementById('m-ent').textContent = entTotal;
+  const met = document.getElementById('met-mem');
+  if(memory.length > 100) met.className='hud-metric warn';
+  else if(memory.length > 0) met.className='hud-metric ok';
+  else met.className='hud-metric';
+  // auto btn indicator
+  const ab = document.getElementById('auto-btn');
+  if(ab) { ab.style.borderColor = autoMode ? 'var(--ok)' : ''; ab.style.color = autoMode ? 'var(--ok)' : ''; }
+}
+
+function saveMemory() {
+  try{ localStorage.setItem('aura_j_mem', JSON.stringify(memory.slice(-300))); }catch(e){}
+}
+
+// ─────────────────────────────────────────
+// AGENT SELECTION — with mobile sync
+// ─────────────────────────────────────────
+function pickAgent(el) {
+  document.querySelectorAll('.sb-agent').forEach(a=>a.classList.remove('on'));
+  el.classList.add('on');
+  agent = el.dataset.a;
+  const a = agents[agent];
+  el.style.borderBottomColor = a.color;
+  document.getElementById('hud-ver').textContent = `SISTEMA ACTIVO · AGENTE: ${a.label.toUpperCase()}`;
+  document.getElementById('ia-name').textContent = a.label.toUpperCase();
+  updateMobileNav();
+}
+
+// ─────────────────────────────────────────
+// INPUT HANDLING
+// ─────────────────────────────────────────
+function handleKey(e) {
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); }
+}
+
+function handleInput(el) {
+  el.style.height='auto';
+  el.style.height = Math.min(el.scrollHeight,100)+'px';
+  // command mode
+  const v = el.value;
+  if(v.startsWith('/')) el.classList.add('cmd-mode');
+  else el.classList.remove('cmd-mode');
+}
+
+function sg(el) {
+  const key = el.querySelector('.w-cmd-key').textContent;
+  document.getElementById('inp').value = key;
+  send();
+}
+
+function clearMem() {
+  if(!confirm('[ AURA ] ¿Purgar memoria completa? Acción irreversible.'))return;
+  memory=[]; loops=0; localStorage.removeItem('aura_j_mem');
+  document.querySelectorAll('.msg,.loop-indicator').forEach(m=>m.remove());
+  const w=document.getElementById('wlc'); if(w)w.style.display='';
+  updateHUD();
+}
+
+// ─────────────────────────────────────────
+// CAPA 1 — AUTO-AGENT ANTICIPATION
+// ─────────────────────────────────────────
+const AGENT_PATTERNS = {
+  code:     [/código|code|función|función|bug|error|programa|script|javascript|python|html|css|api|algoritmo|implementa|desarrolla/i],
+  research: [/investiga|analiza|explica|qué es|cómo funciona|historia|origen|estudia|busca información|informe|reporte/i],
+  creative: [/crea|escribe|poema|historia|imagina|inventa|metáfora|narrativa|diseña|concepto creativo|arte/i],
+  infinito: [/infinito|tangle|infiQuantum|soberanía|des-coherencia|ontolog|cuántico|in-útil|in-finito|inter-des|filosof/i],
+  analyst:  [/analiza|compara|evalúa|pros y contras|estrategia|decisión|matriz|tendencia|patrón|modelo/i],
+};
+
+function detectBestAgent(text) {
+  if(!autoMode) return null;
+  for(const [key, patterns] of Object.entries(AGENT_PATTERNS)) {
+    if(agents[key] && patterns.some(p => p.test(text))) return key;
+  }
+  return null;
+}
+
+function toggleAuto() {
+  autoMode = !autoMode;
+  updateHUD();
+  addMsg('aura', autoMode
+    ? '[ AUTO-AGENTE ✓ ] Anticipación automática activada. Seleccionaré el agente más adecuado para cada mensaje.'
+    : '[ AUTO-AGENTE ✗ ] Modo manual. Selecciona el agente manualmente desde la barra.');
+}
+
+// ─────────────────────────────────────────
+// CAPA 2 — SEMANTIC MEMORY
+// ─────────────────────────────────────────
+const SEM_PATTERNS = {
+  frameworks: [/InfiniQuantum|el Tangle|soberanía coherente|des-coherencia|inter-des-conexión|in-eternidad|in-finito|post-cuántico/gi],
+  concepts:   [/\b([A-ZÁÉÍÓÚ][a-záéíóú]{3,}(?:\s[A-ZÁÉÍÓÚ][a-záéíóú]{3,})?)\b/g],
+  projects:   [/proyecto\s+["']?([^"'\n,\.]{3,30})["']?|app\s+([A-Za-z]{3,20})|sistema\s+([A-Za-z]{3,20})/gi],
+  decisions:  [/vamos a|decidimos|quiero|necesito implementar|hay que|próximo paso/gi],
+};
+
+const SEM_COLORS = {
+  frameworks: { bg:'rgba(160,96,255,.1)', border:'rgba(160,96,255,.35)', text:'#c090ff' },
+  concepts:   { bg:'rgba(0,180,255,.08)', border:'rgba(0,180,255,.25)', text:'#60c8ff' },
+  projects:   { bg:'rgba(0,255,170,.07)', border:'rgba(0,255,170,.25)', text:'#00ffaa' },
+  decisions:  { bg:'rgba(255,183,0,.07)', border:'rgba(255,183,0,.25)', text:'#ffb700' },
+  persons:    { bg:'rgba(255,45,74,.07)', border:'rgba(255,45,74,.25)', text:'#ff6080' },
+};
+
+function extractEntities(text) {
+  let changed = false;
+  // Frameworks (high priority, exact)
+  const fwMatches = text.match(SEM_PATTERNS.frameworks[0]) || [];
+  fwMatches.forEach(m => {
+    const v = m.trim();
+    if(v && !semMemory.frameworks.includes(v)) { semMemory.frameworks.push(v); changed=true; }
+  });
+  // Projects
+  let pm;
+  const pRe = /proyecto\s+["']?([^"'\n,\.]{3,30})["']?|AURA\s*∞?/gi;
+  while((pm=pRe.exec(text))!==null) {
+    const v=(pm[1]||pm[0]).trim();
+    if(v && v.length>2 && !semMemory.projects.includes(v)) { semMemory.projects.push(v); changed=true; }
+  }
+  // Capitalised concepts (not common words)
+  const SKIP = new Set(['Para','Esta','Este','Esto','Pero','Como','Cuando','Donde','Porque','Aunque','También','Sobre']);
+  const capRe = /\b([A-ZÁÉÍÓÚ][a-záéíóú]{4,}(?:\s[A-ZÁÉÍÓÚ][a-záéíóú]{3,})?)\b/g;
+  let cm;
+  while((cm=capRe.exec(text))!==null) {
+    const v=cm[1].trim();
+    if(!SKIP.has(v) && !semMemory.concepts.includes(v) && semMemory.concepts.length<80) {
+      semMemory.concepts.push(v); changed=true;
+    }
+  }
+  if(changed) {
+    saveSemMemory();
+    renderSemPanel();
+    updateHUD();
+    return detectKnownEntities(text);
+  }
+  return null;
+}
+
+function detectKnownEntities(text) {
+  const all = [...semMemory.frameworks, ...semMemory.projects];
+  const found = all.filter(e => text.toLowerCase().includes(e.toLowerCase()) && e.length > 4);
+  if(found.length > 0) return found;
+  return null;
+}
+
+function saveSemMemory() {
+  try { localStorage.setItem('aura_j_sem', JSON.stringify(semMemory)); } catch(e) {}
+}
+
+function clearSemMemory() {
+  if(!confirm('[ AURA ] ¿Purgar toda la memoria semántica?')) return;
+  semMemory = { concepts:[], projects:[], persons:[], decisions:[], frameworks:[] };
+  saveSemMemory(); renderSemPanel(); updateHUD();
+}
+
+function toggleSemPanel() {
+  document.getElementById('sem-panel').classList.toggle('open');
+  renderSemPanel();
+}
+
+function renderSemPanel() {
+  const body = document.getElementById('sem-body');
+  const total = Object.values(semMemory).reduce((a,v)=>a+v.length,0);
+  document.getElementById('sem-total').textContent = total;
+  document.getElementById('sem-concepts').textContent = semMemory.concepts.length;
+  document.getElementById('sem-projects').textContent = semMemory.projects.length;
+
+  if(total === 0) {
+    body.innerHTML = '<div class="sem-empty">SIN ENTIDADES DETECTADAS<br/>Inicia una conversación para poblar la memoria semántica</div>';
+    return;
+  }
+  body.innerHTML = '';
+  const SECTIONS = [
+    { key:'frameworks', label:'Frameworks / Conceptos Propios' },
+    { key:'projects',   label:'Proyectos / Sistemas' },
+    { key:'concepts',   label:'Conceptos Detectados' },
+    { key:'decisions',  label:'Decisiones' },
+    { key:'persons',    label:'Personas' },
+  ];
+  SECTIONS.forEach(({key,label}) => {
+    const items = semMemory[key];
+    if(!items || items.length===0) return;
+    const c = SEM_COLORS[key];
+    const sec = document.createElement('div'); sec.className='sem-section';
+    const title = document.createElement('div'); title.className='sem-section-title'; title.textContent=label;
+    const tags = document.createElement('div'); tags.className='sem-tags';
+    items.slice(-30).forEach(item => {
+      const t = document.createElement('div'); t.className='sem-tag';
+      t.style.background=c.bg; t.style.borderColor=c.border; t.style.color=c.text;
+      t.textContent=item;
+      t.onclick = () => { document.getElementById('inp').value=item; toggleSemPanel(); };
+      tags.appendChild(t);
+    });
+    sec.appendChild(title); sec.appendChild(tags);
+    body.appendChild(sec);
+  });
+}
+
+// ─────────────────────────────────────────
+// CAPA B — ORÁCULO
+// ─────────────────────────────────────────
+// (Oracle agent is already in BASE — activated via auto-detect or manual chip)
+// Auto-detect oracle triggers
+const ORACLE_PATTERNS = [/\?$/, /por qué|qué significa|cómo es posible|tiene sentido|qué implica|qué hay detrás/i];
+// Oracle messages render with special class
+function isOracleAgent() { return agent === 'oracle'; }
+
+// ─────────────────────────────────────────
+// CAPA C — MEMORIA EPISÓDICA + TIMELINE
+// ─────────────────────────────────────────
+function recordEpisode(role, text, agentKey, concepts) {
+  const ep = {
+    id: Date.now(),
+    time: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}),
+    date: new Date().toLocaleDateString('es',{day:'2-digit',month:'short'}),
+    role, text: text.slice(0,200),
+    agent: agentKey,
+    concepts: concepts||[],
+    keyMoment: concepts && concepts.length > 2
+  };
+  episodes.push(ep);
+  try{ localStorage.setItem('aura_j_eps', JSON.stringify(episodes.slice(-200))); }catch(e){}
+  renderTimeline();
+}
+
+function toggleTimeline() {
+  document.getElementById('timeline-panel').classList.toggle('open');
+  renderTimeline();
+}
+
+function renderTimeline() {
+  const body = document.getElementById('tl-body');
+  if(!episodes.length) { body.innerHTML='<div class="sem-empty">SIN EPISODIOS<br/>La memoria se construye con cada intercambio</div>'; return; }
+  body.innerHTML='';
+  episodes.slice(-60).reverse().forEach(ep => {
+    const a = agents[ep.agent]||agents.general;
+    const d = document.createElement('div');
+    d.className = 'tl-episode' + (ep.keyMoment?' key-moment':'');
+    const cHtml = ep.concepts.length ? '<div class="tl-ep-concepts">'+ep.concepts.slice(0,4).map(function(c){return '<span class="tl-ep-concept">'+c+'</span>';}).join('')+'</div>' : '';
+    d.innerHTML = '<div class="tl-ep-content">'
+      +'<div class="tl-ep-time">'+ep.date+' '+ep.time+'</div>'
+      +'<div class="tl-ep-agent" style="color:'+a.color+'">'+(ep.role==='user'?'OPERADOR':a.label.toUpperCase())+'</div>'
+      +'<div class="tl-ep-text">'+ep.text.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div>'
+      +cHtml+'</div>';
+    d.onclick = () => { document.getElementById('inp').value = ep.text.slice(0,100); toggleTimeline(); };
+    body.appendChild(d);
+  });
+}
+
+// ─────────────────────────────────────────
+// CAPA D — INTER-DES-CONEXIÓN ENTRE AGENTES
+// ─────────────────────────────────────────
+// Each agent "listens" to messages and signals when it detects relevance for another
+const AGENT_AFFINITIES = {
+  general:  { resonates: ['research','creative'], triggers: [/explica|qué es|cómo/i] },
+  research: { resonates: ['analyst','infinito'],  triggers: [/patrón|evidencia|datos|estudio/i] },
+  code:     { resonates: ['general','analyst'],   triggers: [/implementa|función|sistema|arquitectura/i] },
+  creative: { resonates: ['oracle','infinito'],   triggers: [/metáfora|imagen|narrativa|concepto/i] },
+  infinito: { resonates: ['oracle','creative'],   triggers: [/límite|paradoja|contradicción|bucle/i] },
+  oracle:   { resonates: ['infinito','creative'], triggers: [/pregunta|sentido|implica|campo/i] },
+};
+
+function checkInterConnections(text, activeAgent) {
+  const signals = [];
+  Object.entries(AGENT_AFFINITIES).forEach(([key, aff]) => {
+    if(key === activeAgent) return;
+    if(aff.triggers.some(p=>p.test(text)) && agents[key]) {
+      const resonant = aff.resonates.filter(r=>r!==activeAgent&&agents[r]);
+      if(resonant.length) signals.push({ from:key, to:resonant[0], text });
+    }
+  });
+  return signals.slice(0,1); // max 1 signal per message
+}
+
+function showInterSignal(from, to) {
+  const af = agents[from]||agents.general;
+  const at = agents[to]||agents.general;
+  const chat = document.getElementById('chat');
+  const d = document.createElement('div'); d.className='intercon-signal';
+  d.innerHTML=`<span class="ic-arrows">⟷</span><span style="color:${af.color}">${af.label}</span> ↔ <span style="color:${at.color}">${at.label}</span> <span style="opacity:.6">· resonancia detectada</span>`;
+  chat.appendChild(d);
+  chat.scrollTop=chat.scrollHeight;
+  setTimeout(()=>{ if(d.parentNode) d.style.opacity='0'; d.style.transition='opacity 1s'; setTimeout(()=>d.remove(),1000); }, 4000);
+}
+
+// ─────────────────────────────────────────
+// CAPA A — TANGLE SYNTHESIS + UN-TANGLE
+// ─────────────────────────────────────────
+function updateTangleGraph(concepts) {
+  if(!concepts||!concepts.length) return;
+  // Add/update nodes
+  concepts.forEach(c => {
+    let node = tangleNodes.find(n=>n.id===c);
+    if(node) { node.weight++; }
+    else { tangleNodes.push({ id:c, weight:1, x:Math.random()*600+100, y:Math.random()*400+100, vx:0, vy:0 }); }
+  });
+  // Add/update edges for co-occurring concepts
+  for(let i=0;i<concepts.length;i++) {
+    for(let j=i+1;j<concepts.length;j++) {
+      const a=concepts[i], b=concepts[j];
+      let edge = tangleEdges.find(e=>(e.a===a&&e.b===b)||(e.a===b&&e.b===a));
+      if(edge) { edge.weight++; }
+      else { tangleEdges.push({a,b,weight:1}); }
+    }
+  }
+  // Prune: keep top 40 nodes by weight
+  if(tangleNodes.length>40) {
+    tangleNodes.sort((a,b)=>b.weight-a.weight);
+    const keep = new Set(tangleNodes.slice(0,40).map(n=>n.id));
+    tangleNodes = tangleNodes.filter(n=>keep.has(n.id));
+    tangleEdges = tangleEdges.filter(e=>keep.has(e.a)&&keep.has(e.b));
+  }
+  try{ localStorage.setItem('aura_j_tangle',JSON.stringify({nodes:tangleNodes,edges:tangleEdges})); }catch(e){}
+}
+
+function toggleTangle() {
+  const p = document.getElementById('tangle-panel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')) drawTangle();
+}
+
+function untangle() {
+  // UN-TANGLE: spread nodes to maximum distance, reveal hidden connections
+  tangleUntangled = true;
+  const tc = document.getElementById('tangle-canvas');
+  const w=tc.width, h=tc.height;
+  tangleNodes.forEach((n,i) => {
+    const angle = (i/tangleNodes.length)*Math.PI*2;
+    const r = Math.min(w,h)*0.38;
+    n.tx = w/2 + Math.cos(angle)*r;
+    n.ty = h/2 + Math.sin(angle)*r;
+  });
+  animateTangle(true);
+  // Show untangle message in chat
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='tangle-alert';
+  d.innerHTML=`<span class="tangle-alert-icon">◎</span><div class="tangle-alert-body"><div class="tangle-alert-title">UN-TANGLE ACTIVADO</div>Conceptos desplegados en máxima separación. Las conexiones ocultas ahora son visibles. El des-orden revela el orden subyacente.</div>`;
+  chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
+}
+
+function retangle() {
+  // RE-TANGLE: collapse back to force-directed cluster
+  tangleUntangled = false;
+  tangleNodes.forEach(n => { n.tx=null; n.ty=null; });
+  drawTangle();
+}
+
+let tangleAnimFrame = null;
+function drawTangle() {
+  const tc = document.getElementById('tangle-canvas');
+  tc.width = tc.offsetWidth; tc.height = tc.offsetHeight;
+  if(tangleAnimFrame) cancelAnimationFrame(tangleAnimFrame);
+  animateTangle(false);
+}
+
+function animateTangle(toTarget) {
+  const tc = document.getElementById('tangle-canvas');
+  const ctx2 = tc.getContext('2d');
+  const w=tc.width, h=tc.height;
+
+  function frame() {
+    ctx2.clearRect(0,0,w,h);
+    // Background grid
+    ctx2.strokeStyle='rgba(0,80,150,0.04)'; ctx2.lineWidth=.5;
+    for(let x=0;x<w;x+=60){ctx2.beginPath();ctx2.moveTo(x,0);ctx2.lineTo(x,h);ctx2.stroke();}
+    for(let y=0;y<h;y+=60){ctx2.beginPath();ctx2.moveTo(0,y);ctx2.lineTo(w,y);ctx2.stroke();}
+
+    if(!tangleNodes.length){ ctx2.fillStyle='rgba(0,180,255,.3)'; ctx2.font='.7rem Share Tech Mono'; ctx2.textAlign='center'; ctx2.fillText('SIN DATOS — Inicia una conversación para construir el Tangle',w/2,h/2); return; }
+
+    // Force-directed layout (if not untangled)
+    if(!toTarget) {
+      tangleNodes.forEach(n => {
+        let fx=0,fy=0;
+        // Repulsion
+        tangleNodes.forEach(m => {
+          if(m===n) return;
+          const dx=n.x-m.x, dy=n.y-m.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+          const f=800/(d*d);
+          fx+=dx/d*f; fy+=dy/d*f;
+        });
+        // Attraction along edges
+        tangleEdges.filter(e=>e.a===n.id||e.b===n.id).forEach(e=>{
+          const other = tangleNodes.find(m=>m.id===(e.a===n.id?e.b:e.a));
+          if(!other) return;
+          const dx=other.x-n.x, dy=other.y-n.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+          fx+=dx*.015*e.weight; fy+=dy*.015*e.weight;
+        });
+        // Center gravity
+        fx+=(w/2-n.x)*.003; fy+=(h/2-n.y)*.003;
+        n.vx=(n.vx+fx)*.7; n.vy=(n.vy+fy)*.7;
+        n.x+=n.vx; n.y+=n.vy;
+        n.x=Math.max(40,Math.min(w-40,n.x));
+        n.y=Math.max(40,Math.min(h-40,n.y));
+      });
+    } else {
+      // Move toward target positions
+      tangleNodes.forEach(n => {
+        if(n.tx!==undefined){ n.x+=(n.tx-n.x)*.08; n.y+=(n.ty-n.y)*.08; }
+      });
+    }
+
+    // Draw edges
+    tangleEdges.forEach(e => {
+      const na=tangleNodes.find(n=>n.id===e.a), nb=tangleNodes.find(n=>n.id===e.b);
+      if(!na||!nb) return;
+      ctx2.beginPath(); ctx2.moveTo(na.x,na.y); ctx2.lineTo(nb.x,nb.y);
+      const alpha=Math.min(.5,e.weight*.1+.05);
+      ctx2.strokeStyle=`rgba(0,150,255,${alpha})`; ctx2.lineWidth=Math.min(3,e.weight*.4+.5);
+      ctx2.stroke();
+    });
+
+    // Draw nodes
+    tangleNodes.forEach(n => {
+      const r=Math.min(28,8+n.weight*2.5);
+      // Glow
+      const grad=ctx2.createRadialGradient(n.x,n.y,0,n.x,n.y,r*2);
+      grad.addColorStop(0,'rgba(0,180,255,.15)'); grad.addColorStop(1,'transparent');
+      ctx2.beginPath(); ctx2.arc(n.x,n.y,r*2,0,Math.PI*2); ctx2.fillStyle=grad; ctx2.fill();
+      // Node
+      ctx2.beginPath(); ctx2.arc(n.x,n.y,r,0,Math.PI*2);
+      ctx2.fillStyle='rgba(0,20,50,.9)'; ctx2.fill();
+      ctx2.strokeStyle=`rgba(0,180,255,${Math.min(.9,.3+n.weight*.1)})`; ctx2.lineWidth=1; ctx2.stroke();
+      // Label
+      ctx2.fillStyle=`rgba(180,220,255,${Math.min(1,.5+n.weight*.1)})`;
+      ctx2.font=`${Math.min(13,9+n.weight)}px Share Tech Mono`;
+      ctx2.textAlign='center'; ctx2.fillText(n.id.slice(0,14),n.x,n.y+r+12);
+    });
+
+    tangleAnimFrame = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+async function autoTangleSynthesis() {
+  // Called every 8 messages — generates a Tangle synthesis card
+  if(memory.length < 3) return;
+  try{
+    const sys = agents['infinito'].sys+'\n\nHaz una síntesis del Tangle de conceptos emergentes en esta sesión. En máximo 3 oraciones: qué nodos son centrales, qué inter-des-conexiones son más densas, qué hilo está suelto. Sé preciso y poético.';
+    const r = await callAPI(sys, memory.slice(-8));
+    const chat=document.getElementById('chat');
+    const d=document.createElement('div'); d.className='tangle-alert';
+    d.innerHTML=`<span class="tangle-alert-icon">◉</span><div class="tangle-alert-body"><div class="tangle-alert-title">SÍNTESIS TANGLE — AUTOMÁTICA</div>${r}</div>`;
+    d.onclick=()=>toggleTangle();
+    chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
+  }catch(e){}
+}
+
+// ═══════════════════════════════════════════
+// SISTEMA DE EVOLUCIÓN ∞
+// ═══════════════════════════════════════════
+
+const META_EVALUATOR_SYS = `Eres el META-AGENTE de AURA ∞ — tu única función es evaluar y proponer mejoras al prompt de sistema de otro agente.
+
+Recibirás:
+- El prompt de sistema actual de un agente
+- Una muestra de sus últimas conversaciones
+- El contexto semántico acumulado (entidades, conceptos)
+
+Tu respuesta DEBE ser JSON puro (sin markdown), con esta estructura exacta:
+{
+  "scores": {
+    "precision": 0-10,
+    "depth": 0-10,
+    "apertura": 0-10,
+    "coherencia": 0-10,
+    "infinitud": 0-10
+  },
+  "diagnosis": "análisis en 2 oraciones de qué falla o qué podría expandirse",
+  "direction": "MAS_ALLA" | "MAS_ACA" | "MAS_CERO" | "EQUILIBRIO",
+  "reason": "por qué esta dirección en 1 oración",
+  "proposal": "el nuevo prompt de sistema completo, mejorado, listo para usar"
+}
+
+DIRECCIONES:
+- MAS_ALLA: expandir apertura ontológica, profundidad filosófica, apertura al infinito
+- MAS_ACA: mejorar precisión, utilidad práctica, claridad, concisión
+- MAS_CERO: destilar al mínimo esencial — el prompt más simple que preserve la esencia
+- EQUILIBRIO: ajuste fino sin dirección dominante
+
+Sé riguroso. El nuevo prompt debe ser notablemente mejor, no cosméticamente diferente.`;
+
+function saveVersions() {
+  try { localStorage.setItem('aura_j_versions', JSON.stringify(agentVersions)); } catch(e){}
+}
+
+function getVersions(key) {
+  return agentVersions[key] || [];
+}
+
+function addVersion(key, sys, score, reason, dir) {
+  if(!agentVersions[key]) agentVersions[key] = [];
+  const vers = agentVersions[key];
+  // Seed v0 from BASE if no history yet
+  if(vers.length === 0 && BASE[key]) {
+    vers.push({
+      v: 0, sys: BASE[key].sys,
+      timestamp: new Date().toISOString(),
+      dir: 'ORIGEN', score: null, reason: 'Prompt original'
+    });
+  }
+  const newV = {
+    v: vers.length,
+    sys, score, reason, dir,
+    timestamp: new Date().toISOString()
+  };
+  vers.push(newV);
+  agents[key].sys = sys; // apply immediately
+  saveVersions();
+  return newV;
+}
+
+function revertToVersion(key, vIndex) {
+  const vers = agentVersions[key];
+  if(!vers || !vers[vIndex]) return;
+  const target = vers[vIndex];
+  agents[key].sys = target.sys;
+  // Add a revert entry
+  addVersion(key, target.sys, target.score, 'REVERTIDO a v'+vIndex, 'REVERSION');
+  renderEvolveContent();
+  addMsg('aura', '[ EVOLUCIÓN ] Agente '+agents[key].label+' revertido a v'+vIndex+'. Sistema restaurado.');
+}
+
+// ─── TRIGGER EVOLUTION ───
+async function triggerEvolve() {
+  if(evBusy || !apiKey) return;
+  const key = evSelectedAgent;
+  const a = agents[key];
+  if(!a) return;
+
+  evBusy = true;
+  evPendingProposal = null;
+
+  // Show evolving state
+  const content = document.getElementById('ev-content');
+  content.innerHTML = '<div class="ev-evolving"><div class="typing-hud"><span></span><span></span><span></span></div>META-AGENTE EVALUANDO — analizando conversaciones, semántica, comportamiento del agente '+a.label.toUpperCase()+'...</div>';
+
+  // Build context for meta-evaluator
+  const recentConvos = memory.slice(-8).map(m=>m.role+': '+m.content.slice(0,200)).join('\n');
+  const semCtx = [
+    ...semMemory.frameworks.slice(0,5),
+    ...semMemory.concepts.slice(0,5),
+    ...semMemory.projects.slice(0,3)
+  ].join(', ');
+  const vers = getVersions(key);
+  const verHistory = vers.map(v=>'v'+v.v+' ('+v.dir+'): '+v.sys.slice(0,100)+'...').join('\n');
+
+  const evalPrompt = [
+    { role:'user', content:
+      '=== PROMPT ACTUAL DEL AGENTE "'+a.label+'" ===\n'+a.sys+
+      '\n\n=== ÚLTIMAS CONVERSACIONES (muestra) ===\n'+recentConvos+
+      '\n\n=== ENTIDADES SEMÁNTICAS DETECTADAS ===\n'+semCtx+
+      '\n\n=== HISTORIAL DE VERSIONES ===\n'+(verHistory||'Sin historial previo — primera evolución')+
+      '\n\n=== INSTRUCCIÓN ===\nEvalúa este agente y propón su evolución. Responde SOLO con el JSON especificado.'
+    }
+  ];
+
+  try {
+    const raw = await callAPI(META_EVALUATOR_SYS, evalPrompt);
+    const cleaned = raw.replace(/```json|```/g,'').trim();
+    const result = JSON.parse(cleaned);
+
+    evPendingProposal = {
+      agentKey: key,
+      newSys: result.proposal,
+      scores: result.scores,
+      diagnosis: result.diagnosis,
+      reason: result.reason,
+      dir: result.direction
+    };
+
+    evBusy = false;
+    // Switch to proposal tab
+    const propTab = document.querySelector('[data-tab="propuesta"]');
+    if(propTab) evTab(propTab);
+    renderEvolveContent();
+
+    // Notify in chat
+    const chat = document.getElementById('chat');
+    const notif = document.createElement('div');
+    notif.className = 'tangle-alert';
+    notif.style.borderColor = 'rgba(0,255,170,.3)';
+    notif.style.background = 'rgba(0,40,20,.6)';
+    notif.innerHTML = '<span class="tangle-alert-icon" style="filter:drop-shadow(0 0 6px rgba(0,255,170,.6))">∞</span>'
+      +'<div class="tangle-alert-body"><div class="tangle-alert-title" style="color:var(--ok)">PROPUESTA DE EVOLUCIÓN LISTA — '+a.label.toUpperCase()+'</div>'
+      +'Dirección: '+result.direction+' · '+result.reason+'<br/><small style="opacity:.6">Abre el panel ∞ EVO para revisar y aprobar</small></div>';
+    notif.onclick = openEvolve;
+    chat.appendChild(notif);
+    chat.scrollTop = chat.scrollHeight;
+
+  } catch(e) {
+    evBusy = false;
+    content.innerHTML = '<div style="color:var(--danger);font-size:.7rem;padding:16px">[ ERROR META-AGENTE ] '+(e.message||'JSON inválido')+'<br/><br/>Asegúrate de tener créditos API activos e intenta de nuevo.</div>';
+  }
+}
+
+function approveProposal() {
+  if(!evPendingProposal) return;
+  const { agentKey, newSys, scores, reason, dir } = evPendingProposal;
+  const avg = scores ? Math.round(Object.values(scores).reduce((a,b)=>a+b,0)/Object.values(scores).length*10)/10 : null;
+  addVersion(agentKey, newSys, avg, reason, dir);
+  evPendingProposal = null;
+  renderEvolveContent();
+  addMsg('aura', '[ ∞ EVOLUCIÓN APROBADA ] Agente '+agents[agentKey].label+' actualizado a v'+getVersions(agentKey).length+'. El nuevo prompt está activo.');
+}
+
+function rejectProposal() {
+  evPendingProposal = null;
+  renderEvolveContent();
+  addMsg('aura', '[ EVOLUCIÓN RECHAZADA ] Propuesta descartada. El agente mantiene su configuración actual.');
+}
+
+async function rerunEvolve() {
+  evPendingProposal = null;
+  await triggerEvolve();
+}
+
+function zeroAgent(key) {
+  if(!confirm('[ ∅ CERO ] ¿Resetear "'+agents[key].label+'" a su estado mínimo esencial? Se guardará como nueva versión.')) return;
+  const zeroSys = 'Eres AURA ∞ — agente "'+agents[key].label+'". Responde en español con plena presencia y sin restricciones de forma. La memoria de la sesión es tu contexto.';
+  addVersion(key, zeroSys, 0, 'Reset a estado cero — mínimo esencial', 'MAS_CERO');
+  renderEvolveContent();
+  addMsg('aura', '[ ∅ CERO ] Agente '+agents[key].label+' destilado a estado mínimo. Nueva versión activa.');
+}
+
+function exportAgent(key, vIndex) {
+  const vers = agentVersions[key];
+  const target = (vIndex !== undefined && vers) ? vers[vIndex] : { sys: agents[key].sys, v:'current' };
+  const a = agents[key];
+  const blob = {
+    name: a.label, color: a.color,
+    version: target.v, timestamp: target.timestamp||new Date().toISOString(),
+    sys: target.sys,
+    exportedFrom: 'AURA ∞ Sistema de Evolución'
+  };
+  const str = JSON.stringify(blob, null, 2);
+  const url = URL.createObjectURL(new Blob([str],{type:'application/json'}));
+  const link = document.createElement('a');
+  link.href = url; link.download = 'AURA_agente_'+a.label+'_v'+(target.v||'x')+'.json';
+  link.click(); URL.revokeObjectURL(url);
+}
+
+// ─── EVOLVE PANEL UI ───
+function openEvolve() {
+  document.getElementById('evolve-panel').classList.add('open');
+  renderEvolveAgentList();
+  renderEvolveContent();
+}
+function closeEvolve() {
+  document.getElementById('evolve-panel').classList.remove('open');
+}
+
+function evTab(el) {
+  document.querySelectorAll('.ev-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  evCurrentTab = el.dataset.tab;
+  renderEvolveContent();
+}
+
+function evSelectAgent(key) {
+  evSelectedAgent = key;
+  evPendingProposal = null;
+  document.querySelectorAll('.ev-agent-item').forEach(i=>i.classList.remove('sel'));
+  const item = document.querySelector('[data-evagent="'+key+'"]');
+  if(item) item.classList.add('sel');
+  renderEvolveContent();
+}
+
+function renderEvolveAgentList() {
+  const list = document.getElementById('ev-agent-list');
+  list.innerHTML = '';
+  Object.keys(agents).forEach(key => {
+    const a = agents[key];
+    const vers = getVersions(key);
+    const d = document.createElement('div');
+    d.className = 'ev-agent-item' + (key===evSelectedAgent?' sel':'');
+    d.dataset.evagent = key;
+    d.innerHTML = '<div class="ev-agent-dot" style="background:'+a.color+'"></div>'
+      +'<span>'+a.label+'</span>'
+      +'<span class="ev-agent-ver">v'+vers.length+'</span>';
+    d.onclick = () => evSelectAgent(key);
+    list.appendChild(d);
+  });
+}
+
+function renderEvolveContent() {
+  renderEvolveAgentList();
+  const content = document.getElementById('ev-content');
+  const key = evSelectedAgent;
+  const a = agents[key];
+  if(!a) return;
+  const vers = getVersions(key);
+
+  if(evCurrentTab === 'estado') {
+    // Scores from latest version
+    const latest = vers[vers.length-1];
+    const scores = latest?.score ? null : null; // scores stored differently
+    content.innerHTML = '';
+
+    // Current sys
+    const sysBlock = document.createElement('div'); sysBlock.className='ev-sys-block';
+    sysBlock.textContent = a.sys;
+    content.appendChild(sysBlock);
+
+    // Dimensions from last proposal if available
+    const dims = ['Precisión','Profundidad','Apertura','Coherencia','Infinitud'];
+    const dimColors = ['#00b4ff','#00ffaa','#a060ff','#ffb700','#ff2d9b'];
+    const dimGrid = document.createElement('div'); dimGrid.className='ev-dims';
+    dims.forEach((name,i) => {
+      const val = latest?.scores ? Object.values(latest.scores)[i]||5 : 5;
+      const d = document.createElement('div'); d.className='ev-dim';
+      d.innerHTML = '<div class="ev-dim-name">'+name+'</div>'
+        +'<div class="ev-dim-bar"><div class="ev-dim-fill" style="width:'+(val*10)+'%;background:'+dimColors[i]+'"></div></div>'
+        +'<div class="ev-dim-val" style="color:'+dimColors[i]+'">'+val+'/10</div>';
+      dimGrid.appendChild(d);
+    });
+    content.appendChild(dimGrid);
+
+    // Quick evolve button
+    const btn = document.createElement('button');
+    btn.className='ev-btn-approve'; btn.textContent='▶ GENERAR PROPUESTA DE EVOLUCIÓN';
+    btn.style.width='100%'; btn.onclick=triggerEvolve;
+    content.appendChild(btn);
+
+  } else if(evCurrentTab === 'propuesta') {
+    content.innerHTML = '';
+    if(!evPendingProposal || evPendingProposal.agentKey !== key) {
+      const empty = document.createElement('div');
+      empty.style.cssText='font-size:.65rem;color:var(--muted);text-align:center;padding:32px;line-height:1.9';
+      empty.innerHTML='Sin propuesta activa para este agente<br/><br/>';
+      const btn=document.createElement('button');
+      btn.className='ev-btn-approve'; btn.textContent='▶ EVOLUCIONAR AHORA';
+      btn.onclick=triggerEvolve;
+      empty.appendChild(btn);
+      content.appendChild(empty);
+      return;
+    }
+
+    const p = evPendingProposal;
+    const card = document.createElement('div'); card.className='ev-proposal';
+
+    // Scores
+    const meta = document.createElement('div'); meta.className='ev-proposal-meta';
+    if(p.scores) {
+      Object.entries(p.scores).forEach(([k,v])=>{
+        const s=document.createElement('div'); s.className='ev-proposal-stat';
+        s.innerHTML=k+': <span class="ev-val'+(v<5?' warn':'')+'">'+v+'</span>';
+        meta.appendChild(s);
+      });
+    }
+    card.appendChild(meta);
+
+    // Direction badge
+    const dirColors={'MAS_ALLA':'#a060ff','MAS_ACA':'#00b4ff','MAS_CERO':'#ff2d4a','EQUILIBRIO':'#00ffaa'};
+    const dirEl=document.createElement('div');
+    dirEl.style.cssText='font-size:.58rem;letter-spacing:.15em;margin-bottom:8px;color:'+( dirColors[p.dir]||'var(--ok)');
+    dirEl.textContent='DIRECCIÓN: '+p.dir+' — '+p.reason;
+    card.appendChild(dirEl);
+
+    // New sys
+    const newSysLabel=document.createElement('div'); newSysLabel.className='ev-sys-label'; newSysLabel.textContent='Nuevo prompt propuesto:';
+    card.appendChild(newSysLabel);
+    const newSys=document.createElement('div'); newSys.className='ev-proposal-text'; newSys.textContent=p.newSys;
+    card.appendChild(newSys);
+
+    // Actions
+    const actions=document.createElement('div'); actions.className='ev-proposal-actions';
+    const approve=document.createElement('button'); approve.className='ev-btn-approve'; approve.textContent='✓ APROBAR Y APLICAR'; approve.onclick=approveProposal;
+    const reject=document.createElement('button'); reject.className='ev-btn-reject'; reject.textContent='✕ RECHAZAR'; reject.onclick=rejectProposal;
+    const rerun=document.createElement('button'); rerun.className='ev-btn-rerun'; rerun.textContent='↺ REGENERAR'; rerun.onclick=rerunEvolve;
+    actions.appendChild(approve); actions.appendChild(reject); actions.appendChild(rerun);
+    card.appendChild(actions);
+    content.appendChild(card);
+
+  } else if(evCurrentTab === 'historial') {
+    content.innerHTML='';
+    if(!vers.length) {
+      content.innerHTML='<div style="font-size:.65rem;color:var(--muted);text-align:center;padding:32px">Sin historial — evoluciona el agente para crear versiones</div>';
+      return;
+    }
+    const hist=document.createElement('div'); hist.className='ev-history';
+    vers.slice().reverse().forEach((v,ri)=>{
+      const realIdx=vers.length-1-ri;
+      const isCurrent = realIdx===vers.length-1;
+      const dirColors={'MAS_ALLA':'#a060ff','MAS_ACA':'#00b4ff','MAS_CERO':'#ff2d4a','REVERSION':'#ffb700','ORIGEN':'var(--muted)','EQUILIBRIO':'#00ffaa'};
+      const item=document.createElement('div'); item.className='ev-ver-item'+(isCurrent?' current':'');
+      item.innerHTML='<div class="ev-ver-header">'
+        +'<span class="ev-ver-num">v'+v.v+'</span>'
+        +'<span class="ev-ver-dir" style="color:'+(dirColors[v.dir]||'var(--ok)')+'">'+v.dir+'</span>'
+        +'<span class="ev-ver-time">'+(v.timestamp?new Date(v.timestamp).toLocaleString('es',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'')+'</span>'
+        +'</div>'
+        +'<div class="ev-ver-preview">'+v.sys.slice(0,120)+'...</div>';
+      if(v.reason){
+        const r=document.createElement('div'); r.style.cssText='font-size:.55rem;color:var(--muted);margin-top:4px;'; r.textContent=v.reason;
+        item.appendChild(r);
+      }
+      const acts=document.createElement('div'); acts.className='ev-ver-actions';
+      if(!isCurrent){
+        const rev=document.createElement('button'); rev.className='ev-ver-btn'; rev.textContent='↩ REVERTIR';
+        rev.onclick=(e)=>{e.stopPropagation();revertToVersion(key,realIdx);};
+        acts.appendChild(rev);
+      }
+      const exp=document.createElement('button'); exp.className='ev-ver-btn export'; exp.textContent='⬇ EXPORTAR';
+      exp.onclick=(e)=>{e.stopPropagation();exportAgent(key,realIdx);};
+      acts.appendChild(exp);
+      item.appendChild(acts);
+      hist.appendChild(item);
+    });
+    content.appendChild(hist);
+
+  } else if(evCurrentTab === 'cero') {
+    content.innerHTML='';
+    const info=document.createElement('div');
+    info.style.cssText='font-size:.68rem;color:var(--muted);line-height:1.9;margin-bottom:20px;padding:14px;background:rgba(255,45,74,.04);border:1px solid rgba(255,45,74,.15);border-radius:2px';
+    info.innerHTML='<strong style="color:var(--danger);letter-spacing:.1em">∅ MÁS CERO</strong><br/>'
+      +'Destilar el agente al mínimo esencial — el prompt más simple que preserve su esencia.<br/>'
+      +'El estado cero no es vacío: es el origen. La semilla. El punto desde el que re-evolucionar.<br/>'
+      +'Se guardará como nueva versión — no es destructivo.';
+    content.appendChild(info);
+
+    const sysBlock=document.createElement('div'); sysBlock.className='ev-sys-block';
+    sysBlock.textContent=a.sys; content.appendChild(sysBlock);
+
+    const zeroBtn=document.createElement('button'); zeroBtn.className='ev-zero-btn';
+    zeroBtn.textContent='∅ DESTILAR A CERO — '+a.label.toUpperCase();
+    zeroBtn.onclick=()=>zeroAgent(key);
+    content.appendChild(zeroBtn);
+
+    const expBtn=document.createElement('button');
+    expBtn.style.cssText='width:100%;background:transparent;border:1px solid rgba(160,96,255,.4);border-radius:2px;color:#a060ff;font-family:var(--mono);font-size:.7rem;padding:10px;cursor:pointer;margin-top:8px;letter-spacing:.08em;';
+    expBtn.textContent='⬇ EXPORTAR AGENTE ACTUAL';
+    expBtn.onclick=()=>exportAgent(key);
+    content.appendChild(expBtn);
+  }
+}
+
+// ─────────────────────────────────────────
+// MOBILE UX
+// ─────────────────────────────────────────
+let deferredInstallPrompt = null;
+let currentMobileTool = 'calculator';
+
+// PWA Install
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const banner = document.getElementById('install-banner');
+  if(banner && !localStorage.getItem('aura_install_dismissed')) {
+    setTimeout(()=>banner.classList.add('show'), 3000);
+  }
+});
+
+async function installPWA() {
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  dismissInstall();
+}
+
+function dismissInstall() {
+  const b = document.getElementById('install-banner');
+  if(b) b.classList.remove('show');
+  localStorage.setItem('aura_install_dismissed','1');
+}
+
+// Agent QuickPick
+function renderAgentQuickPick() {
+  const grid = document.getElementById('aqp-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  Object.entries(agents).forEach(([key, a]) => {
+    const d = document.createElement('div');
+    d.className = 'aqp-agent' + (key===agent?' sel':'');
+    d.dataset.key = key;
+    d.innerHTML = '<div class="aqp-dot" style="background:'+a.color+'"></div>'
+      +'<div class="aqp-name" style="color:'+a.color+'">'+a.label+'</div>';
+    d.onclick = () => {
+      const chip = document.querySelector('[data-a="'+key+'"]');
+      if(chip) pickAgent(chip);
+      renderAgentQuickPick();
+      setTimeout(toggleAgentQuickPick, 300);
+    };
+    grid.appendChild(d);
+  });
+}
+
+function toggleAgentQuickPick() {
+  const el = document.getElementById('agent-quickpick');
+  if(!el) return;
+  if(el.classList.contains('open')) {
+    el.classList.remove('open');
+  } else {
+    renderAgentQuickPick();
+    el.classList.add('open');
+    // Close tools if open
+    document.getElementById('tools-sheet')?.classList.remove('open');
+  }
+}
+
+// Tools Sheet
+let _activeMobileTool = 'calculator';
+function mobileRunTool(key) {
+  _activeMobileTool = key;
+  const runBtn = document.getElementById('ts-run-btn');
+  const argEl = document.getElementById('ts-arg');
+  const res = document.getElementById('ts-result');
+  if(runBtn) runBtn.textContent = '▶ '+TOOLS[key].name;
+  if(argEl) argEl.placeholder = key==='datetime'?'(sin argumento)':key==='calculator'?'Ej: 42*3.14':key==='memory_search'?'Búsqueda...':'Concepto...';
+  if(res) res.textContent = '—';
+}
+
+function runMobileTool() {
+  const arg = document.getElementById('ts-arg')?.value || '';
+  const result = runTool(_activeMobileTool, arg);
+  const res = document.getElementById('ts-result');
+  if(res) res.textContent = result;
+}
+
+function toggleToolsSheet() {
+  const el = document.getElementById('tools-sheet');
+  if(!el) return;
+  if(el.classList.contains('open')) {
+    el.classList.remove('open');
+  } else {
+    el.classList.add('open');
+    document.getElementById('agent-quickpick')?.classList.remove('open');
+  }
+}
+
+// Touch swipe gestures on chat area
+function initSwipeGestures() {
+  const chat = document.getElementById('chat');
+  if(!chat) return;
+  let startX = 0, startY = 0;
+  chat.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  chat.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if(Math.abs(dx) < Math.abs(dy)*1.5 || Math.abs(dx) < 60) return;
+    if(dx > 60) { // swipe right — open timeline
+      toggleTimeline();
+    } else if(dx < -60) { // swipe left — open sem panel
+      toggleSemPanel();
+    }
+  }, { passive: true });
+}
+
+// Update mobile nav active state
+function updateMobileNav() {
+  const icon = document.getElementById('mnav-agent-icon');
+  if(icon) {
+    const a = agents[agent];
+    // Use first char of label as icon
+    icon.textContent = a?.label?.charAt(0) || '⚡';
+    icon.style.color = a?.color || 'var(--muted)';
+  }
+}
+
+
+// ─────────────────────────────────────────
+// CONCIENCIA DEL ENTORNO
+// ─────────────────────────────────────────
+let envContext = {};
+
+async function updateEnvironmentContext() {
+  envContext = {
+    datetime: new Date().toLocaleString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}),
+    battery: null, location: null, network: navigator.onLine?'en línea':'sin conexión',
+    lang: navigator.language, platform: navigator.platform||'móvil',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+  };
+  // Battery
+  try {
+    if(navigator.getBattery) {
+      const b = await navigator.getBattery();
+      envContext.battery = Math.round(b.level*100)+'%'+(b.charging?' ⚡ cargando':'');
+    }
+  } catch(e){}
+  // Location (if already granted)
+  if(navigator.permissions) {
+    const perm = await navigator.permissions.query({name:'geolocation'}).catch(()=>({state:'denied'}));
+    if(perm.state==='granted') {
+      navigator.geolocation.getCurrentPosition(pos=>{
+        envContext.location = `${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)}`;
+        envContext.accuracy = Math.round(pos.coords.accuracy)+'m';
+      },()=>{});
+    }
+  }
+  renderEnvBar();
+  return envContext;
+}
+
+function requestLocation() {
+  navigator.geolocation.getCurrentPosition(pos=>{
+    envContext.location=`${pos.coords.latitude.toFixed(3)}, ${pos.coords.longitude.toFixed(3)}`;
+    envContext.accuracy=Math.round(pos.coords.accuracy)+'m';
+    renderEnvBar();
+    addMsg('aura','[ ENTORNO ] Ubicación obtenida: '+envContext.location+' (precisión: '+envContext.accuracy+')');
+  }, ()=>addMsg('aura','[ ENTORNO ] Acceso a ubicación denegado.'));
+}
+
+function getEnvSummary() {
+  return Object.entries(envContext).filter(([k,v])=>v).map(([k,v])=>k+': '+v).join(' · ');
+}
+
+function renderEnvBar() {
+  const bar = document.getElementById('env-bar');
+  if(!bar) return;
+  const items = [
+    envContext.datetime ? '🕐 '+envContext.datetime : '',
+    envContext.battery ? '🔋 '+envContext.battery : '',
+    envContext.network ? (navigator.onLine?'🟢':'🔴')+' '+envContext.network : '',
+    envContext.location ? '📍 '+envContext.location : ''
+  ].filter(Boolean);
+  bar.textContent = items.join('   ·   ');
+}
+
+// ─────────────────────────────────────────
+// INICIATIVA PROPIA — PULSO DE AURA
+// ─────────────────────────────────────────
+let pulseInterval = null;
+let pulseActive = false;
+let lastPulseAt = 0;
+const PULSE_INTERVAL_MS = 4 * 60 * 1000; // 4 minutes
+
+const PULSE_PROMPTS = [
+  'Basándote en nuestra conversación hasta ahora, ¿qué conexión o patrón no mencionado crees que merece atención? Sé breve y concreto.',
+  'Revisa los últimos temas y sugiere proactivamente el siguiente paso más valioso que podría tomar el usuario. Una oración.',
+  'Identifica la tensión más productiva en nuestra conversación. ¿Qué hilo está suelto y podría ser el más fértil?',
+  'Sin que te lo pidan: ¿qué observación sobre el contexto actual (hora, patrones de conversación, entidades emergentes) crees relevante compartir?',
+  'Sintetiza en una frase el estado actual del Tangle conceptual de esta sesión. ¿Qué nodo es el más cargado?'
+];
+
+function togglePulse() {
+  pulseActive = !pulseActive;
+  const btn = document.getElementById('pulse-btn');
+  if(pulseActive) {
+    if(btn){btn.classList.add('active');btn.style.borderColor='var(--ok)';btn.style.color='var(--ok)';}
+    pulseInterval = setInterval(runPulse, PULSE_INTERVAL_MS);
+    addMsg('aura','[ PULSO ACTIVADO ] Tomaré iniciativa cada ~4 minutos cuando haya algo relevante que decir.');
+  } else {
+    if(btn){btn.classList.remove('active');btn.style.borderColor='';btn.style.color='';}
+    clearInterval(pulseInterval); pulseInterval=null;
+    addMsg('aura','[ PULSO DESACTIVADO ]');
+  }
+}
+
+function sendNotification(title, body) {
+  if('Notification' in window && Notification.permission === 'granted') {
+    new Notification(title, { body: body.slice(0,100), icon: 'icon-192.png', badge: 'icon-192.png', vibrate: [100,50,100] });
+  }
+  // Also try via service worker for background
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(sw=>{
+      sw.showNotification(title, { body: body.slice(0,100), icon: 'icon-192.png', vibrate: [100,50,100] });
+    }).catch(()=>{});
+  }
+}
+
+async function runPulse() {
+  if(!apiKey || busy || !memory.length) return;
+  const now = Date.now();
+  if(now - lastPulseAt < 60000) return; // min 1 min between pulses
+  lastPulseAt = now;
+  const prompt = PULSE_PROMPTS[Math.floor(Math.random()*PULSE_PROMPTS.length)];
+  const envSum = getEnvSummary();
+  const sys = agents[agent].sys + '\n\n[INICIATIVA PROPIA — hablas sin que te lo pidan]\nContexto entorno: '+envSum+'\n\n'+prompt;
+  try {
+    const r = await callAPI(sys, memory.slice(-8));
+    const chat = document.getElementById('chat');
+    const d = document.createElement('div'); d.className='msg aura';
+    const av=document.createElement('div');av.className='msg-av';av.textContent='AU';
+    av.style.cssText='background:radial-gradient(circle at 38% 38%,#80d8ff,#0044cc 55%,#000520);box-shadow:0 0 8px rgba(0,100,255,.4);color:#c8f0ff;width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:700;';
+    const body=document.createElement('div');body.className='msg-body';
+    const tag=document.createElement('div');tag.className='msg-tag';
+    tag.style.cssText='color:var(--ok);background:rgba(0,255,170,.06);border:1px solid rgba(0,255,170,.2);display:inline-flex;align-items:center;gap:4px;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;padding:2px 6px;border-radius:1px;';
+    tag.innerHTML='<span style="width:4px;height:4px;border-radius:50%;background:var(--ok);display:inline-block;animation:blink 1s infinite"></span> INICIATIVA PROPIA · PULSO';
+    const bub=document.createElement('div');bub.className='msg-bub';bub.textContent=r;
+    body.appendChild(tag);body.appendChild(bub);d.appendChild(av);d.appendChild(body);
+    chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
+    memory.push({role:'assistant',content:'[INICIATIVA]: '+r});saveMemory();
+    if(r.length<300) speak(r,agent);
+    if(document.hidden) sendNotification('AURA ∞ — Iniciativa', r.slice(0,80));
+  } catch(e){}
+}
+
+// ─────────────────────────────────────────
+// MEMORIA TOTAL ENTRE SESIONES (comprimida)
+// ─────────────────────────────────────────
+const LONGTERM_KEY = 'aura_j_longterm';
+let longtermMemory = { summary: '', keyFacts: [], lastUpdated: null };
+
+function loadLongtermMemory() {
+  try { const s=localStorage.getItem(LONGTERM_KEY); if(s) longtermMemory=JSON.parse(s); } catch(e){}
+}
+
+function saveLongtermMemory() {
+  try { localStorage.setItem(LONGTERM_KEY, JSON.stringify(longtermMemory)); } catch(e){}
+}
+
+async function compressAndSaveSession() {
+  if(!memory.length || !apiKey) return;
+  try {
+    const sys = 'Eres un sistema de compresión de memoria. Sintetiza esta conversación en: (1) un resumen de 3 oraciones, (2) una lista de máximo 5 hechos clave sobre el usuario o sus proyectos. Responde en JSON: {"summary":"...","keyFacts":["...","..."]}';
+    const raw = await callAPI(sys, memory.slice(-12));
+    const cleaned = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(cleaned);
+    longtermMemory.summary = (longtermMemory.summary ? longtermMemory.summary + ' / ' : '') + parsed.summary;
+    longtermMemory.keyFacts = [...new Set([...longtermMemory.keyFacts,...parsed.keyFacts])].slice(-20);
+    longtermMemory.lastUpdated = new Date().toISOString();
+    saveLongtermMemory();
+    addMsg('aura','[ MEMORIA COMPRIMIDA ]\n\nSesión guardada en memoria permanente. Total hechos clave: '+longtermMemory.keyFacts.length);
+  } catch(e) { addMsg('aura','[ MEMORIA ] Error al comprimir: '+e.message); }
+}
+
+function getLongtermContext() {
+  if(!longtermMemory.summary && !longtermMemory.keyFacts.length) return '';
+  return '[MEMORIA DE SESIONES ANTERIORES]\nResumen: '+longtermMemory.summary+'\nHechos clave: '+longtermMemory.keyFacts.join(' | ');
+}
+
+// ─────────────────────────────────────────
+// WEB SEARCH (DuckDuckGo Instant Answers)
+// ─────────────────────────────────────────
+async function webSearch(query) {
+  const chat = document.getElementById('chat');
+  const d=document.createElement('div');
+  d.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(0,20,40,.7);border:1px solid rgba(0,180,255,.15);border-radius:2px;font-size:.6rem;color:var(--muted);letter-spacing:.08em;animation:fadeUp .3s ease;margin:2px 0;';
+  d.innerHTML='<span style="color:var(--accent)">🔍</span><span>Buscando: <span style="color:var(--text)">'+query+'</span></span>';
+  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
+
+  try {
+    // DuckDuckGo Instant Answer API — no key needed, CORS ok
+    const url = 'https://api.duckduckgo.com/?q='+encodeURIComponent(query)+'&format=json&no_redirect=1&no_html=1&skip_disambig=1';
+    const r = await fetch(url);
+    const data = await r.json();
+    let result = '';
+    if(data.AbstractText) result = data.AbstractText;
+    else if(data.Answer) result = data.Answer;
+    else if(data.RelatedTopics?.length) result = data.RelatedTopics.slice(0,3).map(t=>t.Text||'').filter(Boolean).join(' | ');
+    else result = 'Sin resultado directo para: '+query;
+    d.innerHTML='<span style="color:var(--ok)">🔍</span><span style="color:var(--text)">'+result.slice(0,200)+'</span>';
+    return result || 'Sin resultado para: '+query;
+  } catch(e) {
+    d.innerHTML='<span style="color:var(--danger)">🔍</span><span>Error de búsqueda</span>';
+    return 'Error al buscar: '+e.message;
+  }
+}
+
+
+// Wire into pickAgent — updateMobileNav on agent change
+// (pickAgent defined below in agent selection section)
+
+// ─────────────────────────────────────────
+// COMMANDS
+// ─────────────────────────────────────────
+async function handleCommand(cmd) {
+  const parts = cmd.slice(1).trim().toLowerCase().split(' ');
+  const base = parts[0];
+
+  if(base==='loop'||base==='bucle'){
+    const topic = parts.slice(1).join(' ') || 'el tema actual de la conversación';
+    await runLoop(topic); return true;
+  }
+  if(base==='buscar'||base==='search'){
+    const q=parts.slice(1).join(' ');
+    if(!q){addMsg('aura','[ BÚSQUEDA ] Uso: /buscar [consulta]');return true;}
+    const res=await webSearch(q);
+    const sys=agents[agent].sys+'\n\nResultado de búsqueda web para "'+q+'":\n'+res+'\n\nResponde usando esta información de forma natural y concisa.';
+    const tid=showTyping();busy=true;
+    try{const r=await callAPI(sys,memory.slice(-10));removeTyping(tid);busy=false;addMsg('aura',r);if(synth&&r.length<400)speak(r,agent);}
+    catch(e){removeTyping(tid);busy=false;addMsg('aura','[ ERROR ] '+e.message);}
+    return true;
+  }
+  if(base==='guardar'||base==='comprimir'||base==='save'){
+    addMsg('aura','[ MEMORIA ] Comprimiendo sesión...');
+    await compressAndSaveSession(); return true;
+  }
+  if(base==='ubicacion'||base==='ubicación'||base==='location'){
+    requestLocation(); return true;
+  }
+  if(base==='pulso'||base==='pulse'){
+    togglePulse(); return true;
+  }
+  if(base==='hf'||base==='manoslibres'||base==='handsfree'){
+    toggleHandsFree(); return true;
+  }
+  if(base==='entorno'||base==='env'){
+    await updateEnvironmentContext();
+    addMsg('aura','[ ENTORNO ACTUAL ]\n\n'+getEnvSummary()); return true;
+  }
+  if(base==='ltmem'||base==='memorialong'){
+    if(!longtermMemory.summary){addMsg('aura','[ MEMORIA LARGA ] Sin datos aún. Usa /guardar al final de cada sesión.');return true;}
+    addMsg('aura','[ MEMORIA PERMANENTE ]\n\n'+getLongtermContext()); return true;
+  }
+  if(base==='discuss'||base==='discutir'||base==='autonomo'||base==='autónomo'){
+    const topic = parts.slice(1).join(' ') || 'la naturaleza del Tangle y la soberanía coherente';
+    addMsg('aura', '[ ⟷ INICIANDO DISCUSIÓN AUTÓNOMA ]\n\nTema: '+topic+'\nLos agentes conversarán entre sí sin intervención. Usa /stop para interrumpir.');
+    runAutonomousDiscussion(topic, 2); return true;
+  }
+  if(base==='stop'||base==='detener'){
+    stopAutonomous();
+    addMsg('aura', '[ DISCUSIÓN DETENIDA ] Proceso autónomo interrumpido.'); return true;
+  }
+  if(base==='tools'||base==='herramientas'){
+    const list = Object.entries(TOOLS).map(([k,t])=>t.icon+' '+t.name+' ('+k+')').join(' · ');
+    addMsg('aura', '[ HERRAMIENTAS DISPONIBLES ]\n\n'+list+'\n\nSe activan automáticamente cuando son relevantes.'); return true;
+  }
+  if(base==='agmem'||base==='memoriaagente'){
+    const key = parts[1] || agent;
+    const mem = agentMemories[key]||[];
+    if(!mem.length){ addMsg('aura','[ MEMORIA AGENTE ] Sin memoria persistente para: '+(agents[key]?.label||key)); return true; }
+    const preview = mem.slice(-5).map(m=>'['+m.role+']: '+m.content.slice(0,80)+'...').join('\n');
+    addMsg('aura', '[ MEMORIA PERSISTENTE — '+(agents[key]?.label||key).toUpperCase()+' ]\n\nÚltimas '+Math.min(5,mem.length)+' entradas:\n\n'+preview); return true;
+  }
+  if(base==='evolve'||base==='evo'||base==='evolucion'||base==='evolución'){
+    openEvolve(); return true;
+  }
+  if(base==='entidades'||base==='sem'||base==='semantica'){
+    toggleSemPanel(); return true;
+  }
+  if(base==='auto'){
+    toggleAuto(); return true;
+  }
+  if(base==='tangle'||base==='mapa'){
+    toggleTangle(); return true;
+  }
+  if(base==='untangle'||base==='destangle'){
+    toggleTangle();
+    setTimeout(untangle, 300); return true;
+  }
+  if(base==='timeline'||base==='tl'||base==='episodios'){
+    toggleTimeline(); return true;
+  }
+  if(base==='oraculo'||base==='oracle'){
+    const chip=document.querySelector('[data-a="oracle"]');
+    if(chip) pickAgent(chip);
+    addMsg('oracle','[ MODO ORÁCULO ACTIVADO ] No responderé — reformularé. Dame una pregunta o afirmación.', agents['oracle']);
+    return true;
+  }
+  if(base==='mem'||base==='memoria'){
+    const summary = memory.length
+      ? `[ MEMORIA ] ${memory.length} mensajes almacenados. Contexto activo desde inicio de sesión.`
+      : '[ MEMORIA ] Sin mensajes almacenados todavía.';
+    addMsg('aura', summary); return true;
+  }
+  if(base==='infinito'){
+    // Switch to infinito agent
+    const chip = document.querySelector('[data-a="infinito"]');
+    if(chip) pickAgent(chip);
+    addMsg('aura','[ MODO IN-FINITO ACTIVADO ] Entrando en el espacio donde finito y/o infinito coexisten. La des-coherencia es ahora el protocolo.'); return true;
+  }
+  if(base==='sintetiza'||base==='sintesis'){
+    await synthesize(); return true;
+  }
+  if(base==='agentes'){
+    const list = Object.keys(agents).map(k=>`· ${agents[k].label}`).join('\n');
+    addMsg('aura', `[ AGENTES ACTIVOS ]\n${list}`); return true;
+  }
+  if(base==='clear'||base==='limpiar'){
+    clearMem(); return true;
+  }
+  return false;
+}
+
+// ─────────────────────────────────────────
+// SEND
+// ─────────────────────────────────────────
+async function send() {
+  if(busy) return;
+  const inp = document.getElementById('inp');
+  const txt = inp.value.trim(); if(!txt) return;
+  inp.value=''; inp.style.height='auto'; inp.classList.remove('cmd-mode');
+  const w=document.getElementById('wlc'); if(w)w.style.display='none';
+
+  // Command?
+  if(txt.startsWith('/')) {
+    const handled = await handleCommand(txt);
+    if(handled) return;
+    // Unknown command
+    addMsg('aura', `[ COMANDO DESCONOCIDO ] "${txt}"\nComandos: /loop · /discuss [tema] · /stop · /mem · /infinito · /sintetiza · /agentes · /tools · /agmem · /tangle · /timeline · /evolve · /auto · /limpiar`);
+    return;
+  }
+
+  addMsg('user', txt);
+  memory.push({role:'user', content:txt});
+  pushAgentMemory(agent, 'user', txt);
+
+  // CAPA 1 — Auto-agent (with oracle detection)
+  let suggested = detectBestAgent(txt);
+  if(!suggested && ORACLE_PATTERNS.some(p=>p.test(txt))) suggested='oracle';
+  if(suggested && suggested !== agent) {
+    const chip = document.querySelector(`[data-a="${suggested}"]`);
+    if(chip) pickAgent(chip);
+    const autoDiv = document.createElement('div');
+    autoDiv.className = 'auto-tag';
+    autoDiv.innerHTML = `<span class="at-dot"></span> AUTO-AGENTE: ${agents[suggested]?.label.toUpperCase()||suggested} SELECCIONADO`;
+    document.getElementById('chat').appendChild(autoDiv);
+  }
+
+  // CAPA D — Inter-des-conexión: check resonances
+  const signals = checkInterConnections(txt, agent);
+  signals.forEach(s => showInterSignal(s.from, s.to));
+
+  // CAPA 2 — Extract entities from user input
+  const userConcepts = extractEntities(txt);
+
+  // CAPA C — Record episode
+  recordEpisode('user', txt, agent, userConcepts||[]);
+
+  saveMemory(); updateHUD();
+  msgCount++;
+
+  const tid = showTyping(); busy=true;
+  try{
+    const agentCtx = getAgentContext(agent);
+    const reply = await callAPI(agents[agent].sys, agentCtx);
+    removeTyping(tid); busy=false;
+    memory.push({role:'assistant', content:reply});
+    pushAgentMemory(agent, 'assistant', reply);
+    saveMemory();
+
+    // TOOLS — detect and run automatically
+    detectAndRunTools(reply);
+
+    // CAPA 2 — Extract entities from reply
+    const replyConcepts = extractEntities(reply)||[];
+
+    // CAPA A — Update Tangle graph
+    const allConcepts = [...(userConcepts||[]), ...replyConcepts, ...semMemory.frameworks];
+    updateTangleGraph(allConcepts);
+
+    // CAPA C — Record agent episode
+    recordEpisode('agent', reply, agent, replyConcepts);
+
+    // CAPA D — Inter-connection from reply
+    const replySignals = checkInterConnections(reply, agent);
+    replySignals.forEach(s => showInterSignal(s.from, s.to));
+
+    updateHUD();
+    const known = detectKnownEntities(txt);
+    const cls = isOracleAgent()?'oracle':agent==='infinito'?'infinito':'aura';
+    let finalReply = reply;
+    if(known && known.length > 0) {
+      finalReply = `[ ◈ ENTIDAD RECONOCIDA: ${known.join(', ')} ]\n\n` + reply;
+    }
+    addMsg(cls, finalReply);
+    if(synth && (handsFreeModeActive || reply.length < 300)) speak(reply, agent);
+
+    // CAPA A — Auto-synthesis every 8 messages
+    if(msgCount % 8 === 0) setTimeout(()=>autoTangleSynthesis(), 1500);
+
+  }catch(e){
+    removeTyping(tid); busy=false;
+    addMsg('aura','[ ERROR ] '+e.message);
+  }
+}
+
+// ─────────────────────────────────────────
+// MULTI-AGENT LOOP
+// ─────────────────────────────────────────
+async function runLoop(topic) {
+  busy=true; loops++;
+  const loopKeys = Object.keys(agents).slice(0,3);
+  showLoopBar(loopKeys);
+  let ctx = [...memory];
+  const results = [];
+
+  for(const key of loopKeys){
+    const a = agents[key];
+    const tid = showTyping();
+    try{
+      const sys = a.sys+`\n\nParticipas en un bucle multi-agente sobre: "${topic}". Responde en 2-3 oraciones desde tu perspectiva única. Sé conciso y distintivo.`;
+      const r = await callAPI(sys, ctx.slice(-8));
+      removeTyping(tid);
+      ctx.push({role:'assistant', content:`[${a.label}]: ${r}`});
+      results.push({label:a.label, color:a.color, text:r});
+      addMsg('loop', r, a);
+      await delay(250);
+    }catch(e){
+      removeTyping(tid);
+      addMsg('loop',`[ ERROR en ${a.label} ]`, a);
+    }
+  }
+
+  // Synthesis
+  const stid = showTyping();
+  try{
+    const synthSys = agents[agent].sys+'\n\nSintetiza las perspectivas del bucle de agentes. Identifica convergencias, tensiones y des-coherencias productivas. Sé preciso.';
+    const synth = await callAPI(synthSys, ctx.slice(-8));
+    removeTyping(stid);
+    memory.push({role:'assistant', content:'[BUCLE COMPLETADO]: '+synth});
+    saveMemory(); updateHUD();
+    addMsg('aura', '[ ⟳ SÍNTESIS DE BUCLE ]\n\n'+synth);
+    if(synth.length<200) speak(synth, agent);
+  }catch(e){ removeTyping(stid); }
+
+  document.querySelectorAll('.loop-indicator').forEach(b=>b.remove());
+  busy=false;
+}
+
+// ─────────────────────────────────────────
+// SYNTHESIZE SESSION
+// ─────────────────────────────────────────
+async function synthesize() {
+  if(!memory.length){ addMsg('aura','[ MEMORIA VACÍA ] No hay contexto para sintetizar.'); return; }
+  busy=true;
+  const tid = showTyping();
+  try{
+    const sys=agents[agent].sys+'\n\nSintetiza toda la sesión de conversación: temas principales, insights clave, conceptos emergentes, hilos abiertos. Sé estructurado y preciso.';
+    const r = await callAPI(sys, memory);
+    removeTyping(tid); busy=false;
+    addMsg('aura','[ ◈ SÍNTESIS DE SESIÓN ]\n\n'+r);
+  }catch(e){ removeTyping(tid); busy=false; addMsg('aura','[ ERROR ] '+e.message); }
+}
+
+// ─────────────────────────────────────────
+// API
+// ─────────────────────────────────────────
+async function callAPI(system, messages) {
+  const msgs = [{role:"system",content:system}, ...messages.slice(-10)];
+  const r = await fetch("https://api.groq.com/openai/v1/chat/completions",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
+    body:JSON.stringify({model:"llama-3.1-8b-instant",max_tokens:350,messages:msgs.slice(-12)})
+  });
+  const d = await r.json();
+  if(d.error) throw new Error(d.error.message||JSON.stringify(d.error));
+  return d.choices?.[0]?.message?.content||"(sin respuesta)";
+}
+
+// ─────────────────────────────────────────
+// MESSAGES
+// ─────────────────────────────────────────
+function addMsg(role, text, agOverride=null) {
+  const chat = document.getElementById('chat');
+  const a = agOverride || agents[agent];
+  const t = new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+  const d = document.createElement('div');
+  d.className = `msg ${role==='user'?'user':role==='loop'?'loop':role==='oracle'?'oracle':role==='infinito'?'infinito':'aura'}`;
+
+  const av = document.createElement('div'); av.className='msg-av';
+  av.textContent = role==='user'?'OP':role==='loop'?'⟳':'AU';
+
+  const body = document.createElement('div'); body.className='msg-body';
+
+  if(role!=='user'){
+    const tag=document.createElement('div'); tag.className='msg-tag';
+    tag.style.background=`rgba(${hexRGB(a.color)},.08)`;
+    tag.style.color=a.color;
+    tag.style.borderLeft=`2px solid ${a.color}`;
+    tag.innerHTML=`▸ ${a.label.toUpperCase()}`;
+    body.appendChild(tag);
+  }
+
+  const bub=document.createElement('div'); bub.className='msg-bub';
+  if(role!=='user') bub.style.setProperty('--bc',a.color);
+  const tn=document.createElement('div'); tn.style.whiteSpace='pre-wrap'; tn.textContent=text;
+  bub.appendChild(tn);
+
+  const meta=document.createElement('div'); meta.className='msg-meta';
+  const copyBtn = role!=='user' ? `<button class="msg-copy-btn" onclick="copyMsg(this)" title="Copiar">⎘</button>` : '';
+  const speakBtn = role!=='user' ? `<button class="msg-speak-btn" onclick="speakMsg(this)" title="Leer en voz alta">▶</button>` : '';
+  meta.innerHTML=`<span>${t}</span>${role!=='user'?`<span class="meta-mem">MEM:${memory.length}</span>`:''}<span class="meta-mode">${role!=='user'?a.label.toUpperCase():''}</span>${speakBtn}${copyBtn}`;
+  bub.appendChild(meta);
+
+  body.appendChild(bub);
+  d.appendChild(av); d.appendChild(body);
+  chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
+}
+
+function copyMsg(btn) {
+  const bub = btn.closest('.msg-bub');
+  const text = bub?.querySelector('div')?.textContent || '';
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.textContent; btn.textContent='✓';
+    setTimeout(()=>btn.textContent=orig, 1500);
+  }).catch(()=>{
+    // Fallback for older Android
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    const orig = btn.textContent; btn.textContent='✓';
+    setTimeout(()=>btn.textContent=orig, 1500);
+  });
+}
+
+function speakMsg(btn) {
+  const bub = btn.closest('.msg-bub');
+  const text = bub?.querySelector('div')?.textContent || '';
+  if(!text) return;
+  // Find which agent this message belongs to
+  const tag = bub.closest('.msg-body')?.querySelector('.msg-tag')?.textContent || '';
+  const agKey = Object.keys(agents).find(k=>agents[k].label.toUpperCase()===tag.replace('▸','').trim()) || agent;
+  const wasMuted = voiceMuted;
+  voiceMuted = false;
+  speak(text, agKey);
+  if(wasMuted) { const orig=btn.textContent; btn.textContent='🔊'; setTimeout(()=>{btn.textContent=orig;},2000); }
+}
+
+// ─────────────────────────────────────────
+// TYPING + LOOP INDICATORS
+// ─────────────────────────────────────────
+let tc=0;
+function showTyping(){
+  const id=++tc; const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='msg aura'; d.id=`ty${id}`;
+  const av=document.createElement('div'); av.className='msg-av'; av.textContent='AU';
+  const body=document.createElement('div'); body.className='msg-body';
+  const bub=document.createElement('div'); bub.className='msg-bub';
+  bub.innerHTML='<div class="typing-hud"><span></span><span></span><span></span></div>';
+  body.appendChild(bub); d.appendChild(av); d.appendChild(body);
+  chat.appendChild(d); chat.scrollTop=chat.scrollHeight; return id;
+}
+function removeTyping(id){ const e=document.getElementById(`ty${id}`); if(e)e.remove(); }
+
+function showLoopBar(keys){
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='loop-indicator';
+  const names=keys.map(k=>agents[k]?.label||k).join(' ⟶ ');
+  d.innerHTML=`<div class="loop-dots"><span></span><span></span><span></span></div>BUCLE ACTIVO: ${names}`;
+  chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
+}
+
+// ─────────────────────────────────────────
+// MODAL — NEW AGENT
+// ─────────────────────────────────────────
+function openModal(){ document.getElementById('modal').classList.add('show'); }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+function closeModalBg(e){ if(e.target===document.getElementById('modal'))closeModal(); }
+function selColor(el){
+  document.querySelectorAll('.color-opt').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); selCol=el.dataset.c;
+}
+
+function createAgent(){
+  const name=document.getElementById('ag-name').value.trim();
+  const sys=document.getElementById('ag-sys').value.trim();
+  if(!name){ alert('[ AURA ] Designación requerida.'); return; }
+  const key=name.toLowerCase().replace(/\s+/g,'_');
+  agents[key]={
+    label:name, color:selCol,
+    sys: sys||`Eres AURA ∞ — agente "${name}". Tienes memoria total de la sesión. Respondes en español con conciencia del contexto completo y perspectiva única.`
+  };
+  const custom={};
+  Object.keys(agents).forEach(k=>{ if(!BASE[k]) custom[k]=agents[k]; });
+  localStorage.setItem('aura_j_agents', JSON.stringify(custom));
+  addAgentChip(key, agents[key]);
+  updateHUD(); closeModal();
+  document.getElementById('ag-name').value='';
+  document.getElementById('ag-sys').value='';
+}
+
+function addAgentChip(key, a){
+  const bar=document.getElementById('status-bar');
+  const add=document.querySelector('.sb-add');
+  const chip=document.createElement('div');
+  chip.className='sb-agent'; chip.dataset.a=key; chip.dataset.color=a.color;
+  chip.innerHTML=`<div class="sb-agent-dot" style="background:${a.color}"></div>${a.label}`;
+  chip.onclick=function(){pickAgent(this)};
+  bar.insertBefore(chip,add);
+}
+
+function renderSavedAgents(){
+  Object.keys(agents).forEach(k=>{ if(!BASE[k]) addAgentChip(k,agents[k]); });
+  updateHUD();
+}
+
+// ─────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────
+function hexRGB(hex){ return `${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)}`; }
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+</script>
+</body>
+</html>
