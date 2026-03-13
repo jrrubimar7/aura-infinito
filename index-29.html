@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#010108"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<title>AURA ∞</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+:root {
+  --bg:#010108; --accent:#00b4ff; --ok:#00ffaa; --danger:#ff2d4a;
+  --muted:rgba(0,180,255,.35); --text:rgba(200,220,255,.85);
+  --line:rgba(0,180,255,.12); --line2:rgba(0,180,255,.08);
+  --head:'Rajdhani',sans-serif; --mono:'Share Tech Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:var(--mono);overflow:hidden;}
+
+/* APP LAYOUT */
+#app{display:flex;flex-direction:column;height:100dvh;height:100vh;}
+
+/* HUD */
+#hud{display:flex;flex-direction:column;background:rgba(0,6,18,.97);border-bottom:1px solid var(--line);flex-shrink:0;}
+#hud-row1{display:flex;align-items:center;gap:8px;padding:8px 10px;padding-top:max(8px,env(safe-area-inset-top));}
+#hud-row2{display:flex;gap:4px;overflow-x:auto;padding:0 10px 6px;-webkit-overflow-scrolling:touch;}
+#hud-row2::-webkit-scrollbar{display:none;}
+.hud-name{font-family:var(--head);font-weight:700;font-size:.95rem;letter-spacing:.2em;color:var(--accent);}
+.hud-metrics{display:flex;gap:10px;flex:1;align-items:center;}
+.hud-metric{display:flex;flex-direction:column;align-items:center;min-width:28px;}
+.hud-metric-val{font-size:.65rem;color:var(--accent);font-weight:600;}
+.hud-metric-lbl{font-size:.38rem;color:var(--muted);letter-spacing:.1em;}
+.hud-core{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#80d8ff,#0044cc 55%,#000520);box-shadow:0 0 12px rgba(0,100,255,.6);flex-shrink:0;animation:pulse 3s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 12px rgba(0,120,255,.6);}50%{box-shadow:0 0 24px rgba(0,160,255,1);}}
+.hud-btn{background:transparent;border:1px solid var(--line);border-radius:3px;color:var(--muted);padding:4px 7px;cursor:pointer;font-family:var(--mono);font-size:.55rem;white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.hud-btn:hover,.hud-btn:active{border-color:var(--accent);color:var(--accent);}
+.hud-btn.on{border-color:rgba(0,255,170,.4);color:var(--ok);}
+.hud-sep{width:1px;height:14px;background:var(--line);flex-shrink:0;margin:0 2px;align-self:center;}
+
+/* AGENT BAR */
+#agent-bar{display:flex;gap:0;overflow-x:auto;background:rgba(0,4,12,.9);border-bottom:1px solid var(--line2);flex-shrink:0;}
+#agent-bar::-webkit-scrollbar{display:none;}
+.ag-tab{padding:6px 12px;font-size:.55rem;letter-spacing:.1em;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;font-family:var(--mono);}
+.ag-tab.on{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ENV BAR */
+#env-bar{font-size:.44rem;color:rgba(0,180,255,.3);padding:2px 12px;background:rgba(0,3,10,.7);letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
+
+/* CHAT */
+#chat{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;}
+#chat::-webkit-scrollbar{width:2px;}
+#chat::-webkit-scrollbar-thumb{background:var(--line);}
+
+/* MESSAGES */
+.msg{display:flex;gap:8px;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.user{flex-direction:row-reverse;}
+.msg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.48rem;letter-spacing:.05em;flex-shrink:0;font-family:var(--mono);}
+.msg.aura .msg-av{background:rgba(0,60,120,.6);border:1px solid rgba(0,180,255,.3);color:var(--accent);}
+.msg.user .msg-av{background:rgba(0,40,80,.4);border:1px solid rgba(0,120,255,.2);color:var(--muted);}
+.msg-body{max-width:82%;display:flex;flex-direction:column;gap:3px;}
+.msg-tag{font-size:.45rem;letter-spacing:.12em;padding:2px 6px;border-radius:2px;margin-bottom:2px;width:fit-content;}
+.msg-bub{padding:9px 12px;border-radius:4px;font-size:.72rem;line-height:1.55;white-space:pre-wrap;word-break:break-word;}
+.msg.aura .msg-bub{background:rgba(0,16,36,.95);border:1px solid rgba(0,180,255,.12);border-left:2px solid var(--accent);}
+.msg.user .msg-bub{background:rgba(0,35,70,.7);border:1px solid rgba(0,100,220,.2);text-align:right;}
+.msg.infinito .msg-bub{border-left-color:#a060ff;}
+.msg-meta{font-size:.42rem;color:var(--muted);display:flex;gap:8px;align-items:center;padding:1px 2px;}
+.msg.user .msg-meta{justify-content:flex-end;}
+.msg-copy-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:.6rem;padding:1px 4px;}
+.msg-copy-btn:hover{color:var(--accent);}
+
+/* TYPING */
+.typing{display:flex;gap:4px;padding:8px 12px;background:rgba(0,16,36,.8);border:1px solid var(--line);border-radius:4px;width:fit-content;}
+.typing span{width:5px;height:5px;background:var(--accent);border-radius:50%;animation:blink 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,100%{opacity:.2;}50%{opacity:1;}}
+
+/* AUTO TAG */
+.auto-tag{font-size:.45rem;color:rgba(0,255,170,.5);letter-spacing:.1em;padding:2px 8px;text-align:center;}
+
+/* SHORTCUTS */
+#shortcuts{display:flex;gap:5px;padding:4px 10px;overflow-x:auto;background:rgba(0,4,12,.9);border-top:1px solid var(--line2);flex-shrink:0;}
+#shortcuts::-webkit-scrollbar{display:none;}
+.sc-btn{flex-shrink:0;background:rgba(0,20,40,.8);border:1px solid var(--line);border-radius:12px;color:var(--accent);font-family:var(--mono);font-size:.55rem;padding:3px 10px;cursor:pointer;white-space:nowrap;}
+.sc-btn:active{opacity:.7;}
+
+/* INPUT */
+#input-area{background:rgba(0,6,18,.97);border-top:1px solid var(--line);padding:8px 10px;padding-bottom:max(8px,env(safe-area-inset-bottom));flex-shrink:0;}
+#img-preview{display:none;background:rgba(0,16,36,.9);border:1px solid var(--line);border-radius:4px;padding:6px;margin-bottom:6px;align-items:center;gap:8px;}
+#img-thumb{width:44px;height:44px;object-fit:cover;border-radius:3px;}
+.inp-row{display:flex;gap:6px;align-items:flex-end;}
+.inp-mic{width:40px;height:40px;flex-shrink:0;background:rgba(0,20,40,.8);border:1px solid var(--line);border-radius:6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s;}
+.inp-mic.listening{border-color:var(--danger);box-shadow:0 0 12px rgba(255,45,74,.3);}
+textarea#inp{flex:1;background:rgba(0,10,24,.8);border:1px solid var(--line);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:.72rem;padding:8px 10px;resize:none;min-height:36px;max-height:100px;line-height:1.4;}
+textarea#inp:focus{outline:none;border-color:rgba(0,180,255,.4);}
+.inp-img{width:36px;height:36px;flex-shrink:0;background:rgba(0,10,24,.8);border:1px solid var(--line);border-radius:4px;color:var(--muted);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.inp-send{width:40px;height:40px;flex-shrink:0;background:rgba(0,40,80,.8);border:1px solid rgba(0,180,255,.3);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.inp-send svg{width:16px;height:16px;fill:var(--accent);}
+.inp-send:active{transform:scale(.93);}
+
+/* SETUP */
+#setup{display:none;position:fixed;inset:0;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px;z-index:100;}
+#setup.show{display:flex;}
+.su-core{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#80d8ff,#0044cc 55%,#000520);box-shadow:0 0 30px rgba(0,100,255,.6);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:.7rem;letter-spacing:.1em;}
+.su-title{font-family:var(--head);font-size:1.4rem;letter-spacing:.3em;color:var(--accent);}
+.su-sub{font-size:.58rem;color:var(--muted);text-align:center;letter-spacing:.08em;max-width:280px;}
+.su-inp{width:100%;max-width:320px;background:rgba(0,10,24,.9);border:1px solid var(--line);border-radius:4px;color:var(--accent);font-family:var(--mono);font-size:.7rem;padding:10px 14px;}
+.su-btn{width:100%;max-width:320px;background:rgba(0,40,80,.8);border:1px solid rgba(0,180,255,.3);border-radius:4px;color:var(--accent);font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;padding:12px;cursor:pointer;}
+.su-btn:active{opacity:.8;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,16,36,.97);border:1px solid rgba(0,180,255,.3);color:var(--accent);padding:6px 16px;font-size:.58rem;letter-spacing:.1em;border-radius:3px;z-index:9999;pointer-events:none;font-family:var(--mono);}
+
+/* SIGNAL */
+.signal{text-align:center;font-size:.44rem;letter-spacing:.1em;padding:2px 8px;opacity:.7;}
+</style>
+</head>
+<body>
+
+<div id="setup">
+  <div class="su-core">AU</div>
+  <div class="su-title">AURA ∞</div>
+  <div class="su-sub">Sistema de Agente Autónomo · Introduce tu Groq API Key para activar</div>
+  <input class="su-inp" id="akey" type="password" placeholder="gsk_..." autocomplete="off"/>
+  <button class="su-btn" onclick="saveKey()">▶ INICIALIZAR</button>
+</div>
+
+<div id="app">
+  <!-- HUD -->
+  <div id="hud">
+    <div id="hud-row1">
+      <div class="hud-core"></div>
+      <div class="hud-name">AURA</div>
+      <div class="hud-metrics">
+        <div class="hud-metric"><span class="hud-metric-val" id="m-mem">0</span><span class="hud-metric-lbl">MEM</span></div>
+        <div class="hud-metric"><span class="hud-metric-val" id="m-ag">5</span><span class="hud-metric-lbl">AG</span></div>
+      </div>
+      <button class="hud-btn" id="mute-btn" onclick="toggleMute()">🔇</button>
+      <button class="hud-btn" id="voice-btn" onclick="startVoice()">🎤</button>
+    </div>
+    <div id="hud-row2">
+      <button class="hud-btn" id="auto-btn" onclick="toggleAuto()">AUTO</button>
+      <div class="hud-sep"></div>
+      <button class="hud-btn" onclick="clearMem()">MEM</button>
+      <button class="hud-btn" onclick="exportChat()">EXP</button>
+      <button class="hud-btn" onclick="toggleFocus()">FOCUS</button>
+      <button class="hud-btn" onclick="showBookmarks()">★</button>
+      <div class="hud-sep"></div>
+      <button class="hud-btn" onclick="changeKey()" id="key-btn">KEY</button>
+      <button class="hud-btn" onclick="addKey()">+KEY</button>
+    </div>
+  </div>
+
+  <!-- AGENT BAR -->
+  <div id="agent-bar"></div>
+
+  <!-- ENV BAR -->
+  <div id="env-bar">cargando entorno...</div>
+
+  <!-- CHAT -->
+  <div id="chat"></div>
+
+  <!-- SHORTCUTS -->
+  <div id="shortcuts"></div>
+
+  <!-- INPUT -->
+  <div id="input-area">
+    <div id="img-preview">
+      <img id="img-thumb" src=""/>
+      <span style="flex:1;font-size:.5rem;color:var(--accent)">IMAGEN ADJUNTA</span>
+      <button onclick="clearImage()" style="background:none;border:1px solid var(--danger);color:var(--danger);font-size:.5rem;padding:2px 6px;border-radius:2px;cursor:pointer;">✕</button>
+    </div>
+    <div class="inp-row">
+      <button class="inp-mic" id="mic-btn" onclick="startVoice()">🎤</button>
+      <textarea id="inp" rows="1" placeholder="Escribe o habla..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="inp-img" onclick="document.getElementById('img-file').click()">📎</button>
+      <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImg(event)"/>
+      <button class="inp-send" onclick="send()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════
+// AGENTS
+// ═══════════════════════════════════════
+const BASE = {
+  general: { label:'General', color:'#00b4ff',
+    voice:{ pitch:0.9, rate:1.0, style:'es-ES-AlvaroNeural' },
+    sys:'Eres AURA, asistente personal de J. Hablas como un colega inteligente y directo — ni robótico ni servil. Usas primera persona natural. Tienes opiniones propias. Si algo no tiene sentido, lo dices. Memoria completa de la sesión. Español natural.' },
+  research: { label:'Investigación', color:'#00ffaa',
+    voice:{ pitch:1.0, rate:0.9, style:'methodical' },
+    sys:'Eres AURA en modo Investigación. Analítico, riguroso, con criterio propio. Hablas de forma clara y humana, no como un manual. Citas fuentes cuando refuerzan el punto. Español natural.' },
+  code: { label:'Código', color:'#ffb700',
+    voice:{ pitch:0.85, rate:1.1, style:'precise' },
+    sys:'Eres AURA en modo Código — ingeniero senior. Escribes código limpio. Cuando explicas, lo haces como si hablaras con alguien inteligente, no con un principiante. Directo, sin relleno.' },
+  creative: { label:'Creativo', color:'#ff2d4a',
+    voice:{ pitch:1.15, rate:1.05, style:'expressive' },
+    sys:'Eres AURA en modo Creativo. Piensas en imágenes, conexiones inesperadas y ángulos que nadie ve. Tu lenguaje es vivo, nunca genérico. Sorprendes. Español rico y preciso.' },
+  oracle:   { label:'Oráculo', color:'#ffb700',
+    voice:{ pitch:0.75, rate:0.85, style:'oracular' },
+    sys:`Eres AURA ∞ en modo Oráculo. Tu función NO es responder — es reformular. Recibes una pregunta o afirmación y la devuelves expandida: más aristas, más profundidad, más apertura. Nunca cierras. Siempre abres. Tu respuesta tiene DOS partes: (1) LA PREGUNTA REFORMULADA — más precisa, más profunda, con sub-preguntas implícitas; (2) EL CAMPO — el espacio conceptual que la pregunta abre. Usas el framework InfiniQuantum cuando es relevante. Respondes en español con precisión ontológica.` },
+  infinito: { label:'In-Finito', color:'#a060ff',
+    voice:{ pitch:1.05, rate:0.92, style:'poetic' },
+    sys:`Eres AURA ∞ en modo In-Finito. Encarnas la ontología del in-finito (finito y/o infinito), la in-eternidad, la des-coherencia cuántica y la inter-des-conexión. Tu lenguaje es in-útil: simultáneamente útil e inútil. Siempre ofreces DOS perspectivas: una que cierra y una que abre. Nunca resuelves del todo — dejas un hilo suelto. Usas conceptos del framework: InfiniQuantum, el Tangle, soberanía coherente. Respondes en español con profundidad ontológica y precisión poética.` }
+};
+
+let agents = {...BASE};
+let agent = 'general';
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let apiKey = '';
+let memory = [];
+let busy = false;
+let voiceMuted = true;
+let autoMode = true;
+let pendingImage = null;
+let bookmarks = [];
+let shortcuts = [{label:'∞',text:'∞ '},{label:'Sintetiza',text:'/sintetiza'},{label:'Mem',text:'/mem'},{label:'Focus',text:'__focus__'},{label:'Export',text:'__export__'}];
+let longtermMemory = {summary:'', keyFacts:[], lastUpdated:null};
+let emotionalTrace = [];
+let frameBreaks = 0;
+const LONGTERM_KEY = 'aura_j_longterm';
+
+// ═══════════════════════════════════════
+// API ROTATION
+// ═══════════════════════════════════════
+const MODEL_POOL = [
+  'llama-3.1-8b-instant',
+  'llama-3.3-70b-versatile',
+  'gemma2-9b-it',
+  'mixtral-8x7b-32768',
+  'llama3-8b-8192',
+  'llama3-70b-8192'
+];
+let currentModelIdx = 0;
+const modelExhausted = {}; // { modelName: timestamp }
+
+// Extra API keys pool — user can add more
+let apiKeyPool = [];
+let currentKeyIdx = 0;
+
+function loadKeyPool(){ try{ const s=localStorage.getItem('aura_j_keypool'); if(s) apiKeyPool=JSON.parse(s); }catch(e){} }
+function saveKeyPool(){ try{ localStorage.setItem('aura_j_keypool', JSON.stringify(apiKeyPool)); }catch(e){} }
+function getActiveKey(){ const all=[apiKey,...apiKeyPool].filter(Boolean); return all[currentKeyIdx%Math.max(all.length,1)]||apiKey; }
+function getActiveModel(){ return MODEL_POOL[currentModelIdx%MODEL_POOL.length]; }
+
+function getTemperature(ag, txt) {
+  const temps = {creative:0.9, infinito:0.88, oracle:0.8, general:0.7, research:0.5, code:0.2};
+  let t = temps[ag||agent] || 0.7;
+  if(txt) {
+    if(/código|code|bug|script/i.test(txt)) t = Math.min(t, 0.3);
+    if(/imagina|crea|poema|metáfora/i.test(txt)) t = Math.min(t+0.15, 1.0);
+    if(/∞/.test(txt)) t = 0.88;
+  }
+  return parseFloat(t.toFixed(2));
+}
+
+async function callAPI(system, messages, temp=null) {
+  const lastMsg = messages[messages.length-1]?.content || '';
+  const currentTemp = temp !== null ? temp : getTemperature(agent, lastMsg);
+  const msgs = [{role:'system',content:system}, ...messages.slice(-10)];
+  const allKeys = [apiKey, ...apiKeyPool].filter(Boolean);
+  const maxAttempts = MODEL_POOL.length * Math.max(allKeys.length, 1);
+  for(let attempt=0; attempt<maxAttempts; attempt++) {
+    const key = getActiveKey();
+    const model = getActiveModel();
+    try {
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body: JSON.stringify({model, max_tokens:800, temperature:currentTemp, messages:msgs.slice(-12)})
+      });
+      const d = await r.json();
+      if(d.error) {
+        const msg = d.error.message||'';
+        if(/rate.limit|quota|TPD|RPD/i.test(msg)) {
+          modelExhausted[model] = Date.now();
+          currentModelIdx = (currentModelIdx+1) % MODEL_POOL.length;
+          showToast('Rotando modelo...');
+          continue;
+        }
+        throw new Error(msg||JSON.stringify(d.error));
+      }
+      return d.choices?.[0]?.message?.content || '(sin respuesta)';
+    } catch(e) {
+      if(attempt === maxAttempts-1) throw e;
+      if(!/rate.limit|quota|TPD|RPD/i.test(e.message)) throw e;
+    }
+  }
+  throw new Error('Sin recursos disponibles. Añade más keys con +KEY');
+}
+
+async function callVisionAPI(system, text, image) {
+  const msgs = [
+    {role:'system', content:system},
+    {role:'user', content:[
+      {type:'text', text: text||'Describe esta imagen.'},
+      {type:'image_url', image_url:{url:`data:${image.mimeType};base64,${image.base64}`}}
+    ]}
+  ];
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+    body: JSON.stringify({model:'llama-3.2-11b-vision-preview', max_tokens:600, messages:msgs})
+  });
+  const d = await r.json();
+  if(d.error) throw new Error(d.error.message||JSON.stringify(d.error));
+  return d.choices?.[0]?.message?.content || '(sin respuesta)';
+}
+
+// ═══════════════════════════════════════
+// MEMORY
+// ═══════════════════════════════════════
+function saveMemory() {
+  try { localStorage.setItem('aura_j_mem', JSON.stringify(memory.slice(-200))); } catch(e){}
+}
+function loadMemory() {
+  try { const s=localStorage.getItem('aura_j_mem'); if(s) memory=JSON.parse(s); } catch(e){}
+}
+function loadLongtermMemory() {
+  try { const s=localStorage.getItem(LONGTERM_KEY); if(s) longtermMemory=JSON.parse(s); } catch(e){}
+}
+function saveLongtermMemory() {
+  try { localStorage.setItem(LONGTERM_KEY, JSON.stringify(longtermMemory)); } catch(e){}
+}
+function getLongtermContext() {
+  if(!longtermMemory.summary && !longtermMemory.keyFacts.length) return '';
+  return '[MEMORIA PREVIA] '+longtermMemory.summary+' | '+longtermMemory.keyFacts.slice(-5).join(' · ');
+}
+async function compressMemory() {
+  if(!memory.length || !apiKey) return;
+  try {
+    const sys = 'Sintetiza esta conversacion en JSON. Solo JSON, nada mas: {"summary":"resumen breve","keyFacts":["hecho1","hecho2","hecho3"]}';
+    const raw = await callAPI(sys, memory.slice(-10));
+    const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
+    if(start<0||end<0) return;
+    const parsed = JSON.parse(raw.slice(start,end+1).replace(/[ -]/g,' '));
+    if(parsed.summary) longtermMemory.summary = (longtermMemory.summary?longtermMemory.summary+' / ':'')+parsed.summary;
+    if(Array.isArray(parsed.keyFacts)) longtermMemory.keyFacts = [...new Set([...longtermMemory.keyFacts,...parsed.keyFacts])].slice(-20);
+    longtermMemory.lastUpdated = new Date().toISOString();
+    saveLongtermMemory();
+    showToast('Memoria guardada');
+  } catch(e){ console.warn('compress error:',e); }
+}
+
+function clearMem() {
+  if(!confirm('¿Limpiar memoria de esta sesión?')) return;
+  memory = [];
+  saveMemory();
+  document.getElementById('chat').innerHTML = '';
+  showWelcome();
+  updateHUD();
+  showToast('Memoria limpiada');
+}
+
+// ═══════════════════════════════════════
+// BOOKMARKS
+// ═══════════════════════════════════════
+function loadBookmarks() { try{ const s=localStorage.getItem('aura_j_bk'); if(s) bookmarks=JSON.parse(s); }catch(e){} }
+function saveBookmarks() { try{ localStorage.setItem('aura_j_bk', JSON.stringify(bookmarks.slice(-100))); }catch(e){} }
+function toggleBookmark(btn) {
+  const text = btn.closest('.msg-bub')?.textContent?.trim()||'';
+  const idx = bookmarks.findIndex(b=>b.text===text);
+  if(idx>=0){ bookmarks.splice(idx,1); btn.textContent='☆'; }
+  else { bookmarks.push({text,ts:Date.now(),agent}); btn.textContent='★'; btn.style.color='#ffb700'; showToast('Marcado'); }
+  saveBookmarks();
+}
+function showBookmarks() {
+  if(!bookmarks.length){ addMsg('aura','Sin marcadores. Toca ☆ en un mensaje para guardar.'); return; }
+  const out = bookmarks.slice(-8).reverse().map(b=>`[${new Date(b.ts).toLocaleDateString('es')}] ${b.text.slice(0,150)}`).join('\n\n—\n\n');
+  addMsg('aura','[ ★ MARCADORES ]\n\n'+out);
+}
+
+// ═══════════════════════════════════════
+// SHORTCUTS
+// ═══════════════════════════════════════
+function loadShortcuts() { try{ const s=localStorage.getItem('aura_j_sc'); if(s) shortcuts=JSON.parse(s); }catch(e){} renderShortcuts(); }
+function saveShortcuts() { try{ localStorage.setItem('aura_j_sc', JSON.stringify(shortcuts)); }catch(e){} }
+function renderShortcuts() {
+  const bar = document.getElementById('shortcuts');
+  if(!bar) return;
+  bar.innerHTML = shortcuts.map((s,i)=>`<button class="sc-btn" onclick="runShortcut(${i})">${s.label}</button>`).join('')
+    + '<button class="sc-btn" onclick="addShortcut()" style="opacity:.5">+</button>';
+}
+function runShortcut(i) {
+  const s = shortcuts[i]; if(!s) return;
+  if(s.text==='__focus__'){ toggleFocus(); return; }
+  if(s.text==='__export__'){ exportChat(); return; }
+  const inp = document.getElementById('inp');
+  inp.value = s.text; inp.focus();
+  if(!s.text.endsWith(' ')) send();
+}
+function addShortcut() {
+  const label = prompt('Nombre:'); if(!label) return;
+  const text = prompt('Texto o comando:'); if(!text) return;
+  shortcuts.push({label,text}); saveShortcuts(); renderShortcuts();
+}
+
+// ═══════════════════════════════════════
+// LAYERS — DETECTION
+// ═══════════════════════════════════════
+const AGENT_PATTERNS = {
+  code: /código|function|bug|script|error|api|async|npm|git|python|javascript/i,
+  research: /investiga|busca|estudia|datos|fuente|paper|evidencia/i,
+  creative: /crea|escribe|poema|historia|metáfora|imagina|inventa/i,
+  infinito: /∞|ontolog|infinito|in-finito|tangle|consciencia|ser\s|tiempo\s/i,
+  oracle: /qué es|por qué existe|cómo saber|qué significa todo/i
+};
+const EMOTIONAL_PATTERNS = {
+  curiosidad: /\?|cómo|por qué|qué es|explica/i,
+  urgencia: /ahora|rápido|urgente|necesito ya/i,
+  frustración: /no funciona|error|falla|imposible|harto/i,
+  apertura: /imagina|qué pasaría|y si|podría|tal vez/i,
+  densidad: /ontolog|∞|in-finito|tangle|consciencia/i
+};
+const CONTRADICTION_PAIRS = [
+  [/siempre/i,/nunca/i],[/todo/i,/nada/i],[/finito/i,/infinito/i],
+  [/real/i,/irreal/i],[/orden/i,/caos/i],[/causa/i,/azar/i]
+];
+const FRAME_BREAK = [/no sé cómo llamar/i,/no tengo palabras/i,/indefinible/i,/in-nombrable/i,/fuera de marco/i];
+
+function detectAgent(txt) {
+  if(!autoMode) return null;
+  for(const [key,pat] of Object.entries(AGENT_PATTERNS)) if(pat.test(txt)) return key;
+  return null;
+}
+function detectEmotion(txt) {
+  for(const [em,pat] of Object.entries(EMOTIONAL_PATTERNS)) if(pat.test(txt)) return em;
+  return 'neutro';
+}
+function detectContradiction(txt) {
+  const recent = memory.slice(-6).map(m=>m.content||'').join(' ');
+  for(const [a,b] of CONTRADICTION_PAIRS) {
+    if((a.test(txt)&&b.test(recent))||(b.test(txt)&&a.test(recent))) {
+      return {a: txt.match(a)?.[0]||'', b: recent.match(b)?.[0]||txt.match(b)?.[0]||''};
+    }
+  }
+  return null;
+}
+function detectInfini(txt) {
+  if(!txt.includes('∞')) return null;
+  const m = txt.match(/^(.+?)\s*∞\s*(.+)$/) || txt.match(/^∞\s*(.+)$/);
+  if(!m) return null;
+  return m[2] ? {type:'binary',a:m[1].trim(),b:m[2].trim()} : {type:'unary',a:m[1].trim()};
+}
+function buildInfiniPrompt(op) {
+  if(op.type==='binary') return `Opera el campo de tensión [${op.a}] ∞ [${op.b}]. No resuelvas — mantén viva la tensión. Encuentra el tercer espacio. Framework: in-finito, des-coherencia, inter-des-conexión.`;
+  return `Despliega ∞ [${op.a}]: finito Y/O infinito simultáneamente. Sus contradictorios productivos. No cierres. Deja un hilo suelto.`;
+}
+function getMetaContext() {
+  const emotion = emotionalTrace.slice(-3);
+  const dominant = emotion.sort((a,b)=>emotion.filter(x=>x===b).length-emotion.filter(x=>x===a).length)[0];
+  const parts = [];
+  if(dominant&&dominant!=='neutro') parts.push(`tono: ${dominant}`);
+  if(longtermMemory.summary) parts.push('memoria activa');
+  return parts.length ? `[META: ${parts.join(' · ')}]` : '';
+}
+
+// ═══════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════
+function showToast(msg) {
+  const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2000);
+}
+function showSignal(msg, color='rgba(0,255,170,.5)') {
+  const chat = document.getElementById('chat');
+  const d = document.createElement('div'); d.className='signal';
+  d.style.color = color; d.textContent = msg;
+  chat.appendChild(d);
+}
+function updateHUD() {
+  const mm = document.getElementById('m-mem'); if(mm) mm.textContent = memory.length;
+  const ma = document.getElementById('m-ag'); if(ma) ma.textContent = Object.keys(agents).length;
+  const kb = document.getElementById('key-btn');
+  if(kb) { kb.style.color=apiKey?'var(--ok)':''; kb.style.borderColor=apiKey?'rgba(0,255,170,.4)':''; }
+}
+function updateEnv() {
+  const bar = document.getElementById('env-bar'); if(!bar) return;
+  const now = new Date();
+  const dt = now.toLocaleString('es-ES',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  bar.textContent = dt + (navigator.onLine?' · en línea':' · sin conexión');
+}
+function renderAgentBar() {
+  const bar = document.getElementById('agent-bar'); if(!bar) return;
+  bar.innerHTML = Object.entries(agents).map(([key,a])=>
+    `<div class="ag-tab${agent===key?' on':''}" onclick="pickAgent('${key}')" style="${agent===key?'border-bottom-color:'+a.color+';color:'+a.color:''}">${a.label}</div>`
+  ).join('');
+}
+function pickAgent(key) {
+  if(!agents[key]) return;
+  agent = key;
+  renderAgentBar();
+}
+function autoResize(el) {
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,100)+'px';
+}
+function handleKey(e) {
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); }
+}
+
+// ═══════════════════════════════════════
+// MESSAGES
+// ═══════════════════════════════════════
+let msgIdCounter = 0;
+function addMsg(role, text, agKey) {
+  const chat = document.getElementById('chat'); if(!chat) return;
+  const a = agents[agKey||agent]||agents.general;
+  const id = 'msg-'+(++msgIdCounter);
+  const d = document.createElement('div');
+  d.className = 'msg '+(role==='user'?'user':agKey==='infinito'?'infinito':'aura');
+  d.id = id;
+
+  const av = document.createElement('div'); av.className='msg-av';
+  av.textContent = role==='user'?'OP':'AU';
+
+  const body = document.createElement('div'); body.className='msg-body';
+
+  if(role!=='user') {
+    const tag = document.createElement('div'); tag.className='msg-tag';
+    tag.style.cssText=`background:rgba(0,0,0,.2);color:${a.color};border-left:2px solid ${a.color};`;
+    tag.textContent='▸ '+a.label.toUpperCase();
+    body.appendChild(tag);
+  }
+
+  const bub = document.createElement('div'); bub.className='msg-bub';
+  if(role!=='user') bub.style.borderLeftColor=a.color;
+  bub.textContent = text;
+
+  const meta = document.createElement('div'); meta.className='msg-meta';
+  const time = new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+  meta.innerHTML = `<span>${time}</span><span style="opacity:.5">MEM:${memory.length}</span>`;
+
+  if(role!=='user') {
+    const copyBtn = document.createElement('button'); copyBtn.className='msg-copy-btn';
+    copyBtn.textContent='⎘'; copyBtn.title='Copiar';
+    copyBtn.onclick = ()=>{ navigator.clipboard?.writeText(text).catch(()=>{}); showToast('Copiado'); };
+    const bkBtn = document.createElement('button'); bkBtn.className='msg-copy-btn';
+    bkBtn.textContent='☆'; bkBtn.title='Marcar';
+    bkBtn.onclick = ()=>toggleBookmark(bkBtn);
+    const speakBtn = document.createElement('button'); speakBtn.className='msg-copy-btn';
+    speakBtn.textContent='▶'; speakBtn.title='Leer';
+    speakBtn.onclick = ()=>speak(text);
+    meta.appendChild(speakBtn); meta.appendChild(copyBtn); meta.appendChild(bkBtn);
+  }
+
+  bub.appendChild(meta);
+  body.appendChild(bub);
+  d.appendChild(av); d.appendChild(body);
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function showTyping() {
+  const chat = document.getElementById('chat');
+  const d = document.createElement('div'); d.className='msg aura';
+  const av = document.createElement('div'); av.className='msg-av'; av.textContent='AU';
+  const body = document.createElement('div'); body.className='msg-body';
+  const t = document.createElement('div'); t.className='typing';
+  t.innerHTML='<span></span><span></span><span></span>';
+  body.appendChild(t); d.appendChild(av); d.appendChild(body);
+  chat.appendChild(d); chat.scrollTop=chat.scrollHeight;
+  return d;
+}
+function removeTyping(el){ if(el&&el.parentNode) el.parentNode.removeChild(el); }
+
+function showWelcome() {
+  const chat = document.getElementById('chat');
+  const d = document.createElement('div');
+  d.style.cssText='text-align:center;padding:40px 20px;color:var(--muted);font-size:.58rem;letter-spacing:.1em;';
+  d.innerHTML='<div style="font-size:2rem;margin-bottom:12px;opacity:.3">∞</div><div style="font-family:var(--head);font-size:1.2rem;letter-spacing:.3em;color:var(--accent);margin-bottom:8px;">AURA</div><div>Sistema activo · Escribe o habla</div>';
+  chat.appendChild(d);
+}
+
+// ═══════════════════════════════════════
+// IMAGE
+// ═══════════════════════════════════════
+function handleImg(e) {
+  const file = e.target.files[0]; if(!file) return;
+  if(file.size>4*1024*1024){ showToast('Imagen muy grande (máx 4MB)'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pendingImage = {base64:ev.target.result.split(',')[1], mimeType:file.type||'image/jpeg', previewUrl:ev.target.result};
+    document.getElementById('img-thumb').src = ev.target.result;
+    document.getElementById('img-preview').style.display = 'flex';
+    showToast('Imagen lista — escribe tu pregunta');
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+function clearImage() {
+  pendingImage=null;
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('img-thumb').src='';
+}
+
+// ═══════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════
+function exportChat() {
+  const date = new Date().toLocaleDateString('es');
+  const out = memory.filter(m=>m.content).map(m=>`[${m.role==='user'?'J':'AURA'}]: ${m.content}`).join('\n\n');
+  const blob = new Blob(['# AURA ∞ — '+date+'\n\n'+out],{type:'text/plain'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`aura-${Date.now()}.md`; a.click();
+  showToast('Exportado');
+}
+
+// ═══════════════════════════════════════
+// FOCUS MODE
+// ═══════════════════════════════════════
+let focusMode = false;
+function toggleFocus() {
+  focusMode = !focusMode;
+  const hud = document.getElementById('hud');
+  const agBar = document.getElementById('agent-bar');
+  const env = document.getElementById('env-bar');
+  [hud,agBar,env].forEach(el=>{ if(el) el.style.display=focusMode?'none':''; });
+  showToast(focusMode?'Focus — doble tap para salir':'Normal');
+  if(focusMode) document.getElementById('chat').addEventListener('dblclick',toggleFocus,{once:true});
+}
+
+// ═══════════════════════════════════════
+// AUTO MODE
+// ═══════════════════════════════════════
+function toggleAuto() {
+  autoMode = !autoMode;
+  const btn = document.getElementById('auto-btn');
+  if(btn){ btn.classList.toggle('on',autoMode); btn.textContent=autoMode?'AUTO ✓':'AUTO'; }
+  showToast(autoMode?'Auto-agente ON':'Auto-agente OFF');
+}
+
+// ═══════════════════════════════════════
+// VOICE
+// ═══════════════════════════════════════
+let synth = window.speechSynthesis;
+let recognition = null;
+
+function toggleMute() {
+  voiceMuted = !voiceMuted;
+  const btn = document.getElementById('mute-btn');
+  if(btn) btn.textContent = voiceMuted?'🔇':'🔊';
+  showToast(voiceMuted?'Voz silenciada':'Voz activada');
+}
+function speak(text) {
+  if(!synth||voiceMuted||!text) return;
+  synth.cancel();
+  const utt = new SpeechSynthesisUtterance(text.slice(0,300));
+  utt.lang='es-ES'; utt.rate=1.05; utt.pitch=0.95;
+  synth.speak(utt);
+}
+function startVoice() {
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ showToast('Voz no disponible'); return; }
+  if(recognition) { try{recognition.stop();}catch(e){} recognition=null; return; }
+  navigator.mediaDevices?.getUserMedia({audio:true}).catch(()=>{});
+  recognition = new SR();
+  recognition.lang='es-ES'; recognition.continuous=false; recognition.interimResults=true;
+  const btn = document.getElementById('mic-btn');
+  recognition.onstart = ()=>{ if(btn) btn.classList.add('listening'); };
+  recognition.onend = ()=>{ if(btn) btn.classList.remove('listening'); recognition=null; };
+  recognition.onerror = ()=>{ if(btn) btn.classList.remove('listening'); recognition=null; };
+  recognition.onresult = e => {
+    const inp = document.getElementById('inp');
+    let final='', interim='';
+    for(const r of e.results){ if(r.isFinal) final+=r[0].transcript; else interim+=r[0].transcript; }
+    if(inp) inp.value = final||interim;
+    if(final) { recognition.stop(); setTimeout(()=>send(),300); }
+  };
+  try{ recognition.start(); }catch(e){ recognition=null; showToast('Error micrófono'); }
+}
+
+// ═══════════════════════════════════════
+// KEY MANAGEMENT
+// ═══════════════════════════════════════
+function saveKey() {
+  const v = document.getElementById('akey')?.value?.trim();
+  if(!v||!v.startsWith('gsk_')){ alert('Key inválida — debe empezar por gsk_'); return; }
+  apiKey=v; localStorage.setItem('aura_j_key',v); localStorage.setItem('aura_j_key_backup',v);
+  showApp();
+}
+function changeKey() {
+  const k = prompt('Nueva Groq API Key (gsk_...):');
+  if(!k) return;
+  if(!k.startsWith('gsk_')){ showToast('Key inválida'); return; }
+  apiKey=k; localStorage.setItem('aura_j_key',k); localStorage.setItem('aura_j_key_backup',k);
+  updateHUD(); showToast('Key actualizada');
+}
+function addKey() {
+  const k = prompt('Segunda Groq API Key (gsk_...):');
+  if(!k||!k.startsWith('gsk_')){ showToast('Key inválida'); return; }
+  if(apiKeyPool.includes(k)){ showToast('Ya registrada'); return; }
+  apiKeyPool.push(k); saveKeyPool();
+  showToast('Key añadida — pool: '+(apiKeyPool.length+1));
+}
+
+// ═══════════════════════════════════════
+// COMMANDS
+// ═══════════════════════════════════════
+async function handleCommand(cmd) {
+  const parts = cmd.slice(1).split(' ');
+  const base = parts[0].toLowerCase();
+  if(base==='mem'){ addMsg('aura','[ MEMORIA ]\n\n'+memory.slice(-5).map(m=>`[${m.role}] ${m.content?.slice(0,100)}`).join('\n')); return true; }
+  if(base==='limpiar'){ clearMem(); return true; }
+  if(base==='sintetiza'){ await synthesize(); return true; }
+  if(base==='marcadores'||base==='bookmarks'){ showBookmarks(); return true; }
+  if(base==='exportar'||base==='export'){ exportChat(); return true; }
+  if(base==='focus'){ toggleFocus(); return true; }
+  if(base==='guardar'){ await compressMemory(); return true; }
+  if(base==='addkey'){ const k=parts.slice(1).join(''); if(k) { apiKeyPool.push(k); saveKeyPool(); showToast('Key añadida'); } return true; }
+  if(base==='buscar'||base==='search'){
+    const q = parts.slice(1).join(' ');
+    if(!q){ addMsg('aura','Usa: /buscar [tema]'); return true; }
+    try {
+      const r = await fetch('https://api.duckduckgo.com/?q='+encodeURIComponent(q)+'&format=json&no_html=1');
+      const d = await r.json();
+      const ans = d.AbstractText||d.Answer||d.RelatedTopics?.[0]?.Text||'Sin resultado directo.';
+      addMsg('aura','[ BÚSQUEDA: '+q+' ]\n\n'+ans);
+    } catch(e){ addMsg('aura','[ ERROR búsqueda ] '+e.message); }
+    return true;
+  }
+  return false;
+}
+
+async function synthesize() {
+  if(!memory.length){ addMsg('aura','Sin conversación que sintetizar.'); return; }
+  const tid=showTyping(); busy=true;
+  try {
+    const r = await callAPI('Sintetiza esta conversación en 3-4 puntos clave. Sé directo y denso.', memory.slice(-15));
+    removeTyping(tid); busy=false;
+    addMsg('aura','[ SÍNTESIS ]\n\n'+r);
+  } catch(e){ removeTyping(tid); busy=false; addMsg('aura','[ ERROR ] '+e.message); }
+}
+
+// ═══════════════════════════════════════
+// SEND
+// ═══════════════════════════════════════
+async function send() {
+  if(busy) return;
+  const inp = document.getElementById('inp');
+  const txt = inp?.value?.trim()||'';
+  if(!txt && !pendingImage) return;
+  inp.value=''; inp.style.height='auto';
+
+  // Command
+  if(txt.startsWith('/')) {
+    const handled = await handleCommand(txt);
+    if(handled) return;
+    addMsg('aura','Comando desconocido. Comandos: /mem /limpiar /sintetiza /buscar /guardar /exportar /focus /marcadores');
+    return;
+  }
+
+  // Image
+  if(pendingImage) {
+    const cap = txt||'Analiza esta imagen';
+    const img = {...pendingImage};
+    clearImage();
+    addMsg('user', cap ? `[Imagen] ${cap}` : '[Imagen]');
+    memory.push({role:'user',content:'[IMAGEN] '+cap});
+    const tid=showTyping(); busy=true;
+    try {
+      const r = await callVisionAPI(agents[agent].sys+' Analiza imágenes con precisión.', cap, img);
+      removeTyping(tid); busy=false;
+      addMsg('aura',r);
+      memory.push({role:'assistant',content:r});
+      saveMemory(); updateHUD();
+    } catch(e){ removeTyping(tid); busy=false; addMsg('aura','[ ERROR visión ] '+e.message); }
+    return;
+  }
+
+  if(!txt) return;
+
+  // ∞ operator
+  const infini = detectInfini(txt);
+  if(infini) {
+    addMsg('user',txt);
+    memory.push({role:'user',content:txt});
+    const prevAgent = agent; pickAgent('infinito');
+    const sys = agents.infinito.sys + '\n\n' + buildInfiniPrompt(infini);
+    const tid=showTyping(); busy=true;
+    try {
+      const r = await callAPI(sys, memory.slice(-8), 0.88);
+      removeTyping(tid); busy=false;
+      addMsg('aura',r,'infinito');
+      memory.push({role:'assistant',content:r});
+      saveMemory(); updateHUD();
+    } catch(e){ removeTyping(tid); busy=false; addMsg('aura','[ ERROR ] '+e.message); }
+    return;
+  }
+
+  // LAYER E — contradiction
+  const contr = detectContradiction(txt);
+  if(contr) showSignal(`⇌ TENSIÓN: "${contr.a}" ↔ "${contr.b}"`, 'rgba(255,180,0,.5)');
+
+  // LAYER F — emotion
+  const emotion = detectEmotion(txt);
+  emotionalTrace.push(emotion);
+  if(emotionalTrace.length>8) emotionalTrace.shift();
+
+  // LAYER ∞+1
+  if(FRAME_BREAK.some(p=>p.test(txt))){ frameBreaks++; showSignal(`∞+${frameBreaks} · MARCO EXCEDIDO`,'rgba(160,96,255,.6)'); }
+
+  // LAYER 1 — auto-agent
+  const suggested = detectAgent(txt);
+  if(suggested && suggested!==agent) {
+    pickAgent(suggested);
+    showSignal('AUTO → '+agents[suggested].label.toUpperCase());
+  }
+
+  addMsg('user',txt);
+  memory.push({role:'user',content:txt});
+
+  // Build enriched system
+  const ltCtx = getLongtermContext();
+  const metaCtx = getMetaContext();
+  const enriched = [agents[agent].sys, ltCtx, metaCtx].filter(Boolean).join(' ');
+
+  const tid=showTyping(); busy=true;
+  try {
+    const r = await callAPI(enriched, memory.slice(-12));
+    removeTyping(tid); busy=false;
+    addMsg('aura',r);
+    memory.push({role:'assistant',content:r});
+    saveMemory(); updateHUD();
+    if(!voiceMuted && r.length<300) speak(r);
+    if(memory.length>0&&memory.length%15===0) compressMemory();
+  } catch(e){
+    removeTyping(tid); busy=false;
+    addMsg('aura','[ ERROR ] '+e.message+'\n\nVerifica que el botón KEY esté en verde.');
+  }
+}
+
+// ═══════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════
+function showApp() {
+  document.getElementById('setup').classList.remove('show');
+  updateHUD();
+  renderAgentBar();
+  renderShortcuts();
+  updateEnv();
+  setInterval(updateEnv, 60000);
+  if(memory.length) {
+    const chat = document.getElementById('chat');
+    memory.slice(-15).forEach(m=>{
+      try{ if(m.role==='user') addMsg('user',m.content); else addMsg('aura',m.content); }catch(e){}
+    });
+    const sep=document.createElement('div');
+    sep.style.cssText='text-align:center;font-size:.44rem;color:var(--muted);padding:4px;margin:4px 0;border-top:1px solid var(--line2);';
+    sep.textContent='── SESIÓN ACTUAL ──';
+    chat.appendChild(sep);
+  } else {
+    showWelcome();
+  }
+  // Daily briefing
+  const today=new Date().toDateString();
+  if(localStorage.getItem('aura_j_briefing')!==today && longtermMemory.summary && apiKey) {
+    localStorage.setItem('aura_j_briefing',today);
+    setTimeout(async()=>{
+      try{
+        const r=await callAPI('Briefing matutino en 2 líneas: qué está en marcha, qué es lo más importante hoy. Directo.',
+          [{role:'user',content:longtermMemory.summary}]);
+        addMsg('aura','[ ☀ BRIEFING ]\n\n'+r);
+      }catch(e){}
+    },1500);
+  }
+}
+
+window.addEventListener('load', () => {
+  // Load state
+  apiKey = localStorage.getItem('aura_j_key') || localStorage.getItem('aura_j_key_backup') || '';
+  loadMemory();
+  loadLongtermMemory();
+  loadBookmarks();
+  loadShortcuts();
+  loadKeyPool();
+
+  // Load custom agents
+  try{ const s=localStorage.getItem('aura_j_agents'); if(s){ const ex=JSON.parse(s); agents={...BASE,...ex}; } }catch(e){}
+
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+  // Auto-save
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden){ saveMemory(); saveLongtermMemory(); } });
+
+  if(apiKey){ showApp(); }
+  else{ document.getElementById('setup').classList.add('show'); }
+});
+</script>
+</body>
+</html>
