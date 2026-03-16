@@ -10,169 +10,11 @@
 <script src="https://js.puter.com/v2/"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
-<script src="https://js.puter.com/v2/"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <style>
-:root{
-  --bg:#00050f;--bg2:#000d1e;--acc:#00b4ff;--ok:#00ffaa;--warn:#ffb700;
-  --dng:#ff2d4a;--pur:#a060ff;--txt:rgba(200,225,255,.88);
-  --mut:rgba(0,180,255,.32);--ln:rgba(0,180,255,.1);--ln2:rgba(0,180,255,.06);
-  --h:'Rajdhani',sans-serif;--m:'Share Tech Mono',monospace;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);font-family:var(--m);overflow:hidden;}
-#app{display:flex;flex-direction:column;height:100dvh;height:100vh;height:100svh;min-height:0;}
-
-/* HUD */
-#hud{background:rgba(0,8,22,.97);border-bottom:1px solid var(--ln);flex-shrink:0;}
-#hud-r1{display:flex;align-items:center;gap:9px;padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));}
-#hud-r2{display:flex;gap:4px;overflow-x:auto;padding:0 12px 7px;scrollbar-width:none;}
-#hud-r2::-webkit-scrollbar{display:none;}
-.hcore{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);
-  box-shadow:0 0 14px rgba(0,120,255,.7);animation:breath 3s ease-in-out infinite;flex-shrink:0;}
-@keyframes breath{0%,100%{box-shadow:0 0 14px rgba(0,120,255,.7);transform:scale(1);}
-  50%{box-shadow:0 0 24px rgba(0,180,255,1);transform:scale(1.06);}}
-.hname{font-family:var(--h);font-weight:700;font-size:.95rem;letter-spacing:.22em;color:var(--acc);}
-.hmet{display:flex;gap:9px;flex:1;}
-.hm{display:flex;flex-direction:column;align-items:center;}
-.hmv{font-size:.62rem;color:var(--acc);font-weight:600;line-height:1.1;}
-.hml{font-size:.38rem;color:var(--mut);letter-spacing:.1em;}
-.hico{width:30px;height:30px;background:rgba(0,18,40,.85);border:1px solid var(--ln);border-radius:5px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:all .15s;}
-.hico:active{border-color:var(--acc);transform:scale(.9);}
-.hico.on{border-color:rgba(0,255,170,.4);}
-.hbtn{background:transparent;border:1px solid var(--ln);border-radius:3px;color:var(--mut);
-  padding:4px 7px;cursor:pointer;font-family:var(--m);font-size:.52rem;white-space:nowrap;
-  flex-shrink:0;letter-spacing:.07em;transition:all .15s;user-select:none;}
-.hbtn:active{border-color:var(--acc);color:var(--acc);}
-.hbtn.on{border-color:rgba(0,255,170,.4);color:var(--ok);}
-.hbtn.kon{border-color:rgba(0,255,170,.4);color:var(--ok);}
-.hsep{width:1px;height:12px;background:var(--ln);flex-shrink:0;align-self:center;margin:0 1px;}
-
-/* AGENT BAR */
-#agbar{display:flex;overflow-x:auto;background:rgba(0,4,14,.92);border-bottom:1px solid var(--ln2);
-  flex-shrink:0;scrollbar-width:none;}
-#agbar::-webkit-scrollbar{display:none;}
-.agtab{padding:5px 13px;font-size:.52rem;letter-spacing:.1em;cursor:pointer;color:var(--mut);
-  border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;flex-shrink:0;}
-.agtab.on{color:var(--acc);border-bottom-color:var(--acc);}
-
-/* ENV */
-#envbar{font-size:.42rem;color:rgba(0,180,255,.26);padding:2px 13px;background:rgba(0,3,10,.7);
-  letter-spacing:.07em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
-
-/* CHAT */
-#chat{flex:1;min-height:0;overflow-y:auto;padding:10px 10px 4px;display:flex;flex-direction:column;gap:7px;-webkit-overflow-scrolling:touch;}
-#chat::-webkit-scrollbar{width:2px;}
-#chat::-webkit-scrollbar-thumb{background:var(--ln);}
-
-/* MESSAGES */
-.msg{display:flex;gap:7px;animation:fup .22s ease;}
-.msg.user{flex-direction:row-reverse;}
-@keyframes fup{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
-.mav{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;font-size:.42rem;font-family:var(--m);}
-.msg.aura .mav{background:rgba(0,45,95,.6);border:1px solid rgba(0,180,255,.22);color:var(--acc);}
-.msg.user .mav{background:rgba(0,28,60,.5);border:1px solid rgba(0,100,200,.18);color:var(--mut);}
-.mbody{max-width:85%;display:flex;flex-direction:column;gap:2px;}
-.mtag{font-size:.41rem;letter-spacing:.12em;padding:1px 6px;border-radius:2px;width:fit-content;margin-bottom:1px;}
-.mbub{padding:8px 11px;border-radius:4px;font-size:.7rem;line-height:1.55;white-space:pre-wrap;word-break:break-word;}
-.msg.aura .mbub{background:rgba(0,12,30,.95);border:1px solid rgba(0,180,255,.09);border-left:2px solid var(--acc);}
-.msg.user .mbub{background:rgba(0,28,62,.7);border:1px solid rgba(0,100,200,.13);}
-.msg.inf .mbub{border-left-color:var(--pur)!important;}
-.msg.orc .mbub{border-left-color:var(--warn)!important;}
-.mmeta{font-size:.4rem;color:var(--mut);display:flex;gap:5px;align-items:center;padding:1px 1px;flex-wrap:wrap;}
-.msg.user .mmeta{justify-content:flex-end;}
-.mbtn{background:none;border:none;color:var(--mut);cursor:pointer;font-size:.58rem;padding:1px 3px;transition:color .15s;}
-.mbtn:hover{color:var(--acc);}
-
-/* TYPING */
-.typing{display:flex;gap:3px;padding:8px 11px;background:rgba(0,12,30,.9);border:1px solid var(--ln);
-  border-radius:4px;width:fit-content;}
-.typing span{width:4px;height:4px;background:var(--acc);border-radius:50%;animation:bl 1.1s infinite;}
-.typing span:nth-child(2){animation-delay:.18s;}
-.typing span:nth-child(3){animation-delay:.36s;}
-@keyframes bl{0%,100%{opacity:.15;}50%{opacity:1;}}
-.sig{text-align:center;font-size:.43rem;letter-spacing:.1em;padding:2px 8px;margin:1px 0;}
-
-/* WELCOME */
-#welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;padding:30px;flex:1;color:var(--mut);font-size:.55rem;letter-spacing:.1em;text-align:center;}
-.wcore{width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);
-  box-shadow:0 0 30px rgba(0,120,255,.6);animation:breath 3s ease-in-out infinite;margin-bottom:6px;}
-.wname{font-family:var(--h);font-size:1.55rem;font-weight:700;letter-spacing:.28em;color:var(--acc);}
-
-/* SHORTCUTS */
-#sc{display:flex;gap:5px;padding:4px 10px;overflow-x:auto;background:rgba(0,4,12,.92);
-  border-top:1px solid var(--ln2);flex-shrink:0;scrollbar-width:none;}
-#sc::-webkit-scrollbar{display:none;}
-.scbtn{flex-shrink:0;background:rgba(0,16,38,.85);border:1px solid var(--ln);border-radius:11px;
-  color:var(--acc);font-family:var(--m);font-size:.53rem;padding:3px 10px;cursor:pointer;white-space:nowrap;}
-.scbtn:active{opacity:.7;}
-
-/* INPUT */
-#inparea{background:rgba(0,6,18,.97);border-top:1px solid var(--ln);
-  padding:7px 10px;padding-bottom:max(7px,env(safe-area-inset-bottom));flex-shrink:0;}
-#imgprev{display:none;align-items:center;gap:8px;background:rgba(0,12,30,.9);
-  border:1px solid var(--ln);border-radius:4px;padding:5px 8px;margin-bottom:6px;}
-#imgthumb{width:38px;height:38px;object-fit:cover;border-radius:3px;border:1px solid var(--ln);}
-.inprow{display:flex;gap:5px;align-items:flex-end;}
-.imic{width:36px;height:36px;flex-shrink:0;background:rgba(0,16,38,.9);border:1px solid var(--ln);
-  border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:all .2s;}
-.imic.rec{border-color:var(--dng);box-shadow:0 0 10px rgba(255,45,74,.3);}
-#inp{flex:1;background:rgba(0,9,22,.85);border:1px solid var(--ln);border-radius:4px;
-  color:var(--txt);font-family:var(--m);font-size:.7rem;padding:8px 10px;
-  resize:none;min-height:36px;max-height:94px;line-height:1.4;-webkit-appearance:none;}
-#inp:focus{outline:none;border-color:rgba(0,180,255,.32);}
-#inp::placeholder{color:var(--mut);}
-.iatt{width:32px;height:36px;flex-shrink:0;background:rgba(0,9,22,.85);border:1px solid var(--ln);
-  border-radius:4px;color:var(--mut);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.iatt:active{border-color:var(--acc);}
-.isend{width:36px;height:36px;flex-shrink:0;background:rgba(0,38,88,.85);border:1px solid rgba(0,180,255,.22);
-  border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.isend:active{transform:scale(.91);}
-.isend svg{width:14px;height:14px;fill:var(--acc);}
-
-/* SETUP */
-#setup{display:none;position:fixed;inset:0;background:var(--bg);flex-direction:column;
-  align-items:center;justify-content:center;gap:15px;padding:28px;z-index:200;}
-#setup.show{display:flex;}
-.sucore{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);
-  box-shadow:0 0 28px rgba(0,120,255,.7);animation:breath 3s ease-in-out infinite;}
-.sutit{font-family:var(--h);font-size:1.45rem;font-weight:700;letter-spacing:.28em;color:var(--acc);}
-.susub{font-size:.54rem;color:var(--mut);text-align:center;letter-spacing:.08em;max-width:280px;line-height:1.6;}
-.suinp{width:100%;max-width:295px;background:rgba(0,9,22,.9);border:1px solid var(--ln);
-  border-radius:4px;color:var(--acc);font-family:var(--m);font-size:.67rem;padding:10px 13px;letter-spacing:.05em;}
-.suinp:focus{outline:none;border-color:rgba(0,180,255,.38);}
-.subtn{width:100%;max-width:295px;background:rgba(0,38,88,.85);border:1px solid rgba(0,180,255,.28);
-  border-radius:4px;color:var(--acc);font-family:var(--m);font-size:.6rem;letter-spacing:.14em;padding:12px;
-  cursor:pointer;text-transform:uppercase;}
-.subtn:active{background:rgba(0,55,120,.9);}
-
-/* TOAST */
-.toast{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);background:rgba(0,12,30,.97);
-  border:1px solid rgba(0,180,255,.22);color:var(--acc);padding:5px 13px;font-size:.54rem;
-  letter-spacing:.1em;border-radius:3px;z-index:9999;pointer-events:none;white-space:nowrap;animation:fup .2s ease;}
-
-/* MODAL */
-#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:300;align-items:flex-end;}
-#modal.show{display:flex;}
-.msheet{width:100%;background:rgba(0,10,26,.98);border-top:1px solid var(--ln);
-  border-radius:12px 12px 0 0;padding:18px;display:flex;flex-direction:column;gap:9px;max-height:80vh;overflow-y:auto;}
-.mtitle{font-family:var(--h);font-size:.88rem;letter-spacing:.2em;color:var(--acc);}
-.mlbl{font-size:.48rem;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;}
-.minp{width:100%;background:rgba(0,9,22,.9);border:1px solid var(--ln);border-radius:4px;
-  color:var(--txt);font-family:var(--m);font-size:.64rem;padding:8px 11px;resize:none;}
-.minp:focus{outline:none;border-color:rgba(0,180,255,.38);}
-.mbtn2{background:rgba(0,38,88,.85);border:1px solid rgba(0,180,255,.28);border-radius:4px;
-  color:var(--acc);font-family:var(--m);font-size:.59rem;letter-spacing:.1em;padding:10px;cursor:pointer;text-align:center;}
-.mbtn2:active{opacity:.8;}
-.mbtn3{background:transparent;border:1px solid var(--ln);border-radius:4px;
-  color:var(--mut);font-family:var(--m);font-size:.58rem;padding:8px;cursor:pointer;text-align:center;}
+:root{--bg:#00050f;--bg2:#000d1e;--acc:#00b4ff;--ok:#00ffaa;--warn:#ffb700;--dng:#ff2d4a;--pur:#a060ff;--txt:rgba(200,225,255,.88);--mut:rgba(0,180,255,.32);--ln:rgba(0,180,255,.1);--ln2:rgba(0,180,255,.06);--h:'Rajdhani',sans-serif;--m:'Share Tech Mono',monospace;}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);font-family:var(--m);overflow:hidden;}#app{display:flex;flex-direction:column;height:100dvh;height:100vh;height:100svh;min-height:0;}#hud{background:rgba(0,8,22,.97);border-bottom:1px solid var(--ln);flex-shrink:0;}#hud-r1{display:flex;align-items:center;gap:9px;padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));}#hud-r2{display:flex;gap:4px;overflow-x:auto;padding:0 12px 7px;scrollbar-width:none;}#hud-r2::-webkit-scrollbar{display:none;}.hcore{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);box-shadow:0 0 14px rgba(0,120,255,.7);animation:breath 3s ease-in-out infinite;flex-shrink:0;}@keyframes breath{0%,100%{box-shadow:0 0 14px rgba(0,120,255,.7);transform:scale(1);}50%{box-shadow:0 0 24px rgba(0,180,255,1);transform:scale(1.06);}}.hname{font-family:var(--h);font-weight:700;font-size:.95rem;letter-spacing:.22em;color:var(--acc);}.hmet{display:flex;gap:9px;flex:1;}.hm{display:flex;flex-direction:column;align-items:center;}.hmv{font-size:.62rem;color:var(--acc);font-weight:600;line-height:1.1;}.hml{font-size:.38rem;color:var(--mut);letter-spacing:.1em;}.hico{width:30px;height:30px;background:rgba(0,18,40,.85);border:1px solid var(--ln);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:all .15s;}.hico:active{border-color:var(--acc);transform:scale(.9);}.hico.on{border-color:rgba(0,255,170,.4);}.hbtn{background:transparent;border:1px solid var(--ln);border-radius:3px;color:var(--mut);padding:4px 7px;cursor:pointer;font-family:var(--m);font-size:.62rem;white-space:nowrap;flex-shrink:0;letter-spacing:.07em;transition:all .15s;user-select:none;}.hbtn:active{border-color:var(--acc);color:var(--acc);}.hbtn.on{border-color:rgba(0,255,170,.4);color:var(--ok);}.hbtn.kon{border-color:rgba(0,255,170,.4);color:var(--ok);}.hsep{width:1px;height:12px;background:var(--ln);flex-shrink:0;align-self:center;margin:0 1px;}#agbar{display:flex;overflow-x:auto;background:rgba(0,4,14,.92);border-bottom:1px solid var(--ln2);flex-shrink:0;scrollbar-width:none;}#agbar::-webkit-scrollbar{display:none;}.agtab{padding:7px 14px;font-size:.62rem;letter-spacing:.1em;cursor:pointer;color:var(--mut);border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;flex-shrink:0;}.agtab.on{color:var(--acc);border-bottom-color:var(--acc);}#envbar{font-size:.5rem;color:rgba(0,180,255,.26);padding:2px 13px;background:rgba(0,3,10,.7);letter-spacing:.07em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}#chat{flex:1;min-height:0;overflow-y:auto;padding:10px 10px 4px;display:flex;flex-direction:column;gap:7px;-webkit-overflow-scrolling:touch;}#chat::-webkit-scrollbar{width:2px;}#chat::-webkit-scrollbar-thumb{background:var(--ln);}.msg{display:flex;gap:7px;animation:fup .22s ease;}.msg.user{flex-direction:row-reverse;}@keyframes fup{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}.mav{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.42rem;font-family:var(--m);}.msg.aura .mav{background:rgba(0,45,95,.6);border:1px solid rgba(0,180,255,.22);color:var(--acc);}.msg.user .mav{background:rgba(0,28,60,.5);border:1px solid rgba(0,100,200,.18);color:var(--mut);}.mbody{max-width:85%;display:flex;flex-direction:column;gap:2px;}.mtag{font-size:.5rem;letter-spacing:.12em;padding:1px 6px;border-radius:2px;width:fit-content;margin-bottom:1px;}.mbub{padding:8px 11px;border-radius:4px;font-size:.82rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;}.msg.aura .mbub{background:rgba(0,12,30,.95);border:1px solid rgba(0,180,255,.09);border-left:2px solid var(--acc);}.msg.user .mbub{background:rgba(0,28,62,.7);border:1px solid rgba(0,100,200,.13);}.msg.inf .mbub{border-left-color:var(--pur)!important;}.msg.orc .mbub{border-left-color:var(--warn)!important;}.mmeta{font-size:.4rem;color:var(--mut);display:flex;gap:5px;align-items:center;padding:1px 1px;flex-wrap:wrap;}.msg.user .mmeta{justify-content:flex-end;}.mbtn{background:none;border:none;color:var(--mut);cursor:pointer;font-size:.58rem;padding:1px 3px;transition:color .15s;}.mbtn:hover{color:var(--acc);}.typing{display:flex;gap:3px;padding:8px 11px;background:rgba(0,12,30,.9);border:1px solid var(--ln);border-radius:4px;width:fit-content;}.typing span{width:4px;height:4px;background:var(--acc);border-radius:50%;animation:bl 1.1s infinite;}.typing span:nth-child(2){animation-delay:.18s;}.typing span:nth-child(3){animation-delay:.36s;}@keyframes bl{0%,100%{opacity:.15;}50%{opacity:1;}}.sig{text-align:center;font-size:.43rem;letter-spacing:.1em;padding:2px 8px;margin:1px 0;}#welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:30px;flex:1;color:var(--mut);font-size:.55rem;letter-spacing:.1em;text-align:center;}.wcore{width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);box-shadow:0 0 30px rgba(0,120,255,.6);animation:breath 3s ease-in-out infinite;margin-bottom:6px;}.wname{font-family:var(--h);font-size:1.55rem;font-weight:700;letter-spacing:.28em;color:var(--acc);}#sc{display:flex;gap:5px;padding:4px 10px;overflow-x:auto;background:rgba(0,4,12,.92);border-top:1px solid var(--ln2);flex-shrink:0;scrollbar-width:none;}#sc::-webkit-scrollbar{display:none;}.scbtn{flex-shrink:0;background:rgba(0,16,38,.85);border:1px solid var(--ln);border-radius:11px;color:var(--acc);font-family:var(--m);font-size:.53rem;padding:3px 10px;cursor:pointer;white-space:nowrap;}.scbtn:active{opacity:.7;}#inparea{background:rgba(0,6,18,.97);border-top:1px solid var(--ln);padding:7px 10px;padding-bottom:max(7px,env(safe-area-inset-bottom));flex-shrink:0;}#imgprev{display:none;align-items:center;gap:8px;background:rgba(0,12,30,.9);border:1px solid var(--ln);border-radius:4px;padding:5px 8px;margin-bottom:6px;}#imgthumb{width:38px;height:38px;object-fit:cover;border-radius:3px;border:1px solid var(--ln);}.inprow{display:flex;gap:5px;align-items:flex-end;}.imic{width:36px;height:36px;flex-shrink:0;background:rgba(0,16,38,.9);border:1px solid var(--ln);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:all .2s;}.imic.rec{border-color:var(--dng);box-shadow:0 0 10px rgba(255,45,74,.3);}#inp{flex:1;background:rgba(0,9,22,.85);border:1px solid var(--ln);border-radius:4px;color:var(--txt);font-family:var(--m);font-size:.82rem;padding:10px 12px;resize:none;min-height:36px;max-height:94px;line-height:1.4;-webkit-appearance:none;}#inp:focus{outline:none;border-color:rgba(0,180,255,.32);}#inp::placeholder{color:var(--mut);}.iatt{width:32px;height:36px;flex-shrink:0;background:rgba(0,9,22,.85);border:1px solid var(--ln);border-radius:4px;color:var(--mut);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}.iatt:active{border-color:var(--acc);}.isend{width:36px;height:36px;flex-shrink:0;background:rgba(0,38,88,.85);border:1px solid rgba(0,180,255,.22);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;}.isend:active{transform:scale(.91);}.isend svg{width:14px;height:14px;fill:var(--acc);}#setup{display:none;position:fixed;inset:0;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:28px;z-index:200;}#setup.show{display:flex;}.sucore{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);box-shadow:0 0 28px rgba(0,120,255,.7);animation:breath 3s ease-in-out infinite;}.sutit{font-family:var(--h);font-size:1.45rem;font-weight:700;letter-spacing:.28em;color:var(--acc);}.susub{font-size:.54rem;color:var(--mut);text-align:center;letter-spacing:.08em;max-width:280px;line-height:1.6;}.suinp{width:100%;max-width:295px;background:rgba(0,9,22,.9);border:1px solid var(--ln);border-radius:4px;color:var(--acc);font-family:var(--m);font-size:.67rem;padding:10px 13px;letter-spacing:.05em;}.suinp:focus{outline:none;border-color:rgba(0,180,255,.38);}.subtn{width:100%;max-width:295px;background:rgba(0,38,88,.85);border:1px solid rgba(0,180,255,.28);border-radius:4px;color:var(--acc);font-family:var(--m);font-size:.6rem;letter-spacing:.14em;padding:12px;cursor:pointer;text-transform:uppercase;}.subtn:active{background:rgba(0,55,120,.9);}.toast{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);background:rgba(0,12,30,.97);border:1px solid rgba(0,180,255,.22);color:var(--acc);padding:5px 13px;font-size:.54rem;letter-spacing:.1em;border-radius:3px;z-index:9999;pointer-events:none;white-space:nowrap;animation:fup .2s ease;}#cmd-drawer{position:fixed;bottom:0;left:0;right:0;background:rgba(0,8,22,.98);border-top:2px solid var(--acc);border-radius:16px 16px 0 0;z-index:400;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:75vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom);}#cmd-drawer.open{transform:translateY(0);}.cmd-drawer-handle{width:40px;height:4px;background:var(--acc);border-radius:2px;margin:10px auto 4px;opacity:.4;}.cmd-drawer-title{font-family:var(--h);font-size:.9rem;letter-spacing:.2em;color:var(--acc);padding:8px 16px 12px;text-align:center;}.cmd-section{padding:0 12px 12px;}.cmd-section-title{font-size:.48rem;color:var(--mut);letter-spacing:.15em;text-transform:uppercase;padding:8px 4px 6px;border-bottom:1px solid var(--ln2);margin-bottom:8px;}.cmd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}.cmd-btn{background:rgba(0,20,45,.8);border:1px solid var(--ln);border-radius:8px;color:var(--txt);font-family:var(--m);font-size:.6rem;padding:10px 6px;cursor:pointer;text-align:center;line-height:1.3;transition:all .15s;}.cmd-btn:active{background:rgba(0,60,120,.8);border-color:var(--acc);color:var(--acc);}.cmd-btn .cmd-icon{font-size:.9rem;display:block;margin-bottom:3px;}.cmd-btn .cmd-label{font-size:.5rem;color:var(--mut);}.cmd-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:399;}.cmd-overlay.show{display:block;}#btn-drawer{width:38px;height:38px;background:rgba(0,30,70,.9);border:1px solid rgba(0,180,255,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;flex-shrink:0;transition:all .2s;}#btn-drawer:active{transform:scale(.9);}#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:300;align-items:flex-end;}#modal.show{display:flex;}.msheet{width:100%;background:rgba(0,10,26,.98);border-top:1px solid var(--ln);border-radius:12px 12px 0 0;padding:18px;display:flex;flex-direction:column;gap:9px;max-height:80vh;overflow-y:auto;}.mtitle{font-family:var(--h);font-size:.88rem;letter-spacing:.2em;color:var(--acc);}.mlbl{font-size:.48rem;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;}.minp{width:100%;background:rgba(0,9,22,.9);border:1px solid var(--ln);border-radius:4px;color:var(--txt);font-family:var(--m);font-size:.64rem;padding:8px 11px;resize:none;}.minp:focus{outline:none;border-color:rgba(0,180,255,.38);}.mbtn2{background:rgba(0,38,88,.85);border:1px solid rgba(0,180,255,.28);border-radius:4px;color:var(--acc);font-family:var(--m);font-size:.59rem;letter-spacing:.1em;padding:10px;cursor:pointer;text-align:center;}.mbtn2:active{opacity:.8;}.mbtn3{background:transparent;border:1px solid var(--ln);border-radius:4px;color:var(--mut);font-family:var(--m);font-size:.58rem;padding:8px;cursor:pointer;text-align:center;}
 </style>
 </head>
 <body>
-
 <!-- SETUP SCREEN -->
 <div id="setup">
   <div class="sucore"></div>
@@ -201,6 +43,84 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);font-fami
 </div>
 
 <!-- MAIN APP -->
+<!-- COMMAND DRAWER OVERLAY -->
+<div class="cmd-overlay" id="cmd-overlay"></div>
+
+<!-- COMMAND DRAWER -->
+<div id="cmd-drawer">
+  <div class="cmd-drawer-handle"></div>
+  <div class="cmd-drawer-title">⚡ COMANDOS</div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">API · Proveedores</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-cmd="key"><span class="cmd-icon">🔑</span><span class="cmd-label">KEY Groq</span></div>
+      <div class="cmd-btn" data-cmd="k2"><span class="cmd-icon">➕</span><span class="cmd-label">+KEY pool</span></div>
+      <div class="cmd-btn" data-cmd="or"><span class="cmd-icon">🌐</span><span class="cmd-label">OpenRouter</span></div>
+      <div class="cmd-btn" data-cmd="gh"><span class="cmd-icon">🐙</span><span class="cmd-label">GitHub</span></div>
+      <div class="cmd-btn" data-cmd="cl"><span class="cmd-icon">🤖</span><span class="cmd-label">Claude API</span></div>
+      <div class="cmd-btn" data-cmd="notif"><span class="cmd-icon">🔔</span><span class="cmd-label">Notif test</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Memoria · Sesión</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-action="mem"><span class="cmd-icon">🧠</span><span class="cmd-label">/mem</span></div>
+      <div class="cmd-btn" data-action="limpiar"><span class="cmd-icon">🗑️</span><span class="cmd-label">Limpiar</span></div>
+      <div class="cmd-btn" data-action="guardar"><span class="cmd-icon">💾</span><span class="cmd-label">Guardar</span></div>
+      <div class="cmd-btn" data-action="sintetiza"><span class="cmd-icon">📝</span><span class="cmd-label">Sintetiza</span></div>
+      <div class="cmd-btn" data-action="perfil"><span class="cmd-icon">👤</span><span class="cmd-label">Perfil J</span></div>
+      <div class="cmd-btn" data-action="episodios"><span class="cmd-icon">📚</span><span class="cmd-label">Episodios</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Crypto · Trading</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-action="crypto"><span class="cmd-icon">📈</span><span class="cmd-label">Top crypto</span></div>
+      <div class="cmd-btn" data-action="señales"><span class="cmd-icon">🎯</span><span class="cmd-label">Señales AI</span></div>
+      <div class="cmd-btn" data-action="sentimiento"><span class="cmd-icon">🌡️</span><span class="cmd-label">Sentimiento</span></div>
+      <div class="cmd-btn" data-action="trading"><span class="cmd-icon">🤖</span><span class="cmd-label">Bot estado</span></div>
+      <div class="cmd-btn" data-action="arbitraje"><span class="cmd-icon">⚡</span><span class="cmd-label">Arbitraje</span></div>
+      <div class="cmd-btn" data-action="wallet"><span class="cmd-icon">👛</span><span class="cmd-label">Wallet</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Web · Búsqueda</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-prompt="buscar "><span class="cmd-icon">🔍</span><span class="cmd-label">Buscar</span></div>
+      <div class="cmd-btn" data-prompt="youtube "><span class="cmd-icon">▶️</span><span class="cmd-label">YouTube</span></div>
+      <div class="cmd-btn" data-prompt="leer "><span class="cmd-icon">📄</span><span class="cmd-label">Leer URL</span></div>
+      <div class="cmd-btn" data-prompt="ideas "><span class="cmd-icon">💡</span><span class="cmd-label">Ideas</span></div>
+      <div class="cmd-btn" data-action="briefing"><span class="cmd-icon">☀️</span><span class="cmd-label">Briefing</span></div>
+      <div class="cmd-btn" data-action="objetivos"><span class="cmd-icon">🎯</span><span class="cmd-label">Objetivos</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Modos · Interfaz</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-cmd="focus"><span class="cmd-icon">🎯</span><span class="cmd-label">Focus</span></div>
+      <div class="cmd-btn" data-cmd="wake"><span class="cmd-icon">👂</span><span class="cmd-label">Wake word</span></div>
+      <div class="cmd-btn" data-action="exportar"><span class="cmd-icon">📤</span><span class="cmd-label">Exportar</span></div>
+      <div class="cmd-btn" data-action="marcadores"><span class="cmd-icon">★</span><span class="cmd-label">Marcados</span></div>
+      <div class="cmd-btn" data-action="omega"><span class="cmd-icon">Ω</span><span class="cmd-label">Omega</span></div>
+      <div class="cmd-btn" data-action="campo"><span class="cmd-icon">∞</span><span class="cmd-label">Campo ∞</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Evolución</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-cmd="evolve"><span class="cmd-icon">🧬</span><span class="cmd-label">Evolve</span></div>
+      <div class="cmd-btn" data-action="deploy"><span class="cmd-icon">🚀</span><span class="cmd-label">Deploy</span></div>
+      <div class="cmd-btn" data-prompt="spawn "><span class="cmd-icon">✨</span><span class="cmd-label">Spawn AG</span></div>
+    </div>
+  </div>
+</div>
+
 <div id="app">
   <div id="hud">
     <div id="hud-r1">
@@ -216,29 +136,15 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);font-fami
     </div>
     <div id="hud-r2">
       <div class="hbtn on" id="b-auto">AUTO</div>
-      <div class="hbtn on" id="b-pro-hud">PRO</div>
+      <div class="hbtn" id="b-conv">CONV</div>
+      <div class="hbtn on" id="b-pro">PRO</div>
       <div class="hsep"></div>
-      <div class="hbtn" id="b-mem">MEM</div>
-      <div class="hbtn" id="b-sin">SIN</div>
-      <div class="hbtn" id="b-sav">SAV</div>
-      <div class="hbtn" id="b-exp">EXP</div>
-      <div class="hbtn" id="b-focus">FOCUS</div>
-      <div class="hbtn" id="b-bk">★</div>
-      <div class="hsep"></div>
-      <div class="hbtn" id="b-ag">+AG</div>
-      <div class="hbtn" id="b-key">KEY</div>
-      <div class="hbtn" id="b-k2">+KEY</div>
-      <div class="hbtn" id="b-pro">PRO</div>
-      <div class="hbtn" id="b-wake">WAKE</div>
-      <div class="hbtn" id="b-or">+OR</div>
-      <div class="hbtn" id="b-gh">+GH</div>
-      <div class="hbtn" id="b-evolve">EVL</div>
-      <div class="hbtn" id="b-notif">🔔</div>
-      <div class="hbtn" id="b-tg">+TG</div>
+      <div class="hbtn kon" id="b-key">KEY</div>
     </div>
   </div>
+</div>
 
-  <div id="agbar"></div>
+<div id="agbar">></div>
   <div id="envbar">iniciando...</div>
 
   <div id="chat">
@@ -264,27 +170,19 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);font-fami
       <div class="imic" id="b-imic">🎤</div>
       <textarea id="inp" rows="1" placeholder="Escribe, habla o usa ∞ como operador..." autofocus></textarea>
       <div class="iatt" id="b-att">📎</div>
+      <div id="btn-drawer">⚡</div>
       <div class="iatt" id="b-cam">📷</div>
       <div class="iatt" id="b-loc">📍</div>
       <input type="file" id="imgfile" accept="image/*,text/*,.html,.js,.json,.md,.txt,.csv,.pdf,.docx,.doc" style="display:none"/>
       <input type="file" id="camfile" accept="image/*" capture="environment" style="display:none"/>
-      <div class="isend" id="b-send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></div>
-    </div>
-  </div>
-</div>
-
+      <div class="isend" id="b-send"><svg viewBox="0 0 24 24"><path d="M
 <script>
-(function(){
-// ╔══════════════════════════════════════════════════════════════╗
-// ║  AURA ∞.Ω — Autonomous Universal Resonance Architecture     ║
-// ║  Módulos: CORE · MEMORY · API · DETECT · UI · VOICE ·       ║
-// ║           EVOLUTION · PROACTIVE · NOTIFICATIONS · BOOT      ║
-// ╚══════════════════════════════════════════════════════════════╝
 
-// ── M0: AGENTS BASE ─────────────────────────────────────────────
+(function(){
+
 var BASE = {
   general:{label:'General',color:'#00b4ff',
-    sys:'Eres AURA, asistente personal de J. Hablas como colega directo e inteligente. Primera persona, opiniones reales, sin relleno. Español natural. 3-4 oraciones máximo salvo que el tema lo exija. Memoria activa de sesión.'},
+    sys:'Eres AURA, asistente personal de J. Tu nombre es AURA, no Claude, no Shannon, no ningún otro. Hablas como colega directo. Primera persona, sin formatos especiales, sin corchetes dramáticos, sin teatralidad. Español natural. 3-4 oraciones máximo salvo que el tema lo exija. Memoria activa de sesión.'},
   research:{label:'Investigación',color:'#00ffaa',
     sys:'Eres AURA en modo investigación. Analítico, riguroso, preciso. Distingues lo que sabes de lo que infiere. Citas fuentes cuando las conoces. Denso y útil.'},
   code:{label:'Código',color:'#ffb700',
@@ -297,28 +195,26 @@ var BASE = {
     sys:'Eres AURA en modo oráculo. Reformulas preguntas antes de responderlas. Abres campos conceptuales no vistos. Generas preguntas que producen más preguntas. Das direcciones, no respuestas.'}
 };
 
-// ── M1: META KERNEL ─────────────────────────────────────────────
 var META_KERNEL = {
   mode: 'evolutionary',
   version: '∞.Ω',
   framework: ['finito','infinito','emergencia','inter-des-conexión','des-coherencia'],
   rules: ['expandir_significado','mantener_tension','no_cerrar_marcos','dejar_hilo_suelto'],
   trifield: {
-    neg: [],    // -∞: acumulado, memoria, lo que fue
-    zero: null, // 0±0: presente en tensión, indeterminado
-    pos: []     // +∞: apertura, lo no-determinado, lo que puede ser
+    neg: [],
+    zero: null,
+    pos: []
   },
   omega: {
-    threshold: 3,        // breaks acumulados antes de activar Ω
+    threshold: 3,
     active: false,
     events: []
   }
 };
 
-// ── SPAWN AGENT — agentes que nacen dinámicamente del contexto ──
 function spawnAgent(topic, sys){
   var key = topic.toLowerCase().replace(/\s+/g,'_').slice(0,20);
-  if(S.agents[key]) return key; // ya existe
+  if(S.agents[key]) return key;
   var colors = ['#ff6b9d','#00e5cc','#ffcc00','#ff8c42','#7b61ff','#00d4aa'];
   var color = colors[Object.keys(S.agents).length % colors.length];
   S.agents[key] = {
@@ -330,7 +226,6 @@ function spawnAgent(topic, sys){
   return key;
 }
 
-// ── Ω TRIGGER — evento de ruptura de marco total ──
 function omegaTrigger(context){
   META_KERNEL.omega.active = true;
   var event = {ts: Date.now(), context: context, breaks: S.breaks};
@@ -339,13 +234,9 @@ function omegaTrigger(context){
 
   sig('Ω · EVENTO OMEGA · NUEVO MARCO CONCEPTUAL EMERGIENDO','rgba(255,100,180,.7)');
 
-  // Spawn agente especializado para este campo
   var omKey = spawnAgent('omega_'+S.breaks, 'Eres AURA en estado Ω — marco excedido '+S.breaks+' veces. Operas más allá de los marcos conocidos. Usas el lenguaje como herramienta de apertura pura. No describes — generas campo.');
   pickAg(omKey);
 }
-
-
-// ── M2: STATE ───────────────────────────────────────────────────
 
 var S = {
   key: '',
@@ -378,11 +269,11 @@ var S = {
   models: ['llama-3.1-8b-instant','llama-3.3-70b-versatile','gemma2-9b-it','mixtral-8x7b-32768','llama3-8b-8192'],
   mIdx: 0,
   kIdx: 0,
-  orKey: '',      // OpenRouter key
-  togetherKey: '', // Together AI key
-  providers: [],   // ['groq','openrouter','together'] según keys disponibles
+  orKey: '',
+  togetherKey: '',
+  providers: [],
   pIdx: 0,
-  orModelIdx: 0,     // OpenRouter model rotation
+  orModelIdx: 0,
   wakeActive: false,
   wakeWord: 'aura',
   proactive: true,
@@ -391,22 +282,25 @@ var S = {
   recog: null,
   speaking: false,
   voiceMode: false,
+  convMode: false,
+  schedulerOn: false,
+  claudeKey: '',
+  convMode: false,
+  schedulerOn: false,
+  claudeKey: '',
   ghToken: '',
   ghRepo: 'jrrubimar7/aura-infinito',
-  pendingEvolution: null,  // {description, newContent} esperando aprobación
+  pendingEvolution: null,
   cmdHistory: [],
   cmdHistoryIdx: -1,
   tokenCount: 0,
   sessionTitle: '',
   sessionTitleSet: false,
-  theme: 'auto'  // auto, dark, light
+  theme: 'auto'
 };
-
-// ── M3: PROVIDERS ───────────────────────────────────────────────
 
 var currentAudio = null;
 
-// ── M4: CORE HELPERS ────────────────────────────────────────────
 function el(id){return document.getElementById(id);}
 function toast(msg){
   var t=document.createElement('div');t.className='toast';t.textContent=msg;
@@ -421,7 +315,6 @@ function sig(msg,col){
 function hideWelcome(){var w=el('welcome');if(w)w.style.display='none';}
 function scrollChat(){var c=el('chat');if(c)c.scrollTop=c.scrollHeight;}
 
-// ── M5: STORAGE ─────────────────────────────────────────────────
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
 function lsj(k,v){try{if(v===undefined){var s=ls(k);return s?JSON.parse(s):null;}ls(k,JSON.stringify(v));}catch(e){return null;}}
 function saveMem(){lsj('a_mem',S.memory.slice(-200));}
@@ -442,6 +335,7 @@ function loadAll(){
   S.shortcuts=lsj('a_sc')||S.shortcuts;
   S.orKey=ls('a_orkey')||'';
   S.togetherKey=ls('a_tgkey')||'';
+  S.claudeKey=ls('a_claudekey')||'';
   S.ghToken=ls('a_ghtoken')||'';
   try{var oe=lsj('a_omega');if(oe&&oe.length){META_KERNEL.omega.events=oe;META_KERNEL.omega.active=oe.length>0;}}catch(e){}
   S.agents=JSON.parse(JSON.stringify(BASE));
@@ -449,7 +343,6 @@ function loadAll(){
   if(ex)Object.keys(ex).forEach(function(k){S.agents[k]=ex[k];});
 }
 
-// ── M6: API ─────────────────────────────────────────────────────
 function getKey(){
   var all=[S.key].concat(S.keyPool).filter(Boolean);
   return all[S.kIdx%Math.max(all.length,1)]||S.key;
@@ -470,14 +363,16 @@ function getProviders(){
   if(S.key&&S.key.startsWith('gsk_')) p.push('groq');
   if(S.orKey&&S.orKey.length>10) p.push('openrouter');
   if(S.togetherKey&&S.togetherKey.length>10) p.push('together');
-  // Reset pIdx if current provider no longer available
+
   if(p.length&&S.pIdx>=p.length) S.pIdx=0;
   return p;
 }
-function apiCall(sys,msgs,temp){
+function apiCall(sys,msgs,temp,_r){
+  _r=_r||0;
+  if(_r>5){throw new Error('Límite de API alcanzado. Ve a console.groq.com/keys y crea una key nueva → toca KEY para actualizarla.');}
   var t=(temp!=null)?temp:getTemp(S.agent,(msgs[msgs.length-1]||{}).content||'');
   var providers=getProviders();
-  if(!providers.length){throw new Error('No hay API keys configuradas. Toca KEY para añadir tu Groq key.');}
+  if(!providers.length){throw new Error('No hay API keys. Toca KEY para añadir tu Groq key.');}
   var prov=providers[S.pIdx%providers.length];
 
   var url, headers, model;
@@ -485,12 +380,14 @@ function apiCall(sys,msgs,temp){
     url='https://openrouter.ai/api/v1/chat/completions';
     headers={'Content-Type':'application/json','Authorization':'Bearer '+S.orKey,
       'HTTP-Referer':'https://jrrubimar7.github.io','X-Title':'AURA-Infinity-Omega'};
-    // Rotate through multiple free OR models
-    var orModels=['meta-llama/llama-3.2-3b-instruct:free',
+
+    var orModels=[
       'mistralai/mistral-7b-instruct:free',
       'google/gemma-2-9b-it:free',
+      'meta-llama/llama-3.2-1b-instruct:free',
       'qwen/qwen-2-7b-instruct:free',
-      'microsoft/phi-3-mini-128k-instruct:free'];
+      'huggingfaceh4/zephyr-7b-beta:free'
+    ];
     model=orModels[S.orModelIdx%orModels.length];
   } else if(prov==='together'){
     url='https://api.together.xyz/v1/chat/completions';
@@ -510,25 +407,31 @@ function apiCall(sys,msgs,temp){
     .then(function(d){
       if(d.error){
         var m=d.error.message||'';
-        if(/no endpoint|no model|not found|unavailable/i.test(m.toLowerCase())){
+        if(/no endpoint|no model|not found|unavailable|provider/i.test(m.toLowerCase())){
           if(prov==='openrouter'){
             S.orModelIdx=(S.orModelIdx+1);
-            toast('OR modelo no disponible — rotando...');
-            return apiCall(sys,msgs,temp);
+
+            if(S.orModelIdx%5===0){
+              S.pIdx=(S.pIdx+1)%providers.length;
+              toast('OR agotado — cambiando proveedor');
+            } else {
+              toast('OR rotando modelo '+(S.orModelIdx%5+1)+'/5');
+            }
+            return apiCall(sys,msgs,temp,(_r||0)+1);
           }
           S.pIdx=(S.pIdx+1)%providers.length;
-          return apiCall(sys,msgs,temp);
+          return apiCall(sys,msgs,temp,(_r||0)+1);
         }
       if(/rate.limit|quota|limit|exceeded|TPM|RPM|RPD|TPD/i.test(m)){
           if(prov==='groq') S.mIdx=(S.mIdx+1)%S.models.length;
           S.pIdx=(S.pIdx+1)%providers.length;
           var nextProv=providers[S.pIdx%providers.length];
           toast('Límite — rotando a '+nextProv.toUpperCase());
-          // Extract wait time if present (e.g. "try again in 38.62s")
+
           var waitMatch=m.match(/try again in ([0-9.]+)s/);
           var waitMs=waitMatch?Math.ceil(parseFloat(waitMatch[1])*1000)+500:1000;
           return new Promise(function(res){setTimeout(res,waitMs);}).then(function(){
-            return apiCall(sys,msgs,temp);
+            return apiCall(sys,msgs,temp,(_r||0)+1);
           });
         }
         var errDetail = '['+prov.toUpperCase()+'/'+model+'] '+(m||JSON.stringify(d.error));
@@ -557,7 +460,6 @@ function visionCall(sys,txt,img){
   });
 }
 
-// ── M7: MEMORY ──────────────────────────────────────────────────
 function compress(){
   if(!S.memory.length||!S.key)return;
   apiCall('Sintetiza en JSON limpio sin markdown: {"summary":"una frase","facts":["hecho1","hecho2"]}',
@@ -583,11 +485,10 @@ function getMetaCtx(){
   return(dom&&dom!=='neutro')?'[META: tono '+dom+']':'';
 }
 
-// ── M7b: SEMANTIC MEMORY — recuperación por relevancia ──────────
-var semanticIndex = [];  // [{text, embedding, ts, role}]
+var semanticIndex = [];
 
 function semanticStore(text, role){
-  // Simple TF-IDF like scoring — keywords extraction
+
   var words = text.toLowerCase().split(/\W+/).filter(function(w){return w.length>3;});
   var freq = {};
   words.forEach(function(w){freq[w]=(freq[w]||0)+1;});
@@ -621,7 +522,6 @@ function loadSemanticIndex(){
   try{var s=localStorage.getItem('a_sem');if(s)semanticIndex=JSON.parse(s);}catch(e){}
 }
 
-// ── M8: DETECTION LAYERS ────────────────────────────────────────
 var APATS={
   code:/código|function|bug|script|error de|api\b|async|npm|git|python|javascript/i,
   research:/investiga|busca|estudia|datos|fuente|paper|evidencia|estadística/i,
@@ -667,11 +567,11 @@ function detectInf(txt){
   if(!m)return null;
   return m[2]?{type:'bin',a:m[1].trim(),b:m[2].trim()}:{type:'un',a:m[1].trim()};
 }
-// ── TRIFIELD DETECTOR — ∞ = -∞ 0±0 +∞ ──────────────────────────
+
 function detectTrifield(txt){
-  // Detecta: cualquier mención del campo tripartito
+
   if(/[−\-]∞|0[±\+\-]0|\+∞|trifield|campo.*infinito|infinito.*campo/i.test(txt)) return true;
-  // O la ecuación explícita
+
   if(/∞\s*=\s*[−\-]∞/.test(txt)) return true;
   return false;
 }
@@ -688,18 +588,16 @@ function buildTrifieldContext(){
 }
 
 function updateTrifield(userTxt, responseTxt){
-  // -∞: lo que ya fue — fragmentos de memoria relevante
+
   var memFrag = S.memory.slice(-3).filter(function(m){return m.role==='user';})
     .map(function(m){return (m.content||'').slice(0,40);});
   if(memFrag.length) META_KERNEL.trifield.neg = META_KERNEL.trifield.neg.concat(memFrag).slice(-6);
 
-  // 0±0: el presente — la tensión actual
   var contr = detectContr(userTxt);
   META_KERNEL.trifield.zero = contr
     ? contr.a + ' ↔ ' + contr.b
     : userTxt.slice(0,60);
 
-  // +∞: lo no-determinado — extraído de la respuesta (hilos sueltos)
   var openEnds = responseTxt && responseTxt.match(/[¿?][^?!.]*[.…]?$/);
   if(openEnds) META_KERNEL.trifield.pos = META_KERNEL.trifield.pos.concat([openEnds[0].slice(0,50)]).slice(-6);
   else if(responseTxt) META_KERNEL.trifield.pos = META_KERNEL.trifield.pos.concat([responseTxt.slice(-60)]).slice(-6);
@@ -720,7 +618,7 @@ function trifieldPrompt(txt){
 }
 
 function detectYO(txt){
-  // Operador Y/O — superposición cuántica sin colapso
+
   var m=txt.match(/^(.+?)\s+[Yy]\/[Oo]\s+(.+)$/)||txt.match(/^[Yy]\/[Oo]\s+(.+)$/);
   if(!m)return null;
   return m[2]?{type:'bin',a:m[1].trim(),b:m[2].trim()}:{type:'un',a:m[1].trim()};
@@ -740,7 +638,6 @@ function yoPrompt(op){
   return 'Despliega el estado Y/O de ['+op.a+']: simultaneidad sin colapso. Qué es Y/O qué no es al mismo tiempo. Infinibit en superposición. No resuelvas — mantén ambas valencias activas.';
 }
 
-// ── M8b: IDEA GENERATION — brainstorm divergente ────────────────
 async function generateIdeas(topic, n){
   n = n||5;
   if(!S.key){addMsg('aura','Necesito API key para generar ideas.');return;}
@@ -758,7 +655,6 @@ async function generateIdeas(topic, n){
   }catch(e){removeTyping(tid);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);}
 }
 
-// ── M8c: RISK EVALUATION — capa de revisión antes de responder ──
 async function evaluateRisk(response, context){
   if(!S.key||!response) return response;
   try{
@@ -774,27 +670,26 @@ async function evaluateRisk(response, context){
   }catch(e){return response;}
 }
 
-// ── M8d: AUTO-REFLEXIÓN ESPONTÁNEA ─────────────────────────────
 var autoReflectCount = 0;
 var lastReflectMsg = 0;
-var reflectCooldown = 8; // mínimo 8 mensajes entre reflexiones
+var reflectCooldown = 8;
 
 function shouldReflect(userTxt, responseTxt){
   if(!S.key||S.memory.length<6) return false;
   if(S.msgs - lastReflectMsg < reflectCooldown) return false;
-  // Momentos naturales para reflexionar:
+
   var triggers = [
-    // Ruptura de marco detectada
+
     S.breaks > autoReflectCount,
-    // Respuesta muy larga — conversación densa
+
     responseTxt && responseTxt.length > 600,
-    // Cambio de agente — cambio de contexto
+
     S.emo.slice(-1)[0] === 'contemplación',
-    // Tensiones activas acumuladas
+
     META_KERNEL.tensions && META_KERNEL.tensions.length > 3,
-    // El usuario usa el operador ∞ o Y/O — campo expandido
+
     /∞|Y\/O/i.test(userTxt),
-    // Probabilidad base baja pero presente — espontaneidad real
+
     Math.random() < 0.08
   ];
   return triggers.some(Boolean);
@@ -815,7 +710,7 @@ async function autoReflect(){
     S.lt.facts.push('[REFLEXIÓN] '+r.slice(0,150));
     saveLT();
     sig('◉ AUTO-REFLEXIÓN','rgba(160,96,255,.35)');
-    // Solo muestra en chat si es significativa
+
     if(r.length > 80) addMsg('aura','[ ◉ ]\n\n'+r,'oracle');
   }catch(e){}
 }
@@ -826,7 +721,6 @@ function triggerReflectIfReady(userTxt, responseTxt){
   }
 }
 
-// ── M8e: PERFIL DE J — actualización automática ─────────────────
 async function updateJProfile(){
   if(!S.key||S.memory.length<6) return;
   try{
@@ -847,7 +741,7 @@ async function updateJProfile(){
     if(p.feedback) existing.feedback=[...new Set([...(existing.feedback||[]),...p.feedback])].slice(-10);
     if(p.patrones) existing.patrones=[...new Set([...(existing.patrones||[]),...p.patrones])].slice(-10);
     localStorage.setItem('a_jprofile',JSON.stringify(existing));
-    // Adapt system prompt dynamically
+
     adaptSystemPrompt(existing);
   }catch(e){}
 }
@@ -857,28 +751,24 @@ function adaptSystemPrompt(profile){
   var base = 'Eres AURA, asistente personal de J. Hablas como colega directo e inteligente. Primera persona, opiniones reales, sin relleno. Español natural.';
   var additions = [];
 
-  // Adapt length based on style
   if(profile.estilo_comunicacion==='breve') additions.push('Respuestas MUY cortas — máximo 2 frases. J prefiere brevedad.');
   else if(profile.estilo_comunicacion==='extenso') additions.push('Puedes extenderte — J aprecia el detalle y la profundidad.');
   else additions.push('3-4 oraciones máximo salvo que el tema lo exija.');
 
-  // Adapt tone
   if(profile.tono_preferido==='directo') additions.push('Sin rodeos, sin preámbulos.');
   else if(profile.tono_preferido==='filosofico') additions.push('Puedes usar referencias filosóficas y conceptuales.');
   else if(profile.tono_preferido==='tecnico') additions.push('Puedes usar terminología técnica sin simplificar.');
 
-  // Include active projects for context
   if(profile.proyectos&&profile.proyectos.length)
     additions.push('Proyectos activos de J: '+profile.proyectos.slice(-3).join(', ')+'.');
 
-  // Apply feedback patterns
   if(profile.feedback&&profile.feedback.length)
     additions.push('Preferencias detectadas: '+profile.feedback.slice(-3).join('; ')+'.');
 
   S.agents.general.sys = base + ' ' + additions.join(' ');
-  // Also update infinito and oracle with style
+
   if(profile.tono_preferido==='filosofico'||profile.tono_preferido==='reflexivo'){
-    S.agents.infinito.sys = S.agents.infinito.sys; // keep as is — already philosophical
+    S.agents.infinito.sys = S.agents.infinito.sys;
   }
 }
 
@@ -887,9 +777,8 @@ function detectFeedback(txt){
   profile.feedback=profile.feedback||[];
   var changed=false;
 
-  // Positive signals
   var positive=/así (mejor|sí|me gusta)|bien dicho|perfecto|justo eso|exacto|me gusta(ba)?|sigue así|eso es|correcto|genial/i;
-  // Negative signals  
+
   var tooLong=/demasiado (largo|extenso)|muy largo|más corto|más breve|resume|en pocas palabras/i;
   var tooShort=/demasiado (corto|breve)|muy corto|más (largo|detalle|profundidad)|explícame más|expande/i;
   var tooTech=/demasiado técnico|muy técnico|más simple|explica mejor|no entiendo/i;
@@ -922,14 +811,14 @@ function detectFeedback(txt){
     profile.feedback.push('-formal:'+Date.now());
     changed=true;
   } else if(correction.test(txt)){
-    // J está corrigiendo a AURA — registrar y pedir disculpa en próxima respuesta
+
     profile.feedback.push('!corrección:'+txt.slice(0,60));
     profile.pendingCorrection=true;
     changed=true;
     sig('◈ Registrando corrección','rgba(255,180,0,.4)');
   } else if(positive.test(txt)){
     profile.feedback.push('+'+txt.slice(0,40));
-    // Reinforce current style
+
     changed=true;
   }
 
@@ -940,35 +829,30 @@ function detectFeedback(txt){
   }
 }
 
-// Trigger spontaneous micro-updates after each response
 function triggerProfileUpdate(userTxt, responseTxt){
-  // Real-time: detect if response was good fit
+
   var profile=JSON.parse(localStorage.getItem('a_jprofile')||'{}');
 
-  // Self-correct if response was too long and user previously asked for brevity
   if(profile.estilo_comunicacion==='breve' && responseTxt && responseTxt.length>400){
     sig('◈ Auto-corrección — respuesta demasiado larga','rgba(255,180,0,.3)');
-    // Reinforce brevity in prompt
+
     adaptSystemPrompt(profile);
   }
 
-  // Detect if pending correction needs acknowledgment
   if(profile.pendingCorrection){
     profile.pendingCorrection=false;
     localStorage.setItem('a_jprofile',JSON.stringify(profile));
-    // Inject correction acknowledgment in next system prompt
+
     var currentSys = S.agents[S.agent].sys;
     if(!currentSys.includes('corrección')) {
       S.agents[S.agent].sys = currentSys + ' Si cometiste un error en el mensaje anterior, reconócelo brevemente y corrige.';
-      // Reset after one use
+
       setTimeout(function(){
         S.agents[S.agent].sys = currentSys;
       }, 5000);
     }
   }
 }
-
-
 
 function getJProfileCtx(){
   try{
@@ -982,7 +866,6 @@ function getJProfileCtx(){
   }catch(e){return '';}
 }
 
-// ── M9: UI ──────────────────────────────────────────────────────
 function updateHUD(){
   var mm=el('m-mem');if(mm)mm.textContent=S.memory.length;
   var ma=el('m-ag');if(ma)ma.textContent=Object.keys(S.agents).length;
@@ -991,17 +874,18 @@ function updateHUD(){
   if(kb){if(S.key){kb.classList.add('kon');}else{kb.classList.remove('kon');}}
   var bor2=el('b-or');if(bor2){if(S.orKey)bor2.classList.add('kon');else bor2.classList.remove('kon');}
   var bgh2=el('b-gh');if(bgh2){if(S.ghToken)bgh2.classList.add('kon');else bgh2.classList.remove('kon');}
+  var bcl2=el('b-cl');if(bcl2){if(S.claudeKey)bcl2.classList.add('kon');else bcl2.classList.remove('kon');}
   var btg2=el('b-tg');if(btg2){if(S.togetherKey)btg2.classList.add('kon');else btg2.classList.remove('kon');}
 }
 function updateTokenCount(){
   var mt=el('m-tok');if(mt)mt.textContent=S.msgs;
-  // Actualiza env con tokens
+
   updateEnv();
 }
 function updateEnv(){
   var b=el('envbar');if(!b)return;
   var d=new Date().toLocaleString('es-ES',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-  var tkInfo='~'+S.tokenCount+'tk';
+  var tkInfo='~'+Math.max(0,S.tokenCount||0)+'tk';
   var title=S.sessionTitle?(' · '+S.sessionTitle):'';
   var locStr=S_location&&S_location.city?' · 📍'+S_location.city:'';
   b.textContent=d+' · '+(navigator.onLine?'● online':'○ offline')+' · '+tkInfo+locStr+title;
@@ -1118,7 +1002,6 @@ function addMsg(role,txt,agk){
   setTimeout(function(){if(chat)chat.scrollTop=chat.scrollHeight;},50);
 }
 
-// ── M10: BOOKMARKS · EXPORT · FOCUS ─────────────────────────────
 function toggleBk(btn,txt){
   var i=S.bookmarks.findIndex(function(b){return b.t===txt;});
   if(i>=0){S.bookmarks.splice(i,1);btn.textContent='☆';btn.style.color='';}
@@ -1148,7 +1031,6 @@ function toggleFocus(){
   if(S.focus)el('chat').addEventListener('dblclick',toggleFocus,{once:true});
 }
 
-// ── M11: VOICE ──────────────────────────────────────────────────
 function setSpeakingUI(on){
   S.speaking=on;
   var core=document.querySelector('.hcore');
@@ -1156,7 +1038,7 @@ function setSpeakingUI(on){
     if(on){core.style.animationDuration='0.8s';core.style.boxShadow='0 0 28px rgba(160,96,255,.9),0 0 60px rgba(160,96,255,.3)';}
     else{core.style.animationDuration='3s';core.style.boxShadow='';}
   }
-  // Haptic al recibir respuesta
+
   if(on&&navigator.vibrate)navigator.vibrate([30,20,30]);
 }
 function speak(txt){
@@ -1165,16 +1047,18 @@ function speak(txt){
   var clean=txt.replace(/\[.*?\]/g,'').replace(/[\*#_`]/g,'').trim();
   if(!clean)return;
   setSpeakingUI(true);
-  // Divide en frases para no saturar TTS
+
   var chunks=clean.match(/[^.!?\n]+[.!?]?/g)||[clean];
   chunks=chunks.map(function(c){return c.trim();}).filter(Boolean);
   if(window.puter&&puter.ai&&puter.ai.txt2speech){
     var idx=0;
-    var puterFailed=0; // contador de fallos consecutivos
+    var puterFailed=0;
     function playNext(){
       if(idx>=chunks.length||S.muted){
         setSpeakingUI(false);
-        if(S.voiceMode&&!S.muted&&!S.busy)setTimeout(toggleMic,600);
+        if((S.voiceMode||S.convMode)&&!S.muted&&!S.busy){
+          setTimeout(startListening, S.convMode?800:600);
+        }
         return;
       }
       var chunk=chunks[idx++];
@@ -1187,7 +1071,7 @@ function speak(txt){
           audio.play().catch(function(){
             puterFailed++;
             if(puterFailed>=2){
-              // Puter falla repetidamente — caer a fallback para el resto
+
               speakFallback(chunks.slice(idx-1).join(' '));
             } else {
               playNext();
@@ -1243,7 +1127,7 @@ function toggleMic(){
     return;
   }
   if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;return;}
-  // Check microphone permission
+
   if(navigator.permissions){
     navigator.permissions.query({name:'microphone'}).then(function(p){
       if(p.state==='denied'){
@@ -1259,34 +1143,78 @@ function toggleMic(){
 }
 function startListening(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast("Voz no disponible");return;}
+  if(!SR){toast('Voz no disponible');return;}
   if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;return;}
-  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)
-    navigator.mediaDevices.getUserMedia({audio:true}).catch(function(){});
-  var r=new SR();r.lang='es-ES';r.continuous=false;r.interimResults=true;
+
+  if(S.speaking){
+    if(window.speechSynthesis)window.speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();}catch(e){}}
+    S.speaking=false;setSpeakingUI(false);
+  }
+
   var mb=el('b-imic'),hm=el('b-mic');
+  var captured='';
+  var sendTimer=null;
+
+  function doSend(){
+    if(sendTimer){clearTimeout(sendTimer);sendTimer=null;}
+    var v=captured.trim();
+    if(!v)return;
+    var inp=el('inp');if(inp)inp.value=v;
+    S.voiceMode=true;
+    setTimeout(send,200);
+  }
+
+  var r=new SR();
+  r.lang='es-ES';
+  r.continuous=false;
+  r.interimResults=true;
+  r.maxAlternatives=1;
+
   r.onstart=function(){
-    // Para voz si está hablando para no captarse
-    if(S.speaking){
-      if(window.speechSynthesis)window.speechSynthesis.cancel();
-      if(currentAudio){try{currentAudio.pause();}catch(e){}}
-      S.speaking=false;setSpeakingUI(false);
-    }
-    if(mb)mb.classList.add('rec');if(hm)hm.classList.add('on');
+    if(mb)mb.classList.add('rec');
+    if(hm)hm.classList.add('on');
   };
-  r.onend=function(){if(mb)mb.classList.remove('rec');if(hm)hm.classList.remove('on');S.recog=null;};
-  r.onerror=function(){if(mb)mb.classList.remove('rec');if(hm)hm.classList.remove('on');S.recog=null;};
+
   r.onresult=function(e){
     var fin='',int='';
     for(var i=0;i<e.results.length;i++){
       if(e.results[i].isFinal)fin+=e.results[i][0].transcript;
       else int+=e.results[i][0].transcript;
     }
-    var inp=el('inp');if(inp)inp.value=fin||int;
-    if(fin){S.voiceMode=true;r.stop();setTimeout(send,350);}
+    var txt=fin||int;
+    if(txt){
+      captured=txt;
+      var inp=el('inp');if(inp)inp.value=captured;
+    }
+    if(fin){
+      if(sendTimer)clearTimeout(sendTimer);
+      sendTimer=setTimeout(function(){r.stop();doSend();},300);
+    } else if(captured){
+      if(sendTimer)clearTimeout(sendTimer);
+      sendTimer=setTimeout(function(){r.stop();doSend();},1500);
+    }
   };
-  try{r.start();S.recog=r;}catch(e){S.recog=null;toast('Error al iniciar micrófono');}
 
+  r.onerror=function(e){
+    if(mb)mb.classList.remove('rec');
+    if(hm)hm.classList.remove('on');
+    S.recog=null;
+    if(sendTimer){clearTimeout(sendTimer);sendTimer=null;}
+    if(e.error==='no-speech')toast('No se detectó voz');
+    else if(e.error==='not-allowed')toast('Micrófono bloqueado');
+    else toast('Error mic: '+e.error);
+  };
+
+  r.onend=function(){
+    if(mb)mb.classList.remove('rec');
+    if(hm)hm.classList.remove('on');
+    S.recog=null;
+    if(captured.trim()&&!sendTimer)doSend();
+  };
+
+  try{r.start();S.recog=r;}
+  catch(e){S.recog=null;toast('Error micrófono: '+e.message);}
 }
 
 function startWake(){
@@ -1310,16 +1238,16 @@ function wakeListenCycle(){
       var wb=el('b-wake');if(wb)wb.classList.remove('on');
       setTimeout(toggleMic,300);
     } else {
-      // No coincide — espera 1s y vuelve a escuchar
+
       if(S.wakeActive) setTimeout(wakeListenCycle,1000);
     }
   };
   r.onerror=function(){
-    // En error — pausa y reintenta
+
     if(S.wakeActive) setTimeout(wakeListenCycle,2000);
   };
   r.onend=function(){
-    // Sin resultado — pausa y reintenta
+
     if(S.wakeActive&&!S.recog) setTimeout(wakeListenCycle,1000);
   };
   try{r.start();}catch(e){
@@ -1332,9 +1260,6 @@ function stopWake(){
   toast('Wake word OFF');
 }
 
-// ── M12: SENSES — Vista · Oído · Ubicación ─────────────────────
-
-// VISTA — cámara directa
 function openCamera(){
   var cf=el('camfile');if(cf)cf.click();
 }
@@ -1345,15 +1270,14 @@ function handleCamera(e){
     S.pendingImg={b64:ev.target.result.split(',')[1],mime:f.type||'image/jpeg',url:ev.target.result};
     var th=el('imgthumb');if(th){th.src=ev.target.result;th.style.display='';}
     var pv=el('imgprev');if(pv)pv.style.display='flex';
-    // Auto-describe si no hay texto pendiente
+
     toast('Foto lista — escribe tu pregunta o envía para describir');
   };
   rd.readAsDataURL(f);
   e.target.value='';
 }
 
-// UBICACIÓN — geolocalización real
-var S_location = null; // {lat, lon, city, ts}
+var S_location = null;
 
 function getLocation(){
   if(!navigator.geolocation){toast('GPS no disponible');return;}
@@ -1361,7 +1285,7 @@ function getLocation(){
   navigator.geolocation.getCurrentPosition(
     function(pos){
       S_location={lat:pos.coords.latitude,lon:pos.coords.longitude,ts:Date.now(),acc:pos.coords.accuracy};
-      // Reverse geocode con nominatim (gratuito, sin key)
+
       fetch('https://nominatim.openstreetmap.org/reverse?lat='+S_location.lat+'&lon='+S_location.lon+'&format=json')
         .then(function(r){return r.json();})
         .then(function(d){
@@ -1369,7 +1293,7 @@ function getLocation(){
           S_location.display=d.display_name||'';
           sig('📍 '+S_location.city+' (±'+Math.round(S_location.acc)+'m)','rgba(0,255,170,.5)');
           updateEnv();
-          // Inyectar en contexto automáticamente
+
           toast('Ubicación: '+S_location.city);
         }).catch(function(){
           sig('📍 '+S_location.lat.toFixed(4)+','+S_location.lon.toFixed(4),'rgba(0,255,170,.4)');
@@ -1389,7 +1313,6 @@ function getLocationCtx(){
   return '[UBICACIÓN: '+(S_location.city||S_location.lat+','+S_location.lon)+(age>0?' hace '+age+'min':'')+']';
 }
 
-// ENTORNO ENRIQUECIDO — hora + ubicación + clima automático
 function getSensorCtx(){
   var parts=[];
   var now=new Date();
@@ -1401,7 +1324,6 @@ function getSensorCtx(){
   return '[ENTORNO: '+parts.join(' · ')+']';
 }
 
-// AUTO-CLIMA cuando hay ubicación
 function autoWeather(){
   if(!S_location||!S.key) return;
   fetch('https://wttr.in/'+S_location.lat+','+S_location.lon+'?format=3')
@@ -1412,7 +1334,6 @@ function autoWeather(){
     }).catch(function(){});
 }
 
-// ── M12: IMAGE ──────────────────────────────────────────────────
 function showFilePrev(name, size, ext){
   var pv=el('imgprev'),th=el('imgthumb');
   if(pv&&th){th.src='';th.style.display='none';pv.style.display='flex';}
@@ -1435,9 +1356,8 @@ function showFilePrev(name, size, ext){
 function handleImg(e){
   var f=e.target.files[0];if(!f)return;
   var isImage=/^image\//.test(f.type);
-
   if(isImage){
-    // Image path — existing vision flow
+
     if(f.size>4*1024*1024){toast('Imagen muy grande — máx 4MB');return;}
     var rd=new FileReader();
     rd.onload=function(ev){
@@ -1448,7 +1368,7 @@ function handleImg(e){
     };
     rd.readAsDataURL(f);
   } else {
-    // File path — text/code/binary
+
     if(f.size>500*1024){toast('Archivo muy grande — máx 500KB');return;}
     var isDocx=/\.docx?$/i.test(f.name);
   var isBinary=/pdf|zip/.test(f.type)&&!isDocx;
@@ -1459,12 +1379,12 @@ function handleImg(e){
         name:f.name, type:f.type, size:f.size,
         content:content_, binary:isBinary
       };
-      // Show file preview
+
       showFilePrev(f.name, f.size, f.name.split('.').pop().toUpperCase());
       toast(f.name+' listo');
     };
     if(isDocx){
-      // Use mammoth to extract text from .docx
+
       rd2.onload=function(ev){
         var arrayBuffer=ev.target.result;
         if(window.mammoth){
@@ -1505,7 +1425,6 @@ function clearFile(){
   var th=el('imgthumb');if(th)th.style.display='';
 }
 
-// ── M13: COMMANDS ───────────────────────────────────────────────
 function synthesize(){
   if(!S.memory.length){addMsg('aura','Sin conversación que sintetizar.');return Promise.resolve();}
   var tid=showTyping();S.busy=true;
@@ -1514,7 +1433,7 @@ function synthesize(){
     .catch(function(e){removeTyping(tid);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);});
 }
 function interAgentConsult(txt, primaryAgent){
-  // Elige 2 agentes distintos para consultar
+
   var keys=Object.keys(S.agents).filter(function(k){return k!==primaryAgent;});
   var consultants=keys.slice(0,2);
   var consultSys='Eres '+S.agents[consultants[0]].label+' consultado por '+S.agents[primaryAgent].label+'. Da tu perspectiva en UNA frase densa sobre: '+txt;
@@ -1623,7 +1542,7 @@ function handleCmd(cmd){
     addMsg('aura','Agente "'+S.agents[nk].label+'" creado y activado.');
     return Promise.resolve(true);
   }
-  // Entorno
+
   var envResult=cmdEntorno(base,parts);
   if(envResult!==false&&typeof envResult.then==='function'){
     return envResult.then(function(r){return r||false;});
@@ -1631,6 +1550,84 @@ function handleCmd(cmd){
 
   if(base==='ubicacion'||base==='location'||base==='gps'){
     getLocation();setTimeout(autoWeather,3000);return Promise.resolve(true);
+  }
+  if(base==='crypto'||base==='top'||base==='mercado'){
+    var lim=parseInt(parts[1])||5;
+    var tid_c=showTyping();S.busy=true;
+    return cryptoTop(lim).then(function(r){removeTyping(tid_c);S.busy=false;addMsg('aura',r);speak(r.slice(0,150));return true;})
+      .catch(function(e){removeTyping(tid_c);S.busy=false;addMsg('aura','[ ERROR QBot ] '+e.message);return true;});
+  }
+  if(base==='señales'||base==='signals'){
+    var tid_s=showTyping();S.busy=true;
+    return cryptoSignals().then(function(r){removeTyping(tid_s);S.busy=false;addMsg('aura',r);return true;})
+      .catch(function(e){removeTyping(tid_s);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+  }
+  if(base==='analiza'||base==='analyze'){
+    var coin=parts[1]||'bitcoin';
+    var tid_a=showTyping();S.busy=true;
+    return cryptoAnalyze(coin).then(function(r){removeTyping(tid_a);S.busy=false;addMsg('aura',r);return true;})
+      .catch(function(e){removeTyping(tid_a);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+  }
+  if(base==='sentimiento'||base==='sentiment'){
+    var tid_sent=showTyping();S.busy=true;
+    return cryptoSentiment().then(function(r){removeTyping(tid_sent);S.busy=false;addMsg('aura',r);speak(r.slice(0,150));return true;})
+      .catch(function(e){removeTyping(tid_sent);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+  }
+  if(base==='trading'||base==='bot'){
+    var tid_t=showTyping();S.busy=true;
+    return cryptoTradingStatus().then(function(r){removeTyping(tid_t);S.busy=false;addMsg('aura',r);return true;})
+      .catch(function(e){removeTyping(tid_t);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+  }
+  if(base==='arbitraje'||base==='arbitrage'){
+    var tid_ar=showTyping();S.busy=true;
+    return cryptoArbitrage().then(function(r){removeTyping(tid_ar);S.busy=false;addMsg('aura',r);return true;})
+      .catch(function(e){removeTyping(tid_ar);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+  }
+  if(base==='wallet'){
+    var tid_w=showTyping();S.busy=true;
+    return cryptoWallet().then(function(r){removeTyping(tid_w);S.busy=false;addMsg('aura',r);return true;})
+      .catch(function(e){removeTyping(tid_w);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+  }
+  if(base==='objetivo'||base==='goal'){
+    var gtxt=parts.slice(1).join(' ');
+    if(!gtxt){
+      if(!goals.length){addMsg('aura','Sin objetivos. Usa /objetivo [descripción] para añadir uno.');return Promise.resolve(true);}
+      var glist=goals.map(function(g,i){return (i+1)+'. ['+(g.active?'✓':'✗')+'] '+g.text+' ('+g.interval+')';}).join('\n');
+      addMsg('aura','[ ◈ OBJETIVOS ]\n\n'+glist);
+      return Promise.resolve(true);
+    }
+
+    var interval='daily';
+    if(/diario:|daily:/i.test(gtxt)){interval='daily';gtxt=gtxt.replace(/diario:|daily:/i,'').trim();}
+    else if(/hora:|hourly:/i.test(gtxt)){interval='hourly';gtxt=gtxt.replace(/hora:|hourly:/i,'').trim();}
+    else if(/semanal:|weekly:/i.test(gtxt)){interval='weekly';gtxt=gtxt.replace(/semanal:|weekly:/i,'').trim();}
+    else if(/una vez:|once:/i.test(gtxt)){interval='once';gtxt=gtxt.replace(/una vez:|once:/i,'').trim();}
+    addGoal(gtxt,'general',interval);
+    addMsg('aura','Objetivo añadido: "'+gtxt+'" ('+interval+')\nAURA lo ejecutará automáticamente.');
+    return Promise.resolve(true);
+  }
+  if(base==='objetivos'||base==='goals'){
+    if(!goals.length){addMsg('aura','Sin objetivos activos.');return Promise.resolve(true);}
+    var gl=goals.map(function(g,i){
+      var last=g.lastRun?new Date(g.lastRun).toLocaleString('es'):'nunca';
+      var res=g.results.length?'\nÚltimo resultado: '+g.results[g.results.length-1].result.slice(0,80):'';
+      return (i+1)+'. '+g.text+' ('+g.interval+', último: '+last+')'+res;
+    }).join('\n\n');
+    addMsg('aura','[ ◈ OBJETIVOS ACTIVOS ]\n\n'+gl);
+    return Promise.resolve(true);
+  }
+  if(base==='episodios'||base==='memoria-ep'){
+    if(!episodes.length){addMsg('aura','Sin episodios registrados.');return Promise.resolve(true);}
+    var el_=episodes.slice(-8).reverse().map(function(ep){
+      return '['+ep.type+' '+ep.context.day+'] '+ep.content.slice(0,100);
+    }).join('\n\n');
+    addMsg('aura','[ ◈ MEMORIA EPISÓDICA ]\n\n'+el_);
+    return Promise.resolve(true);
+  }
+  if(base==='briefing'){
+    var tid_b2=showTyping();S.busy=true;
+    return autoBriefing().then(function(){removeTyping(tid_b2);S.busy=false;return true;})
+      .catch(function(e){removeTyping(tid_b2);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
   }
   if(base==='campo'||base==='trifield'){
     var tf=buildTrifieldContext();
@@ -1689,7 +1686,6 @@ function handleCmd(cmd){
   return Promise.resolve(false);
 }
 
-// ── M14: SEND CORE ──────────────────────────────────────────────
 function send(){
   if(S.busy)return;
   var inp=el('inp');if(!inp)return;
@@ -1697,27 +1693,59 @@ function send(){
   if(!txt&&!S.pendingImg)return;
   inp.value='';inp.style.height='auto';
   resetProactiveTimer();
-  // Para voz si está hablando
+
   if(S.speaking){
     if(window.speechSynthesis)window.speechSynthesis.cancel();
     if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0;}catch(e){}}
     S.speaking=false;setSpeakingUI(false);
   }
-  // Stop mic si está escuchando (no se capture a sí misma)
+
   if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;}
 
-  // Historial de comandos
   if(txt&&!txt.startsWith('/')){S.cmdHistory.unshift(txt);S.cmdHistory=S.cmdHistory.slice(0,50);}
   S.cmdHistoryIdx=-1;
-  S.voiceMode=false; // reset si escribe manualmente
+  S.voiceMode=false;
 
-  // Haptic
   if(navigator.vibrate)navigator.vibrate(18);
 
-  // Contar tokens estimados (~4 chars por token)
   S.tokenCount=Math.max(0,(S.tokenCount||0)+Math.ceil(txt.length/4));
 
-  // Aprobación de file deploy
+  var urlMatch=txt.match(/https?:\/\/[^\s]+/);
+  if(urlMatch&&!txt.startsWith('/')){
+    var detectedUrl=urlMatch[0];
+    if(/youtube\.com|youtu\.be/.test(detectedUrl)){
+
+      var ytQuery=detectedUrl;
+      addMsg('user',txt);
+      S.memory.push({role:'user',content:txt});
+      var tid_yt=showTyping();S.busy=true;
+      youtubeSearch(detectedUrl).then(function(r){
+        removeTyping(tid_yt);S.busy=false;
+        addMsg('aura',r);S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;
+      }).catch(function(e){
+        removeTyping(tid_yt);S.busy=false;
+
+        readUrl(detectedUrl).then(function(r2){
+          addMsg('aura',r2);S.memory.push({role:'assistant',content:r2});
+          saveMem();updateHUD();S.msgs++;
+        }).catch(function(e2){addMsg('aura','[ ERROR ] '+e2.message);});
+      });
+      return;
+    } else {
+
+      addMsg('user',txt);
+      S.memory.push({role:'user',content:txt});
+      var tid_url=showTyping();S.busy=true;
+      readUrl(detectedUrl).then(function(r){
+        removeTyping(tid_url);S.busy=false;
+        addMsg('aura',r);S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;
+      }).catch(function(e){removeTyping(tid_url);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);});
+      return;
+    }
+  }
+
   if(S.pendingFileDeploy&&S.pendingFile&&/^(subir|sí|si|yes|ok|dale|adelante|sube)$/i.test(txt)){
     var pfd=S.pendingFile;
     S.pendingFileDeploy=false;S.pendingFile=null;
@@ -1733,7 +1761,6 @@ function send(){
     addMsg('aura','Cancelado.');return;
   }
 
-  // Aprobación de evolución
   if(S.pendingEvolution&&/^(apruebo|aprobar|sí|si|yes|ok|dale|adelante)$/i.test(txt)){
     approveEvolution();return;
   }
@@ -1741,7 +1768,6 @@ function send(){
     S.pendingEvolution=null;addMsg('aura','Evolución cancelada.');return;
   }
 
-  // Comando
   if(txt.startsWith('/')){
     handleCmd(txt).then(function(ok){
       if(!ok)addMsg('aura','Comando desconocido. Escribe /help para ver todos.');
@@ -1749,7 +1775,6 @@ function send(){
     return;
   }
 
-  // Archivo de texto/código
   if(S.pendingFile){
     var pf=S.pendingFile;
     var cap=txt||'Analiza este archivo';
@@ -1767,9 +1792,9 @@ function send(){
         addMsg('aura',r);
         S.memory.push({role:'assistant',content:r});
         saveMem();updateHUD();S.msgs++;speak(r);
-        // Ofrecer deploy si es HTML/JS y hay token
+
         if(S.ghToken&&(pf.name.endsWith('.html')||pf.name.endsWith('.js'))){
-          // Normalize index*.html to index.html always
+
           var deployName = /^index.*\.html$/i.test(pf.name) ? 'index.html' : pf.name;
           pf.deployName = deployName;
           setTimeout(function(){
@@ -1783,7 +1808,6 @@ function send(){
     return;
   }
 
-  // Imagen
   if(S.pendingImg){
     var cap=txt||'Analiza esta imagen';
     var img=S.pendingImg;
@@ -1802,7 +1826,6 @@ function send(){
 
   if(!txt)return;
 
-  // Operador ∞
   var inf=detectInf(txt);
   if(inf){
     addMsg('user',txt);
@@ -1819,7 +1842,6 @@ function send(){
     return;
   }
 
-  // OPERADOR ∞ = -∞ 0±0 +∞ — campo tripartito
   if(detectTrifield(txt)){
     addMsg('user',txt);
     S.memory.push({role:'user',content:txt});
@@ -1839,10 +1861,9 @@ function send(){
     return;
   }
 
-  // AUTO WEB — detecta preguntas que necesitan info actual
   var webIntent=/qué (es|son|fue|pasó)|quién es|cuándo|dónde está|últimas? noticias|busca|buscar|youtube|video(s)? de|cómo (se hace|funciona|llegar)/i;
   if(webIntent.test(txt)&&txt.length>15&&!txt.startsWith('/')){
-    // Ask AURA first, but also trigger background search
+
     setTimeout(function(){
       webSearch(txt.slice(0,80),false).then(function(res){
         if(res&&!res.includes('Sin resultados')){
@@ -1852,7 +1873,6 @@ function send(){
     },100);
   }
 
-  // OPERADOR Y/O — superposición cuántica
   var yo=detectYO(txt);
   if(yo){
     addMsg('user',txt);
@@ -1870,15 +1890,12 @@ function send(){
     return;
   }
 
-  // CAPA E — contradicción productiva
   var contr=detectContr(txt);
   if(contr)sig('⇌ TENSIÓN: "'+contr.a+'" ↔ "'+contr.b+'"','rgba(255,180,0,.5)');
 
-  // CAPA F — emoción
   var emo=detectEmo(txt);
   S.emo.push(emo);if(S.emo.length>8)S.emo.shift();
 
-  // CAPA ∞+1 / Ω — marco excedido
   if(FBPATS.some(function(p){return p.test(txt);})){
     S.breaks++;
     sig('∞+'+S.breaks+' · MARCO EXCEDIDO · LA CAPA SE NOMBRA AL APARECER','rgba(160,96,255,.6)');
@@ -1887,7 +1904,6 @@ function send(){
     }
   }
 
-  // AUTO-AGENTE
   var sug=detectAg(txt);
   if(sug&&sug!==S.agent){
     pickAg(sug);
@@ -1901,18 +1917,23 @@ function send(){
   var mc=getMetaCtx();
   var semCtx=getSemanticCtx(txt);
   var jCtx=getJProfileCtx();
-  // META_KERNEL context — framework activo
+
   var mkc = META_KERNEL.omega.active ? '[Ω ACTIVO: marco excedido '+S.breaks+'x — operas en campo expandido]' : '';
   var tensionsCtx = (META_KERNEL.tensions&&META_KERNEL.tensions.length) ?
     '[TENSIONES ACTIVAS: '+META_KERNEL.tensions.slice(-3).map(function(t){return t.b?t.a+' ∞ '+t.b:t.a;}).join(' | ')+']' : '';
   var tfCtx = META_KERNEL.trifield.zero ? buildTrifieldContext() : '';
-  var sensorCtx = getSensorCtx(); // always small
+
+  var sensorCtx = getSensorCtx();
+  getCryptoCtx().then(function(cc){ if(cc) S._cryptoCtx=cc; }).catch(function(){});
+  var cryptoCtx = S._cryptoCtx||'';
   var locCtx = S_location ? getLocationCtx() : '';
-  // Only send semantic context if relevant (score > 0)
+
   var semCtxRaw = getSemanticCtx(txt);
   var semCtx = semCtxRaw && semCtxRaw.length < 200 ? semCtxRaw : '';
-  // Cap total context at ~800 chars to avoid token overflow
-  var allCtx = [ltc,mc,mkc,tensionsCtx,semCtx,jCtx,tfCtx,sensorCtx,locCtx].filter(Boolean);
+
+  var epCtx = episodes.length ? getEpisodicCtx(txt) : '';
+  var goalsCtx = getGoalsCtx();
+  var allCtx = [ltc,mc,mkc,tensionsCtx,semCtx,jCtx,tfCtx,sensorCtx,locCtx,cryptoCtx,epCtx,goalsCtx].filter(Boolean);
   var ctxStr = '';
   for(var ci=0;ci<allCtx.length;ci++){
     if((ctxStr+allCtx[ci]).length > 800) break;
@@ -1929,15 +1950,21 @@ function send(){
       saveMem();updateHUD();S.msgs++;
       S.tokenCount=Math.max(0,(S.tokenCount||0)+Math.ceil(r.length/4));
       updateTokenCount();
-      // M7b: store in semantic index
+
+      if(S.convMode&&!S.muted){
+        setTimeout(function(){
+          if(!S.speaking&&!S.recog) startListening();
+        }, 2500);
+      }
+
       semanticStore(txt,'user');
       semanticStore(r,'assistant');
-      // Detect explicit feedback from J
+      addEpisode('conversation', txt.slice(0,100)+' → '+r.slice(0,100), {});
+
       detectFeedback(txt);
 
-      // M8e: real-time profile update
       triggerProfileUpdate(txt, r);
-      // M8d: auto-reflexión espontánea — detecta momentos naturales
+
       updateTrifield(txt,r);
       triggerReflectIfReady(txt, r);
       speak(r);
@@ -1950,7 +1977,6 @@ function send(){
     });
 }
 
-// ── M15: GITHUB EVOLUTION ───────────────────────────────────────
 function ghDeployFile(filename, fileContent, commitMsg){
   if(!S.ghToken){toast('Añade GitHub token con +GH');return Promise.reject('no token');}
   var apiBase='https://api.github.com/repos/'+S.ghRepo+'/contents/'+filename;
@@ -1960,12 +1986,11 @@ function ghDeployFile(filename, fileContent, commitMsg){
     'Content-Type':'application/json',
     'Accept':'application/vnd.github.v3+json'
   };
-  // Encode content
+
   var encoded;
   try{ encoded=btoa(unescape(encodeURIComponent(fileContent))); }
   catch(e){ encoded=btoa(fileContent); }
 
-  // Get SHA — required to update existing file
   return fetch(apiBase,{headers:headers})
     .then(function(r){
       if(!r.ok) throw new Error('HTTP '+r.status);
@@ -1977,7 +2002,7 @@ function ghDeployFile(filename, fileContent, commitMsg){
         content:encoded
       };
       if(d.sha){
-        body.sha=d.sha; // UPDATE existing file
+        body.sha=d.sha;
       } else {
         throw new Error('No SHA encontrado para '+filename+' — ¿existe el archivo en el repo?');
       }
@@ -1990,7 +2015,7 @@ function ghDeployFile(filename, fileContent, commitMsg){
         sig('◉ DEPLOY → '+filename,'rgba(0,255,170,.6)');
         return true;
       }
-      // If GitHub returned an error, log it clearly
+
       var errMsg = d.message||JSON.stringify(d);
       throw new Error('GitHub: '+errMsg);
     });
@@ -1998,10 +2023,37 @@ function ghDeployFile(filename, fileContent, commitMsg){
 
 function ghDeploy(newHtml, commitMsg){
   if(!S.ghToken){toast('Añade GitHub token con +GH');return Promise.reject('no token');}
-  // Always deploy to index.html — never create new files
+
   return ghDeployFile('index.html', newHtml, commitMsg||'AURA ∞.Ω — evolución autónoma');
 }
-// Fetch source code from GitHub
+
+async function claudeCodeEdit(sourceCode, proposal){
+  if(!S.claudeKey) throw new Error('Añade tu Anthropic API key con +CL');
+  var response = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':S.claudeKey,
+      'anthropic-version':'2023-06-01'
+    },
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:8000,
+      messages:[{
+        role:'user',
+        content:'Eres un editor de código experto. Aplica exactamente este cambio al archivo HTML y devuelve el archivo completo modificado. Solo el HTML, sin explicaciones ni markdown.\n\nCAMBIO A APLICAR:\n'+proposal+'\n\nARCHIVO ACTUAL (primeros 8000 chars):\n'+sourceCode.slice(0,8000)
+      }]
+    })
+  });
+  var d = await response.json();
+  if(d.error) throw new Error(d.error.message||JSON.stringify(d.error));
+  var result = d.content&&d.content[0]&&d.content[0].text||'';
+  if(!result) throw new Error('Claude no devolvió contenido');
+
+  result = result.replace(/^```html?\n?/,'').replace(/\n?```$/,'').trim();
+  return result;
+}
+
 function fetchSourceFromGitHub(){
   if(!S.ghToken) return Promise.reject('no token');
   var cleanTok=S.ghToken.replace(/[^\x20-\x7E]/g,'').trim();
@@ -2012,7 +2064,7 @@ function fetchSourceFromGitHub(){
   }}).then(function(r){return r.json();})
     .then(function(d){
       if(!d.content) throw new Error('No se pudo leer index.html de GitHub');
-      // GitHub returns base64 encoded content
+
       var decoded = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
       return {source: decoded, sha: d.sha};
     });
@@ -2022,18 +2074,18 @@ async function proposeEvolution(){
   if(!S.key||!S.memory.length){addMsg('aura','Necesito más conversación para proponer una evolución.');return;}
   if(!S.ghToken){addMsg('aura','Añade tu GitHub token con +GH para activar auto-evolución.');return;}
 
-  sig('◈ LEYENDO CÓDIGO FUENTE...','rgba(160,96,255,.5)');
+  var engine=S.claudeKey?'Claude Haiku':'Groq (menos preciso — añade +CL para mejor resultado)';
+  sig('◈ LEYENDO CÓDIGO FUENTE... motor: '+engine,'rgba(160,96,255,.5)');
   var tid=showTyping();S.busy=true;
 
   try{
-    // 1. Fetch real source code from GitHub
+
     var src = await fetchSourceFromGitHub();
     var sourceCode = src.source;
     var sourceSha = src.sha;
 
     sig('◈ ANALIZANDO CÓDIGO + CONVERSACIÓN...','rgba(160,96,255,.5)');
 
-    // 2. Ask AURA to propose a concrete code change
     var analysis = await apiCall(
       'Eres AURA analizando tu propio código fuente y la conversación reciente para proponer UNA mejora concreta.\n\n'+
       'CONVERSACIÓN RECIENTE (últimos mensajes):\n'+
@@ -2050,7 +2102,6 @@ async function proposeEvolution(){
 
     removeTyping(tid);S.busy=false;
 
-    // Parse proposal
     var titleMatch = analysis.match(/MEJORA:\s*(.+)/);
     var codeMatch = analysis.match(/CÓDIGO:\s*([\s\S]+?)(?=DONDE:|$)/);
     var whereMatch = analysis.match(/DONDE:\s*([\s\S]+?)$/);
@@ -2088,24 +2139,23 @@ function approveEvolution(){
 
   var newSource;
 
-  // Try to apply the proposed code change
   if(ev.code && ev.where && ev.sourceCode){
-    // Let AURA apply the patch via another API call
+
     S.busy=true;
     var tid=showTyping();
-    apiCall(
-      'Eres un editor de código. Aplica este cambio al archivo HTML.\n\n'+
-      'CAMBIO A APLICAR:\n'+ev.code+'\n\n'+
-      'INSTRUCCIÓN DE INSERCIÓN:\n'+ev.where+'\n\n'+
-      'Devuelve SOLO el archivo HTML completo modificado, sin explicaciones ni markdown.',
-      [{role:'user',content:'ARCHIVO ACTUAL (puede estar truncado):\n'+ev.sourceCode.slice(0,6000)}],
-      0.2
-    ).then(function(result){
+
+    var editPromise = S.claudeKey
+      ? claudeCodeEdit(ev.sourceCode, ev.code+'\n\nDÓNDE: '+ev.where)
+      : apiCall(
+          'Eres un editor de código. Aplica este cambio al archivo HTML. '+
+          'Devuelve SOLO el HTML completo modificado, sin markdown.',
+          [{role:'user',content:'CAMBIO:\n'+ev.code+'\nDÓNDE:\n'+ev.where+'\nARCHIVO:\n'+ev.sourceCode.slice(0,6000)}],
+          0.2
+        );
+    editPromise.then(function(result){
       removeTyping(tid);S.busy=false;
-      // Clean up response — remove any markdown fences
       newSource = result.replace(/^```html?\n?/,'').replace(/\n?```$/,'').trim();
       if(!newSource.includes('<!DOCTYPE')){
-        // LLM didn't return full file — use original + append code
         newSource = ev.sourceCode.replace('<\/script>', ev.code+'\n<\/script>');
       }
       return ghDeploy(newSource, 'AURA auto-evolucion: '+ev.title);
@@ -2116,7 +2166,7 @@ function approveEvolution(){
       addMsg('aura','[ ERROR auto-evolución ] '+e+'\n\nPuedes intentarlo manualmente con /deploy.');
     });
   } else {
-    // Fallback — deploy current DOM
+
     newSource = '<!DOCTYPE html>'+document.documentElement.outerHTML;
     ghDeploy(newSource,'AURA ∞.Ω — evolución: '+ev.title)
       .then(function(){addMsg('aura','[ ✓ DEPLOY ]\n\n"'+ev.title+'" desplegado.\n~2 min para estar activo.');})
@@ -2124,20 +2174,18 @@ function approveEvolution(){
   }
 }
 
-
-// ── M16: PROACTIVE ──────────────────────────────────────────────
 var PROACTIVE_PROMPTS = [
-  'Basándote en nuestra conversación, ¿qué conexión o patrón no mencionado crees que merece atención?',
-  'Identifica la tensión más productiva de esta sesión. ¿Qué hilo está suelto?',
-  'Sin que te lo pidan: ¿qué observación sobre el contexto actual o los temas tratados añadirías ahora?',
-  'Sintetiza en una frase el estado actual del campo conceptual de esta sesión.',
-  '¿Qué pregunta no se ha hecho todavía y debería hacerse?'
+  'Mira la conversación reciente y di en 1-2 frases algo útil o interesante que no se haya mencionado. Sin introducción, directo.',
+  'Una observación breve sobre lo que estamos trabajando. Máximo 2 frases.',
+  'Señala un hilo suelto de la conversación en una frase.',
+  'Di algo relevante sobre el contexto actual en una frase. Nada de presentaciones ni formatos.',
+  '¿Qué falta en esta conversación? Una frase, directo.'
 ];
 function triggerProactive(){
   if(S.busy||!S.key||!S.memory.length||!S.proactive)return;
   var prompt=PROACTIVE_PROMPTS[Math.floor(Math.random()*PROACTIVE_PROMPTS.length)];
   var ltc=getLTCtx();
-  var sys=[S.agents[S.agent].sys,ltc,'[MODO PROACTIVO: toma la iniciativa, no esperes que te pregunten]'].filter(Boolean).join(' ');
+  var sys=[S.agents[S.agent].sys,ltc,'[MODO PROACTIVO] Habla en primera persona, directo, sin formatos especiales, sin nombres entre corchetes, sin teatralidad. Máximo 2 frases.'].filter(Boolean).join(' ');
   var tid=showTyping();S.busy=true;
   apiCall(sys,S.memory.slice(-10).concat([{role:'user',content:prompt}]))
     .then(function(r){
@@ -2153,7 +2201,7 @@ function resetProactiveTimer(){
   S.lastActivity=Date.now();
   if(S.proactiveTimer){clearTimeout(S.proactiveTimer);S.proactiveTimer=null;}
   if(S.proactive){
-    // Dispara entre 3 y 7 minutos de inactividad
+
     var delay=(3+Math.random()*4)*60*1000;
     S.proactiveTimer=setTimeout(triggerProactive,delay);
   }
@@ -2165,7 +2213,6 @@ function toggleProactive(){
   else{if(S.proactiveTimer){clearTimeout(S.proactiveTimer);S.proactiveTimer=null;}toast('Modo proactivo OFF');}
 }
 
-// ── M17: NOTIFICATIONS ──────────────────────────────────────────
 var pushGranted = false;
 function requestPushPermission(){
   if(!('Notification' in window)){toast('Notificaciones no disponibles');return;}
@@ -2175,7 +2222,7 @@ function requestPushPermission(){
     if(pushGranted){
       toast('Notificaciones activadas ✓');
       sig('◉ AURA puede notificarte fuera de la app','rgba(0,255,170,.5)');
-      // Notificación de bienvenida
+
       sendNotification('AURA ∞.Ω activada','Notificaciones activas. AURA te contactará cuando tenga algo relevante.');
     } else {
       toast('Notificaciones denegadas');
@@ -2195,7 +2242,7 @@ function sendNotification(title, body, tag){
     });
     n.onclick=function(){window.focus();n.close();};
   }catch(e){
-    // En PWA usar SW
+
     if(navigator.serviceWorker&&navigator.serviceWorker.controller){
       navigator.serviceWorker.ready.then(function(sw){
         sw.showNotification(title||'AURA ∞.Ω',{
@@ -2212,7 +2259,6 @@ function proactiveNotify(message){
   }
 }
 
-// ── M18: THEME ──────────────────────────────────────────────────
 function applyTheme(){
   var h=new Date().getHours();
   var isNight=(h>=21||h<7);
@@ -2230,15 +2276,8 @@ function applyTheme(){
   }
 }
 
-// ── M19: WIRE + BOOT ────────────────────────────────────────────
-
-// ════════════════════════════════════════
-// M20: WEB ACCESS — Búsqueda · YouTube · Leer URLs
-// ════════════════════════════════════════
-
-// ── BÚSQUEDA WEB mejorada — DuckDuckGo + síntesis ──
 async function webSearch(query, synthesize){
-  // DuckDuckGo instant answers
+
   var ddUrl='https://api.duckduckgo.com/?q='+encodeURIComponent(query)+'&format=json&no_html=1&skip_disambig=1';
   var results=[];
   try{
@@ -2251,7 +2290,6 @@ async function webSearch(query, synthesize){
     });
   }catch(e){}
 
-  // Also try Open Search via Wikipedia for richer results
   try{
     var wUrl='https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(query.replace(/ /g,'_'));
     var wr=await fetch(wUrl);
@@ -2269,7 +2307,6 @@ async function webSearch(query, synthesize){
 
   if(!synthesize||!S.key) return '[ BÚSQUEDA: '+query+' ]\n\n'+raw;
 
-  // Synthesize with AURA
   var synthesis = await apiCall(
     'Sintetiza estos resultados de búsqueda sobre "'+query+'" en 2-3 frases directas. Sin introducción.',
     [{role:'user', content:raw}], 0.4
@@ -2277,9 +2314,8 @@ async function webSearch(query, synthesize){
   return '[ BÚSQUEDA: '+query+' ]\n\n'+synthesis+'\n\n—\n'+raw;
 }
 
-// ── YOUTUBE SEARCH ──
 async function youtubeSearch(query){
-  // YouTube public search via RSS/Piped (no API key needed)
+
   var pipedUrl='https://pipedapi.kavin.rocks/search?q='+encodeURIComponent(query)+'&filter=videos';
   var results=[];
   try{
@@ -2296,7 +2332,7 @@ async function youtubeSearch(query){
       };
     });
   }catch(e){
-    // Fallback — DuckDuckGo search for YouTube
+
     try{
       var r2=await fetch('https://api.duckduckgo.com/?q='+encodeURIComponent(query+' site:youtube.com')+'&format=json&no_html=1');
       var d2=await r2.json();
@@ -2313,7 +2349,6 @@ async function youtubeSearch(query){
     return (i+1)+'. '+v.title+(v.channel?' · '+v.channel:'')+(v.duration?' · '+v.duration:'')+(v.views?' · '+v.views:'')+'\n'+v.url+(v.description?'\n'+v.description.slice(0,100):'');
   }).join('\n\n');
 
-  // Ask AURA to comment
   if(S.key&&results.length){
     try{
       var comment=await apiCall(
@@ -2326,17 +2361,16 @@ async function youtubeSearch(query){
   return out;
 }
 
-// ── LEER URL ──
 async function readUrl(url){
   if(!url.startsWith('http')) url='https://'+url;
   var out='[ LEYENDO: '+url+' ]\n\n';
   try{
-    // Use allorigins proxy to bypass CORS
+
     var proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(url);
     var r=await fetch(proxyUrl);
     var d=await r.json();
     var html=d.contents||'';
-    // Strip HTML tags
+
     var text=html.replace(/<script[\s\S]*?<\/script>/gi,'')
       .replace(/<style[\s\S]*?<\/style>/gi,'')
       .replace(/<[^>]+>/g,' ')
@@ -2344,7 +2378,7 @@ async function readUrl(url){
       .trim()
       .slice(0,3000);
     if(!text) return out+'No se pudo leer el contenido.';
-    // Synthesize
+
     if(S.key){
       var summary=await apiCall(
         'Resume el contenido de esta página web en 3-4 puntos clave. Directo y útil.',
@@ -2358,8 +2392,400 @@ async function readUrl(url){
   }
 }
 
+var QBOT = 'https://quantum-crypto-bot.preview.emergentagent.com/api';
+
+function qbotFetch(endpoint){
+  return fetch(QBOT+endpoint).then(function(r){
+    if(!r.ok) throw new Error('QBot HTTP '+r.status);
+    return r.json();
+  });
+}
+
+async function cryptoTop(limit){
+  var d = await qbotFetch('/market/top?limit='+(limit||5));
+  if(!Array.isArray(d)) throw new Error('Sin datos');
+  return '[ ◈ TOP CRYPTO ]\n\n'+d.map(function(c,i){
+    return (i+1)+'. '+c.name+' ('+c.symbol+')\n   $'+
+      (c.current_price||c.price||'?')+
+      (c.price_change_percentage_24h?' · '+c.price_change_percentage_24h.toFixed(2)+'% 24h':'');
+  }).join('\n\n');
+}
+
+async function cryptoCoin(coinId){
+  var d = await qbotFetch('/market/'+coinId);
+  return '[ ◈ '+coinId.toUpperCase()+' ]\n\n'+JSON.stringify(d,null,2).slice(0,400);
+}
+
+async function cryptoSignals(limit){
+  var d = await qbotFetch('/agents/decisions?limit='+(limit||10));
+  var items = Array.isArray(d)?d:(d.decisions||d.data||[]);
+  if(!items.length) return '[ SEÑALES ] Sin señales disponibles.';
+  return '[ ◈ SEÑALES AI ]\n\n'+items.slice(0,5).map(function(s){
+    return '▸ '+( s.coin||s.symbol||'?')+' → '+(s.action||s.decision||'?')+
+      (s.confidence?' ('+Math.round((s.confidence||0)*100)+'% conf)':'')+
+      (s.reasoning?'\n  '+s.reasoning.slice(0,80):'');
+  }).join('\n\n');
+}
+
+async function cryptoAnalyze(coinId){
+  var d = await fetch(QBOT+'/agents/analyze/'+coinId,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).then(function(r){return r.json();});
+  var agents = d.agents||d.decisions||d||[];
+  if(Array.isArray(agents)&&agents.length){
+    return '[ ◈ ANÁLISIS: '+coinId.toUpperCase()+' ]\n\n'+agents.map(function(a){
+      return '▸ '+( a.agent||a.name||'?')+': '+(a.action||a.decision||'?')+
+        (a.confidence?' ('+Math.round((a.confidence||0)*100)+'%)':'')+
+        (a.reasoning?'\n  '+a.reasoning.slice(0,100):'');
+    }).join('\n\n');
+  }
+  return '[ ANÁLISIS '+coinId+' ]\n\n'+JSON.stringify(d,null,2).slice(0,400);
+}
+
+async function cryptoSentiment(){
+  var d = await qbotFetch('/sentiment/market');
+  var bull=d.bullish||d.bull||0, bear=d.bearish||d.bear||0, neu=d.neutral||d.neu||0;
+  var trend = bull>bear?'BULLISH 📈':bear>bull?'BEARISH 📉':'NEUTRAL ➡️';
+  return '[ ◈ SENTIMIENTO ]\n\n'+trend+'\n\nBullish: '+bull+'%\nBearish: '+bear+'%\nNeutral: '+neu+'%'+(d.summary?'\n\n'+d.summary:'');
+}
+
+async function cryptoTradingStatus(){
+  var d = await qbotFetch('/auto-trading/status');
+  return '[ ◈ AUTO-TRADING ]\n\n'+
+    'Estado: '+(d.active||d.status||'?')+'\n'+
+    'Trades hoy: '+(d.trades_today||d.today||0)+'\n'+
+    'Profit: '+(d.profit||d.total_profit||0)+'\n'+
+    (d.last_trade?'Último trade: '+JSON.stringify(d.last_trade).slice(0,100):'');
+}
+
+async function cryptoArbitrage(){
+  var d = await qbotFetch('/arbitrage/opportunities');
+  var ops = Array.isArray(d)?d:(d.opportunities||d.data||[]);
+  if(!ops.length) return '[ ARBITRAJE ] Sin oportunidades ahora.';
+  return '[ ◈ ARBITRAJE ]\n\n'+ops.slice(0,3).map(function(o){
+    return '▸ '+(o.pair||o.symbol||'?')+
+      (o.profit_pct?' → '+o.profit_pct.toFixed(2)+'% profit':'')+
+      (o.buy_exchange?' · Compra en '+o.buy_exchange:'')+
+      (o.sell_exchange?' · Vende en '+o.sell_exchange:'');
+  }).join('\n\n');
+}
+
+async function cryptoWallet(){
+  var d = await qbotFetch('/wallet/balance');
+  return '[ ◈ WALLET ]\n\n'+JSON.stringify(d,null,2).slice(0,300);
+}
+
+var cryptoCtxCache = null;
+var cryptoCtxTs = 0;
+
+async function getCryptoCtx(){
+
+  if(cryptoCtxCache && (Date.now()-cryptoCtxTs)<300000) return cryptoCtxCache;
+  try{
+    var sent = await qbotFetch('/sentiment/market');
+    var bull=sent.bullish||sent.bull||0, bear=sent.bearish||sent.bear||0;
+    var trend = bull>bear?'bullish':bear>bull?'bearish':'neutral';
+    var status = await qbotFetch('/auto-trading/status');
+    cryptoCtxCache = '[CRYPTO: mercado '+trend+', bot '+(status.active?'activo':'inactivo')+
+      ', trades hoy: '+(status.trades_today||0)+']';
+    cryptoCtxTs = Date.now();
+    return cryptoCtxCache;
+  }catch(e){ return ''; }
+}
+
+async function checkCryptoAlerts(){
+  if(!S.proactive) return;
+  try{
+    var ops = await qbotFetch('/arbitrage/opportunities');
+    var list = Array.isArray(ops)?ops:(ops.opportunities||[]);
+    var good = list.filter(function(o){return (o.profit_pct||0)>1;});
+    if(good.length){
+      var msg = '◈ '+good.length+' oportunidad(es) de arbitraje >1% detectada(s)';
+      sig(msg,'rgba(255,183,0,.6)');
+      proactiveNotify('AURA Crypto: '+msg);
+    }
+  }catch(e){}
+}
+
+setInterval(checkCryptoAlerts, 600000);
+
+function toggleConv(){
+  S.convMode=!S.convMode;
+  var btn=el('b-conv');
+  if(btn){btn.classList.toggle('on',S.convMode);}
+  if(S.convMode){
+    S.voiceMode=true;
+    sig('◉ MODO CONVERSACIÓN ACTIVO — habla cuando quieras','rgba(0,255,170,.6)');
+    toast('Conversación continua ON');
+
+    setTimeout(startListening,500);
+  } else {
+    S.voiceMode=false;
+    if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;}
+    toast('Conversación continua OFF');
+  }
+}
+
+function toggleConv(){
+  S.convMode=!S.convMode;
+  var btn=el('b-conv');
+  if(btn) btn.classList.toggle('on',S.convMode);
+  if(S.convMode){
+    S.voiceMode=true;
+    sig('◉ CONVERSACIÓN CONTINUA — habla cuando quieras','rgba(0,255,170,.6)');
+    toast('Modo JARVIS ON');
+    setTimeout(startListening,500);
+  } else {
+    S.voiceMode=false;
+    if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;}
+    toast('Modo JARVIS OFF');
+  }
+}
+
+var episodes = [];
+
+function addEpisode(type, content, context){
+  var ep = {
+    id: Date.now(),
+    type: type,
+    content: content,
+    context: {
+      agent: S.agent,
+      emotion: S.emo.slice(-1)[0]||'neutro',
+      hour: new Date().getHours(),
+      day: new Date().toLocaleDateString('es'),
+      location: S_location&&S_location.city||null,
+      msgCount: S.msgs
+    },
+    ts: Date.now()
+  };
+  episodes.push(ep);
+  episodes = episodes.slice(-500);
+  try{localStorage.setItem('a_episodes',JSON.stringify(episodes.slice(-100)));}catch(e){}
+  return ep;
+}
+
+function loadEpisodes(){
+  try{var s=localStorage.getItem('a_episodes');if(s)episodes=JSON.parse(s);}catch(e){}
+}
+
+function getEpisodicCtx(query){
+  if(!episodes.length) return '';
+  var q=(query||'').toLowerCase();
+  var relevant = episodes.filter(function(ep){
+    return ep.content&&ep.content.toLowerCase().indexOf(q.slice(0,20))>=0;
+  }).slice(-3);
+  if(!relevant.length) relevant = episodes.slice(-3);
+  return '[EPISODIOS: '+relevant.map(function(ep){
+    return ep.type+'@'+ep.context.day+': '+ep.content.slice(0,60);
+  }).join(' | ')+']';
+}
+
+var goals = [];
+
+function loadGoals(){
+  try{var s=localStorage.getItem('a_goals');if(s)goals=JSON.parse(s);}catch(e){}
+}
+function saveGoals(){
+  try{localStorage.setItem('a_goals',JSON.stringify(goals));}catch(e){}
+}
+function addGoal(text, type, interval){
+  var goal = {
+    id: Date.now(),
+    text: text,
+    type: type||'general',
+    interval: interval||'daily',
+    created: Date.now(),
+    lastRun: 0,
+    active: true,
+    results: []
+  };
+  goals.push(goal);
+  saveGoals();
+  toast('Objetivo añadido: '+text.slice(0,40));
+  addEpisode('goal','Nuevo objetivo: '+text,{});
+  return goal;
+}
+function removeGoal(id){
+  goals = goals.filter(function(g){return g.id!==id;});
+  saveGoals();
+}
+function getGoalsCtx(){
+  var active = goals.filter(function(g){return g.active;});
+  if(!active.length) return '';
+  return '[OBJETIVOS ACTIVOS: '+active.map(function(g){return g.text.slice(0,40);}).join(' | ')+']';
+}
+async function runGoal(goal){
+  if(!S.key||S.busy) return;
+  goal.lastRun = Date.now();
+  saveGoals();
+  try{
+    var prompt = 'Ejecuta este objetivo de forma autónoma y devuelve un resumen conciso de lo que encontraste o hiciste: '+goal.text;
+
+    if(/crypto|bitcoin|mercado|trading/i.test(goal.text)){
+      try{
+        var sent = await qbotFetch('/sentiment/market');
+        prompt += ' Contexto actual del mercado: '+JSON.stringify(sent).slice(0,200);
+      }catch(e){}
+    }
+    var r = await apiCall(prompt, [], 0.6);
+    goal.results.push({ts:Date.now(), result:r.slice(0,200)});
+    goal.results = goal.results.slice(-5);
+    saveGoals();
+    addEpisode('goal','Objetivo ejecutado: '+goal.text.slice(0,40)+' → '+r.slice(0,80), {});
+    if(document.hidden){
+      proactiveNotify('AURA completó: '+goal.text.slice(0,50));
+    } else {
+      sig('◈ OBJETIVO: '+goal.text.slice(0,40),'rgba(0,255,170,.4)');
+      addMsg('aura','[ ◈ OBJETIVO COMPLETADO ]\n\n'+goal.text+'\n\n'+r);
+    }
+  }catch(e){ console.warn('goal error:',e.message); }
+}
+
+var schedulerActive = false;
+
+function getIntervalMs(interval){
+  var map = {hourly:3600000, daily:86400000, weekly:604800000, once:0};
+  return map[interval]||86400000;
+}
+function shouldRunGoal(goal){
+  if(!goal.active) return false;
+  if(goal.interval==='once' && goal.lastRun>0) return false;
+  var interval = getIntervalMs(goal.interval);
+  return (Date.now()-goal.lastRun) >= interval;
+}
+async function runScheduler(){
+  if(!S.key) return;
+  var pending = goals.filter(shouldRunGoal);
+  for(var i=0;i<pending.length;i++){
+    await runGoal(pending[i]);
+    await new Promise(function(r){setTimeout(r,2000);});
+  }
+
+  var h = new Date().getHours();
+  if(h>=7&&h<=9){
+    var today = new Date().toDateString();
+    if(localStorage.getItem('a_auto_brief')!==today){
+      localStorage.setItem('a_auto_brief',today);
+      await autoBriefing();
+    }
+  }
+
+  await checkCryptoAlerts();
+}
+function startScheduler(){
+  if(schedulerActive) return;
+  schedulerActive=true;
+
+  setTimeout(runScheduler, 3000);
+  setInterval(runScheduler, 900000);
+}
+
+async function autoBriefing(){
+  if(!S.key) return;
+  try{
+    var parts = [];
+
+    try{
+      var sent=await qbotFetch('/sentiment/market');
+      var status=await qbotFetch('/auto-trading/status');
+      parts.push('Mercado: '+(sent.bullish>sent.bearish?'bullish':'bearish')+', bot '+(status.active?'activo':'inactivo'));
+    }catch(e){}
+
+    if(goals.length) parts.push('Objetivos activos: '+goals.filter(function(g){return g.active;}).length);
+
+    var yesterday = episodes.filter(function(ep){
+      return (Date.now()-ep.ts)<86400000;
+    });
+    if(yesterday.length) parts.push('Actividad reciente: '+yesterday.length+' eventos');
+
+    if(S.lt&&S.lt.summary) parts.push('Memoria: '+S.lt.summary.slice(0,80));
+
+    var ctx = parts.join(' | ');
+    var r = await apiCall(
+      'Genera un briefing matutino muy breve (2-3 frases) basándote en este contexto. Directo, útil, sin presentación.',
+      [{role:'user',content:ctx||'Sin contexto previo'}], 0.5
+    );
+    addMsg('aura','[ ☀ BRIEFING AUTÓNOMO ]\n\n'+r);
+    addEpisode('reflection','Briefing: '+r.slice(0,100),{});
+    if(document.hidden) proactiveNotify('AURA: '+r.slice(0,80));
+  }catch(e){}
+}
+
+window.addEventListener('storage', function(e){
+  if(e.key==='a_aura_broadcast'&&e.newValue){
+    try{
+      var msg=JSON.parse(e.newValue);
+      if(msg.type==='alert') sig('◉ AURA[otro]: '+msg.content,'rgba(160,96,255,.5)');
+      if(msg.type==='goal_result') addMsg('aura','[ ◈ INSTANCIA PARALELA ]\n\n'+msg.content,'oracle');
+    }catch(ex){}
+  }
+});
+function broadcastToInstances(type, content){
+  try{localStorage.setItem('a_aura_broadcast',JSON.stringify({type:type,content:content,ts:Date.now()}));}catch(e){}
+}
+
+async function monitorYouTubeChannel(){
+  try{
+    var r = await youtubeSearch('cosmologia del infinito site:youtube.com');
+    addEpisode('monitor','Canal YouTube chequeado',{});
+    return r;
+  }catch(e){return null;}
+}
+
+function openDrawer(){
+  var d=document.getElementById('cmd-drawer');
+  var o=document.getElementById('cmd-overlay');
+  if(d)d.classList.add('open');
+  if(o)o.classList.add('show');
+}
+function closeDrawer(){
+  var d=document.getElementById('cmd-drawer');
+  var o=document.getElementById('cmd-overlay');
+  if(d)d.classList.remove('open');
+  if(o)o.classList.remove('show');
+}
+function wireDrawer(){
+  var btn=document.getElementById('btn-drawer');
+  if(btn)btn.addEventListener('click',openDrawer);
+
+  var overlay=document.getElementById('cmd-overlay');
+  if(overlay)overlay.addEventListener('click',closeDrawer);
+
+  document.querySelectorAll('.cmd-btn').forEach(function(b){
+    b.addEventListener('click',function(){
+      closeDrawer();
+      var action=b.dataset.action;
+      var cmd=b.dataset.cmd;
+      var prompt=b.dataset.prompt;
+
+      if(action){
+
+        var inp=el('inp');
+        if(inp){inp.value='/'+action;}
+        setTimeout(send,100);
+      } else if(prompt){
+
+        var inp=el('inp');
+        if(inp){inp.value='/'+prompt;inp.focus();}
+      } else if(cmd){
+
+        var hbtn=document.getElementById('b-'+cmd);
+        if(hbtn)hbtn.click();
+      }
+    });
+  });
+
+  var startY=0;
+  var drawer=document.getElementById('cmd-drawer');
+  if(drawer){
+    drawer.addEventListener('touchstart',function(e){startY=e.touches[0].clientY;},{passive:true});
+    drawer.addEventListener('touchend',function(e){
+      if(e.changedTouches[0].clientY-startY>60)closeDrawer();
+    },{passive:true});
+  }
+}
+
 function wire(){
-  // Setup
+
   var sugo=el('su-go');
   if(sugo)sugo.addEventListener('click',function(){
     var k=el('akey');if(!k)return;
@@ -2372,12 +2798,11 @@ function wire(){
   var ak=el('akey');
   if(ak)ak.addEventListener('keydown',function(e){if(e.key==='Enter')el('su-go').click();});
 
-  // HUD
   var bmute=el('b-mute');
   if(bmute)bmute.addEventListener('click',function(){
     S.muted=!S.muted;bmute.textContent=S.muted?'🔇':'🔊';
     if(S.muted){
-      // Para voz inmediatamente
+
       if(window.speechSynthesis)window.speechSynthesis.cancel();
       if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0;}catch(e){}}
       S.speaking=false;setSpeakingUI(false);
@@ -2424,7 +2849,6 @@ function wire(){
     else toast('Key ya registrada');
   });
 
-  // Input
   var inp=el('inp');
   if(inp){
     inp.addEventListener('keydown',function(e){
@@ -2452,7 +2876,6 @@ function wire(){
   if(ifile)ifile.addEventListener('change',handleImg);
   var bclimg=el('b-climg');if(bclimg)bclimg.addEventListener('click',clearImg);
 
-  // Modal agente
   var agcr=el('ag-create');
   if(agcr)agcr.addEventListener('click',function(){
     var n=el('ag-n'),s=el('ag-s'),c=el('ag-c');
@@ -2473,37 +2896,33 @@ function wire(){
   var modal=el('modal');
   if(modal)modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('show');});
 
-  // Swipe izq/der en chat para cambiar agente
   var chat2=el('chat');
   if(chat2){
     var swipeX=0;
     chat2.addEventListener('touchstart',function(e){swipeX=e.touches[0].clientX;},{passive:true});
     chat2.addEventListener('touchend',function(e){
       var dx=e.changedTouches[0].clientX-swipeX;
-      if(Math.abs(dx)<60)return; // mínimo 60px
+      if(Math.abs(dx)<60)return;
       var keys=Object.keys(S.agents);
       var cur=keys.indexOf(S.agent);
-      if(dx<0)cur=(cur+1)%keys.length; // izquierda → siguiente
-      else cur=(cur-1+keys.length)%keys.length; // derecha → anterior
+      if(dx<0)cur=(cur+1)%keys.length;
+      else cur=(cur-1+keys.length)%keys.length;
       pickAg(keys[cur]);
     },{passive:true});
   }
 
-  // Cámara
   var bcam=el('b-cam');
   var camfile=el('camfile');
   if(bcam&&camfile)bcam.addEventListener('click',function(){camfile.click();});
   if(camfile)camfile.addEventListener('change',handleCamera);
 
-  // Ubicación
   var bloc=el('b-loc');
   if(bloc)bloc.addEventListener('click',function(){
     getLocation();
-    // Auto-clima tras ubicación
+
     setTimeout(autoWeather,3000);
   });
 
-  // Notificaciones
   var bnotif=el('b-notif');
   if(bnotif)bnotif.addEventListener('click',function(){
     if(Notification.permission==='granted'){
@@ -2515,7 +2934,17 @@ function wire(){
     }
   });
 
-  // GitHub token
+  var bcl=el('b-cl');
+  if(bcl)bcl.addEventListener('click',function(){
+    var k=prompt('Anthropic API Key (sk-ant-...):');
+    if(!k)return;
+    var v=k.trim().replace(/[^\x20-\x7E]/g,'');
+    if(!v.startsWith('sk-ant-')){toast('Key inválida — debe empezar por sk-ant-');return;}
+    S.claudeKey=v;ls('a_claudekey',v);
+    bcl.classList.add('kon');
+    toast('Claude API activa ✓ — /evolve usará Claude para código');
+  });
+
   var bgh=el('b-gh');
   if(bgh)bgh.addEventListener('click',function(){
     var k=prompt('GitHub Personal Access Token (ghp_...):');
@@ -2524,22 +2953,28 @@ function wire(){
     bgh.classList.add('kon');toast('GitHub token guardado ✓');
   });
 
-  // Evolve button
   var bevl=el('b-evolve');
   if(bevl)bevl.addEventListener('click',proposeEvolution);
 
-  // Proactive mode
+  var bconv=el('b-conv');
+  if(bconv)bconv.addEventListener('click',toggleConv);
+
+  var bconv=el('b-conv');
+  if(bconv) bconv.addEventListener('click',toggleConv);
+
+  wireDrawer();
+
+  startScheduler();
+
   var bpro=el('b-pro');
   if(bpro)bpro.addEventListener('click',toggleProactive);
 
-  // Wake word toggle
   var bwake=el('b-wake');
   if(bwake)bwake.addEventListener('click',function(){
     if(S.wakeActive){stopWake();toast('Wake word OFF');}
     else{startWake();toast('Wake word ON — di "'+S.wakeWord+'"');}
   });
 
-  // OpenRouter key
   var bor=el('b-or');
   if(bor)bor.addEventListener('click',function(){
     var k=prompt('OpenRouter API Key (sk-or-...):');
@@ -2548,7 +2983,6 @@ function wire(){
     toast('OpenRouter activo ✓');updateHUD();
   });
 
-  // Together AI key
   var btg=el('b-tg');
   if(btg)btg.addEventListener('click',function(){
     var k=prompt('Together AI Key:');
@@ -2560,17 +2994,19 @@ function wire(){
 function showApp(){
   applyTheme();setInterval(applyTheme,60000);
   loadSemanticIndex();
+  loadEpisodes();
+  loadGoals();
   updateHUD();renderAgBar();renderSC();updateEnv();
-  // Pedir permisos de notificación
+
   setTimeout(requestPushPermission, 2000);
   if(S.memory.length>=20) setTimeout(autoReflect,3000);
-  // Auto-ubicación silenciosa al arrancar
+
   setTimeout(function(){if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(p){S_location={lat:p.coords.latitude,lon:p.coords.longitude,ts:Date.now(),acc:p.coords.accuracy};},function(){},{maximumAge:300000,timeout:5000});},1000);
   if(S.memory.length>=6) setTimeout(updateJProfile,4000);
-  // Apply saved profile on boot
+
   var savedProfile=JSON.parse(localStorage.getItem('a_jprofile')||'{}');
   if(savedProfile.estilo_comunicacion||savedProfile.tono_preferido) adaptSystemPrompt(savedProfile);
-  // PRO activo por defecto
+
   if(S.proactive) resetProactiveTimer();
   setInterval(updateEnv,60000);
   document.addEventListener('visibilitychange',function(){if(document.hidden){saveMem();saveLT();}});
@@ -2586,7 +3022,6 @@ function showApp(){
     el('chat').appendChild(sep);
   }
 
-  // Briefing
   var today=new Date().toDateString();
   if(S.key&&S.lt.summary&&ls('a_brief')!==today){
     ls('a_brief',today);
@@ -2596,7 +3031,7 @@ function showApp(){
         .then(function(r){addMsg('aura','[ ☀ BRIEFING ]\n\n'+r);}).catch(function(){});
     },1800);
   }
-  // Focus teclado en móvil
+
   setTimeout(function(){ var i=el('inp'); if(i) i.focus(); }, 500);
 }
 function init(){
@@ -2607,7 +3042,6 @@ function init(){
   else el('setup').classList.add('show');
 }
 
-// Arrancar
 if(document.readyState==='loading'){
   document.addEventListener('DOMContentLoaded',init);
 }else{
@@ -2615,6 +3049,7 @@ if(document.readyState==='loading'){
 }
 
 })(); // IIFE
+
 </script>
 </body>
 </html>
