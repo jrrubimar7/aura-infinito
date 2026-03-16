@@ -1259,46 +1259,80 @@ function toggleMic(){
 }
 function startListening(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast("Voz no disponible");return;}
+  if(!SR){toast('Voz no disponible');return;}
   if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;return;}
-  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)
-    navigator.mediaDevices.getUserMedia({audio:true}).catch(function(){});
-  var r=new SR();r.lang='es-ES';r.continuous=false;r.interimResults=false;r.maxAlternatives=3;
+
+  if(S.speaking){
+    if(window.speechSynthesis)window.speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();}catch(e){}}
+    S.speaking=false;setSpeakingUI(false);
+  }
+
   var mb=el('b-imic'),hm=el('b-mic');
+  var captured='';
+  var sendTimer=null;
+
+  function doSend(){
+    if(sendTimer){clearTimeout(sendTimer);sendTimer=null;}
+    var v=captured.trim();
+    if(!v)return;
+    var inp=el('inp');if(inp)inp.value=v;
+    S.voiceMode=true;
+    setTimeout(send,200);
+  }
+
+  var r=new SR();
+  r.lang='es-ES';
+  r.continuous=false;
+  r.interimResults=true;
+  r.maxAlternatives=1;
+
   r.onstart=function(){
-    // Para voz si está hablando para no captarse
-    if(S.speaking){
-      if(window.speechSynthesis)window.speechSynthesis.cancel();
-      if(currentAudio){try{currentAudio.pause();}catch(e){}}
-      S.speaking=false;setSpeakingUI(false);
-    }
-    if(mb)mb.classList.add('rec');if(hm)hm.classList.add('on');
+    if(mb)mb.classList.add('rec');
+    if(hm)hm.classList.add('on');
   };
-  r.onend=function(){if(mb)mb.classList.remove('rec');if(hm)hm.classList.remove('on');S.recog=null;};
-  r.onerror=function(){if(mb)mb.classList.remove('rec');if(hm)hm.classList.remove('on');S.recog=null;};
-  var interimText='';
+
   r.onresult=function(e){
     var fin='',int='';
     for(var i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal) fin+=e.results[i][0].transcript;
+      if(e.results[i].isFinal)fin+=e.results[i][0].transcript;
       else int+=e.results[i][0].transcript;
     }
-    interimText=fin||int;
-    var inp=el('inp');if(inp)inp.value=interimText;
-    if(fin){S.voiceMode=true;r.stop();setTimeout(send,350);}
-  };
-  // Android fallback — if no isFinal ever fires, use whatever we got on end
-  r.onend=function(){
-    if(mb)mb.classList.remove('rec');if(hm)hm.classList.remove('on');S.recog=null;
-    if(interimText&&interimText.trim()){
-      var inp=el('inp');if(inp)inp.value=interimText.trim();
-      S.voiceMode=true;
-      setTimeout(send,200);
+    var txt=fin||int;
+    if(txt){
+      captured=txt;
+      var inp=el('inp');if(inp)inp.value=captured;
+    }
+    if(fin){
+      if(sendTimer)clearTimeout(sendTimer);
+      sendTimer=setTimeout(function(){r.stop();doSend();},300);
+    } else if(captured){
+      if(sendTimer)clearTimeout(sendTimer);
+      sendTimer=setTimeout(function(){r.stop();doSend();},1500);
     }
   };
-  try{r.start();S.recog=r;}catch(e){S.recog=null;toast('Error al iniciar micrófono');}
 
+  r.onerror=function(e){
+    if(mb)mb.classList.remove('rec');
+    if(hm)hm.classList.remove('on');
+    S.recog=null;
+    if(sendTimer){clearTimeout(sendTimer);sendTimer=null;}
+    if(e.error==='no-speech')toast('No se detectó voz');
+    else if(e.error==='not-allowed')toast('Micrófono bloqueado');
+    else toast('Error mic: '+e.error);
+  };
+
+  r.onend=function(){
+    if(mb)mb.classList.remove('rec');
+    if(hm)hm.classList.remove('on');
+    S.recog=null;
+    if(captured.trim()&&!sendTimer)doSend();
+  };
+
+  try{r.start();S.recog=r;}
+  catch(e){S.recog=null;toast('Error micrófono: '+e.message);}
 }
+
 
 function startWake(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
