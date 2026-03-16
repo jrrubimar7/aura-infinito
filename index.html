@@ -216,6 +216,8 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);font-fami
     </div>
     <div id="hud-r2">
       <div class="hbtn on" id="b-auto">AUTO</div>
+      <div class="hbtn" id="b-conv">CONV</div>
+      <div class="hbtn" id="b-conv">CONV</div>
       <div class="hbtn on" id="b-pro-hud">PRO</div>
       <div class="hsep"></div>
       <div class="hbtn" id="b-mem">MEM</div>
@@ -268,11 +270,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);font-fami
       <div class="iatt" id="b-loc">📍</div>
       <input type="file" id="imgfile" accept="image/*,text/*,.html,.js,.json,.md,.txt,.csv,.pdf,.docx,.doc" style="display:none"/>
       <input type="file" id="camfile" accept="image/*" capture="environment" style="display:none"/>
-      <div class="isend" id="b-send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></div>
-    </div>
-  </div>
-</div>
-
+      <div class="isend" id="b-send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
 <script>
 (function(){
 // ╔══════════════════════════════════════════════════════════════╗
@@ -391,6 +389,8 @@ var S = {
   recog: null,
   speaking: false,
   voiceMode: false,
+  convMode: false,
+  convMode: false,   // JARVIS mode — mic reopens after each response
   ghToken: '',
   ghRepo: 'jrrubimar7/aura-infinito',
   pendingEvolution: null,  // {description, newContent} esperando aprobación
@@ -1176,7 +1176,9 @@ function speak(txt){
     function playNext(){
       if(idx>=chunks.length||S.muted){
         setSpeakingUI(false);
-        if(S.voiceMode&&!S.muted&&!S.busy)setTimeout(toggleMic,600);
+        if((S.voiceMode||S.convMode)&&!S.muted&&!S.busy){
+          setTimeout(startListening, S.convMode?800:600);
+        }
         return;
       }
       var chunk=chunks[idx++];
@@ -2053,6 +2055,12 @@ function send(){
       saveMem();updateHUD();S.msgs++;
       S.tokenCount=Math.max(0,(S.tokenCount||0)+Math.ceil(r.length/4));
       updateTokenCount();
+      // ConvMode safety — if not speaking, reopen mic
+      if(S.convMode&&!S.muted){
+        setTimeout(function(){
+          if(!S.speaking&&!S.recog) startListening();
+        }, 2500);
+      }
       // M7b: store in semantic index
       semanticStore(txt,'user');
       semanticStore(r,'assistant');
@@ -2610,6 +2618,43 @@ async function checkCryptoAlerts(){
 // Check every 10 minutes if proactive is on
 setInterval(checkCryptoAlerts, 600000);
 
+
+// ════════════════════════════════════════
+// MODO CONVERSACIÓN — JARVIS continuo
+// ════════════════════════════════════════
+function toggleConv(){
+  S.convMode=!S.convMode;
+  var btn=el('b-conv');
+  if(btn){btn.classList.toggle('on',S.convMode);}
+  if(S.convMode){
+    S.voiceMode=true;
+    sig('◉ MODO CONVERSACIÓN ACTIVO — habla cuando quieras','rgba(0,255,170,.6)');
+    toast('Conversación continua ON');
+    // Start listening immediately
+    setTimeout(startListening,500);
+  } else {
+    S.voiceMode=false;
+    if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;}
+    toast('Conversación continua OFF');
+  }
+}
+
+function toggleConv(){
+  S.convMode=!S.convMode;
+  var btn=el('b-conv');
+  if(btn) btn.classList.toggle('on',S.convMode);
+  if(S.convMode){
+    S.voiceMode=true;
+    sig('◉ CONVERSACIÓN CONTINUA — habla cuando quieras','rgba(0,255,170,.6)');
+    toast('Modo JARVIS ON');
+    setTimeout(startListening,500);
+  } else {
+    S.voiceMode=false;
+    if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;}
+    toast('Modo JARVIS OFF');
+  }
+}
+
 function wire(){
   // Setup
   var sugo=el('su-go');
@@ -2779,6 +2824,12 @@ function wire(){
   // Evolve button
   var bevl=el('b-evolve');
   if(bevl)bevl.addEventListener('click',proposeEvolution);
+
+  var bconv=el('b-conv');
+  if(bconv)bconv.addEventListener('click',toggleConv);
+
+  var bconv=el('b-conv');
+  if(bconv) bconv.addEventListener('click',toggleConv);
 
   // Proactive mode
   var bpro=el('b-pro');
