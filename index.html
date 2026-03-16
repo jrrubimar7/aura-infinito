@@ -1263,7 +1263,7 @@ function startListening(){
   if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;return;}
   if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)
     navigator.mediaDevices.getUserMedia({audio:true}).catch(function(){});
-  var r=new SR();r.lang='es-ES';r.continuous=false;r.interimResults=true;
+  var r=new SR();r.lang='es-ES';r.continuous=false;r.interimResults=false;r.maxAlternatives=3;
   var mb=el('b-imic'),hm=el('b-mic');
   r.onstart=function(){
     // Para voz si está hablando para no captarse
@@ -1276,14 +1276,25 @@ function startListening(){
   };
   r.onend=function(){if(mb)mb.classList.remove('rec');if(hm)hm.classList.remove('on');S.recog=null;};
   r.onerror=function(){if(mb)mb.classList.remove('rec');if(hm)hm.classList.remove('on');S.recog=null;};
+  var interimText='';
   r.onresult=function(e){
     var fin='',int='';
     for(var i=0;i<e.results.length;i++){
-      if(e.results[i].isFinal)fin+=e.results[i][0].transcript;
+      if(e.results[i].isFinal) fin+=e.results[i][0].transcript;
       else int+=e.results[i][0].transcript;
     }
-    var inp=el('inp');if(inp)inp.value=fin||int;
+    interimText=fin||int;
+    var inp=el('inp');if(inp)inp.value=interimText;
     if(fin){S.voiceMode=true;r.stop();setTimeout(send,350);}
+  };
+  // Android fallback — if no isFinal ever fires, use whatever we got on end
+  r.onend=function(){
+    if(mb)mb.classList.remove('rec');if(hm)hm.classList.remove('on');S.recog=null;
+    if(interimText&&interimText.trim()){
+      var inp=el('inp');if(inp)inp.value=interimText.trim();
+      S.voiceMode=true;
+      setTimeout(send,200);
+    }
   };
   try{r.start();S.recog=r;}catch(e){S.recog=null;toast('Error al iniciar micrófono');}
 
