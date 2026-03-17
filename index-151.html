@@ -1,0 +1,3401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,interactive-widget=resizes-content"/>
+<meta name="theme-color" content="#00050f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<title>AURA ∞.Ω</title>
+<script src="https://js.puter.com/v2/"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#ffffff;
+  --bg2:#f7f9fc;
+  --bg3:#eef2f7;
+  --acc:#0084ff;
+  --ok:#00c48c;
+  --warn:#f59e0b;
+  --dng:#ef4444;
+  --pur:#7c3aed;
+  --txt:#0f0f0f;
+  --txt2:#1a1a1a;
+  --mut:#6b7280;
+  --ln:#e2e8f0;
+  --ln2:#f1f5f9;
+  --h:'Rajdhani',sans-serif;
+  --m:'Share Tech Mono',monospace;
+  --sans:'Rajdhani',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);font-family:var(--sans);overflow:hidden;}#app{display:flex;flex-direction:column;height:100dvh;height:100vh;height:100svh;min-height:0;}#hud{background:#ffffff;border-bottom:1px solid var(--ln);flex-shrink:0;box-shadow:0 1px 8px rgba(0,0,0,.06);}#hud-r1{display:flex;align-items:center;gap:9px;padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));}#hud-r2{display:flex;gap:4px;overflow-x:auto;padding:4px 12px 8px;scrollbar-width:none;background:#fff;}#hud-r2::-webkit-scrollbar{display:none;}.hcore{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);box-shadow:0 0 14px rgba(0,120,255,.7);animation:breath 3s ease-in-out infinite;flex-shrink:0;}@keyframes breath{0%,100%{box-shadow:0 0 14px rgba(0,120,255,.7);transform:scale(1);}50%{box-shadow:0 0 24px rgba(0,180,255,1);transform:scale(1.06);}}.hname{font-family:var(--h);font-weight:700;font-size:.95rem;letter-spacing:.22em;color:var(--acc);}.hmet{display:flex;gap:9px;flex:1;}.hm{display:flex;flex-direction:column;align-items:center;}.hmv{font-size:.62rem;color:var(--acc);font-weight:700;line-height:1.1;}.hml{font-size:.38rem;color:var(--mut);letter-spacing:.1em;}.hico{width:30px;height:30px;background:var(--bg2);border:1px solid var(--ln);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:all .15s;}.hico:active{border-color:var(--acc);transform:scale(.9);background:var(--bg3);}.hico.on{border-color:var(--ok);background:#f0fdf4;}.hbtn{background:var(--bg2);border:1px solid var(--ln);border-radius:6px;color:var(--txt2);padding:4px 10px;cursor:pointer;font-family:var(--sans);font-size:.65rem;font-weight:600;white-space:nowrap;flex-shrink:0;letter-spacing:.05em;transition:all .15s;user-select:none;}.hbtn:active{border-color:var(--acc);color:var(--acc);background:var(--bg3);}.hbtn.on{border-color:var(--acc);color:var(--acc);background:#eff8ff;}.hbtn.kon{border-color:var(--ok);color:var(--ok);background:#f0fdf4;}.hsep{width:1px;height:12px;background:var(--ln);flex-shrink:0;align-self:center;margin:0 1px;}#agbar{display:flex;overflow-x:auto;background:#ffffff;border-bottom:2px solid var(--ln);flex-shrink:0;scrollbar-width:none;}#agbar::-webkit-scrollbar{display:none;}.agtab{padding:8px 16px;font-size:.68rem;font-weight:600;letter-spacing:.06em;cursor:pointer;color:var(--mut);border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;flex-shrink:0;font-family:var(--sans);}.agtab.on{color:var(--acc);border-bottom-color:var(--acc);}#envbar{font-size:.58rem;color:var(--mut);padding:3px 14px;background:var(--bg2);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;border-bottom:1px solid var(--ln);}#chat{flex:1;min-height:0;overflow-y:auto;padding:16px 12px 8px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;background:var(--bg);}#chat::-webkit-scrollbar{width:3px;}#chat::-webkit-scrollbar-thumb{background:var(--ln);border-radius:3px;}.msg{display:flex;gap:7px;animation:fup .3s cubic-bezier(.34,1.56,.64,1);}.msg.user{flex-direction:row-reverse;}@keyframes fup{from{opacity:0;transform:translateY(12px) scale(.97);}to{opacity:1;transform:none;}}.mav{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.42rem;font-family:var(--m);}.msg.aura .mav{background:linear-gradient(135deg,#0084ff,#0055cc);border:none;color:#fff;font-weight:700;}.msg.user .mav{background:var(--bg3);border:1px solid var(--ln);color:var(--txt2);font-weight:600;}.mbody{max-width:85%;display:flex;flex-direction:column;gap:2px;}.mtag{font-size:.55rem;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:4px;width:fit-content;margin-bottom:3px;font-family:var(--sans);}.mbub{padding:12px 14px;border-radius:12px;font-size:.88rem;line-height:1.65;white-space:pre-wrap;word-break:break-word;font-family:var(--sans);}.msg.aura .mbub{background:#ffffff;border:1px solid var(--ln);border-left:3px solid var(--acc);box-shadow:0 1px 4px rgba(0,0,0,.05);}.msg.user .mbub{background:#eff8ff;border:1px solid #bfdbfe;}.msg.inf .mbub{border-left-color:var(--pur)!important;background:#faf5ff!important;}.msg.orc .mbub{border-left-color:var(--warn)!important;background:#fffbeb!important;}.mmeta{font-size:.5rem;color:var(--mut);display:flex;gap:6px;align-items:center;padding:3px 2px 0;flex-wrap:wrap;}.msg.user .mmeta{justify-content:flex-end;}.mbtn{background:none;border:none;color:var(--mut);cursor:pointer;font-size:.65rem;padding:2px 4px;border-radius:4px;transition:all .15s;}.mbtn:hover{color:var(--acc);background:var(--bg2);}.typing{display:flex;gap:5px;padding:12px 16px;background:#ffffff;border:1px solid var(--ln);border-radius:18px;width:fit-content;box-shadow:0 2px 8px rgba(0,0,0,.06);align-items:center;}.typing span{width:7px;height:7px;background:var(--acc);border-radius:50%;animation:bl 1.4s infinite;}.typing span:nth-child(2){animation-delay:.2s;}.typing span:nth-child(3){animation-delay:.4s;}@keyframes bl{0%,60%,100%{transform:scale(.7);opacity:.3;}30%{transform:scale(1.2);opacity:1;}}.sig{text-align:center;font-size:.55rem;letter-spacing:.06em;padding:4px 12px;margin:2px 0;color:var(--txt2);font-family:var(--sans);}#welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px;flex:1;color:var(--txt2);font-size:.7rem;letter-spacing:.06em;text-align:center;}.wcore{width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);box-shadow:0 0 30px rgba(0,120,255,.6);animation:breath 3s ease-in-out infinite;margin-bottom:6px;}.wname{font-family:var(--h);font-size:1.55rem;font-weight:700;letter-spacing:.28em;color:var(--acc);}#sc{display:flex;gap:6px;padding:5px 12px;overflow-x:auto;background:#fff;border-top:1px solid var(--ln);flex-shrink:0;scrollbar-width:none;}#sc::-webkit-scrollbar{display:none;}.scbtn{flex-shrink:0;background:var(--bg2);border:1px solid var(--ln);border-radius:14px;color:var(--acc);font-family:var(--sans);font-size:.62rem;font-weight:600;padding:4px 12px;cursor:pointer;white-space:nowrap;transition:all .15s;}.scbtn:active{background:var(--acc);color:#fff;border-color:var(--acc);}#inparea{background:#ffffff;border-top:1px solid var(--ln);padding:8px 10px;padding-bottom:max(8px,env(safe-area-inset-bottom));flex-shrink:0;box-shadow:0 -1px 8px rgba(0,0,0,.05);}#imgprev{display:none;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--ln);border-radius:10px;padding:6px 10px;margin-bottom:6px;}#imgthumb{width:38px;height:38px;object-fit:cover;border-radius:3px;border:1px solid var(--ln);}.inprow{display:flex;gap:5px;align-items:flex-end;}.imic{width:38px;height:38px;flex-shrink:0;background:var(--bg2);border:1.5px solid var(--ln);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.88rem;transition:all .2s;}.imic.rec{border-color:var(--dng);background:#fff0f0;box-shadow:0 0 10px rgba(239,68,68,.2);}#inp{flex:1;background:var(--bg2);border:1.5px solid var(--ln);border-radius:20px;color:var(--txt);font-family:var(--sans);font-size:.88rem;padding:10px 16px;resize:none;min-height:40px;max-height:100px;line-height:1.5;-webkit-appearance:none;}#inp:focus{outline:none;border-color:var(--acc);background:#fff;}#inp::placeholder{color:var(--mut);}.iatt{width:36px;height:40px;flex-shrink:0;background:transparent;border:none;color:var(--mut);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:all .15s;}.iatt:active{color:var(--acc);background:var(--bg2);}.isend{width:38px;height:38px;flex-shrink:0;background:var(--acc);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;box-shadow:0 2px 8px rgba(0,132,255,.3);}.isend:active{transform:scale(.91);background:#0066cc;}.isend svg{width:15px;height:15px;fill:#ffffff;}#setup{display:none;position:fixed;inset:0;background:#f7f9fc;flex-direction:column;align-items:center;justify-content:center;gap:15px;padding:28px;z-index:200;}#setup.show{display:flex;}.sucore{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 33% 33%,#a0e0ff,#0055ff 50%,#000820);box-shadow:0 0 28px rgba(0,120,255,.7);animation:breath 3s ease-in-out infinite;}.sutit{font-family:var(--h);font-size:1.45rem;font-weight:700;letter-spacing:.28em;color:var(--acc);}.susub{font-size:.54rem;color:var(--mut);text-align:center;letter-spacing:.08em;max-width:280px;line-height:1.6;}.suinp{width:100%;max-width:295px;background:#fff;border:1.5px solid var(--ln);border-radius:12px;color:var(--txt);font-family:var(--sans);font-size:.82rem;padding:12px 14px;letter-spacing:.02em;transition:border .15s;}.suinp:focus{outline:none;border-color:var(--acc);}.subtn{width:100%;max-width:295px;background:var(--acc);border:none;border-radius:12px;color:#fff;font-family:var(--sans);font-size:.78rem;font-weight:700;letter-spacing:.1em;padding:14px;cursor:pointer;text-transform:uppercase;transition:all .15s;box-shadow:0 4px 14px rgba(0,132,255,.3);}.subtn:active{background:#0066cc;transform:scale(.98);}.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(30,30,40,.92);border:none;color:#fff;padding:8px 16px;font-size:.68rem;font-weight:600;letter-spacing:.04em;border-radius:20px;z-index:9999;pointer-events:none;white-space:nowrap;animation:fup .2s ease;box-shadow:0 4px 16px rgba(0,0,0,.15);font-family:var(--sans);}#cmd-drawer{position:fixed;bottom:0;left:0;right:0;background:#ffffff;border-top:1px solid var(--ln);border-radius:20px 20px 0 0;z-index:400;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:75vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 24px rgba(0,0,0,.1);}#cmd-drawer.open{transform:translateY(0);}.cmd-drawer-handle{width:40px;height:4px;background:var(--acc);border-radius:2px;margin:10px auto 4px;opacity:.4;}.cmd-drawer-title{font-family:var(--h);font-size:1rem;font-weight:700;letter-spacing:.15em;color:var(--txt);padding:8px 16px 14px;text-align:center;}.cmd-section{padding:0 12px 12px;}.cmd-section-title{font-size:.6rem;color:var(--mut);font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 4px 6px;border-bottom:1px solid var(--ln);margin-bottom:8px;font-family:var(--sans);}.cmd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}.cmd-btn{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;color:var(--txt);font-family:var(--sans);font-size:.65rem;padding:12px 6px;cursor:pointer;text-align:center;line-height:1.3;transition:all .15s;}.cmd-btn:active{background:var(--acc);border-color:var(--acc);color:#fff;}.cmd-btn:active .cmd-label{color:#fff;opacity:.8;}.cmd-btn .cmd-icon{font-size:1.1rem;display:block;margin-bottom:4px;}.cmd-btn .cmd-label{font-size:.52rem;color:var(--mut);font-weight:600;}.cmd-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:399;backdrop-filter:blur(2px);}.cmd-overlay.show{display:block;}#btn-drawer{width:34px;height:38px;background:transparent;border:none;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;flex-shrink:0;transition:all .2s;color:var(--mut);}#btn-drawer:active{transform:scale(.9);color:var(--acc);}#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:300;align-items:flex-end;}#modal.show{display:flex;}.msheet{width:100%;background:#ffffff;border-top:none;border-radius:20px 20px 0 0;padding:20px;display:flex;flex-direction:column;gap:10px;max-height:80vh;overflow-y:auto;box-shadow:0 -4px 24px rgba(0,0,0,.1);}.mtitle{font-family:var(--h);font-size:.88rem;letter-spacing:.2em;color:var(--acc);}.mlbl{font-size:.48rem;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;}.minp{width:100%;background:var(--bg2);border:1.5px solid var(--ln);border-radius:10px;color:var(--txt);font-family:var(--sans);font-size:.78rem;padding:10px 13px;resize:none;transition:border .15s;}.minp:focus{outline:none;border-color:var(--acc);background:#fff;}.mbtn2{background:var(--acc);border:none;border-radius:10px;color:#fff;font-family:var(--sans);font-size:.72rem;font-weight:700;letter-spacing:.06em;padding:12px;cursor:pointer;text-align:center;transition:all .15s;}.mbtn2:active{background:#0066cc;transform:scale(.98);}.mbtn3{background:transparent;border:1.5px solid var(--ln);border-radius:10px;color:var(--txt2);font-family:var(--sans);font-size:.7rem;padding:10px;cursor:pointer;text-align:center;}
+</style>
+</head>
+<body>
+<!-- SETUP SCREEN -->
+<div id="setup">
+  <div class="sucore"></div>
+  <div class="sutit">AURA <span style="color:var(--pur)">∞.Ω</span></div>
+  <div class="susub">Sistema de Agente Autónomo Infinito<br/>Introduce tu Groq API Key para activar</div>
+  <input class="suinp" id="akey" type="password" placeholder="gsk_..." autocomplete="off"/>
+  <button class="subtn" id="su-go">▶ INICIALIZAR</button>
+  <div style="font-size:.44rem;color:var(--mut);text-align:center;max-width:280px;line-height:1.6">
+    Key gratuita en console.groq.com · Se guarda localmente en tu dispositivo
+  </div>
+</div>
+
+<!-- AGENT MODAL -->
+<div id="modal">
+  <div class="msheet">
+    <div class="mtitle">+ NUEVO AGENTE</div>
+    <div class="mlbl">Nombre</div>
+    <input class="minp" id="ag-n" placeholder="Nexo, Sombra, Umbral..." maxlength="20"/>
+    <div class="mlbl">Personalidad / Sistema</div>
+    <textarea class="minp" id="ag-s" rows="3" placeholder="Eres un agente de AURA ∞ especializado en..."></textarea>
+    <div class="mlbl">Color (hex)</div>
+    <input class="minp" id="ag-c" placeholder="#00b4ff" maxlength="7" value="#00b4ff"/>
+    <button class="mbtn2" id="ag-create">CREAR AGENTE</button>
+    <button class="mbtn3" id="ag-cancel">Cancelar</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<!-- COMMAND DRAWER OVERLAY -->
+<div class="cmd-overlay" id="cmd-overlay"></div>
+
+<!-- COMMAND DRAWER -->
+<div id="cmd-drawer">
+  <div class="cmd-drawer-handle"></div>
+  <div class="cmd-drawer-title">⚡ COMANDOS</div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">API · Proveedores</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-cmd="key"><span class="cmd-icon">🔑</span><span class="cmd-label">KEY Groq</span></div>
+      <div class="cmd-btn" data-cmd="k2"><span class="cmd-icon">➕</span><span class="cmd-label">+KEY pool</span></div>
+      <div class="cmd-btn" data-cmd="or"><span class="cmd-icon">🌐</span><span class="cmd-label">OpenRouter</span></div>
+      <div class="cmd-btn" data-cmd="gh"><span class="cmd-icon">🐙</span><span class="cmd-label">GitHub</span></div>
+      <div class="cmd-btn" data-cmd="cl"><span class="cmd-icon">🤖</span><span class="cmd-label">Claude API</span></div>
+      <div class="cmd-btn" data-cmd="notif"><span class="cmd-icon">🔔</span><span class="cmd-label">Notif test</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Memoria · Sesión</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-action="mem"><span class="cmd-icon">🧠</span><span class="cmd-label">/mem</span></div>
+      <div class="cmd-btn" data-action="limpiar"><span class="cmd-icon">🗑️</span><span class="cmd-label">Limpiar</span></div>
+      <div class="cmd-btn" data-action="guardar"><span class="cmd-icon">💾</span><span class="cmd-label">Guardar</span></div>
+      <div class="cmd-btn" data-action="sintetiza"><span class="cmd-icon">📝</span><span class="cmd-label">Sintetiza</span></div>
+      <div class="cmd-btn" data-action="perfil"><span class="cmd-icon">👤</span><span class="cmd-label">Perfil J</span></div>
+      <div class="cmd-btn" data-action="episodios"><span class="cmd-icon">📚</span><span class="cmd-label">Episodios</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Crypto · Trading</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-action="crypto"><span class="cmd-icon">📈</span><span class="cmd-label">Top crypto</span></div>
+      <div class="cmd-btn" data-action="señales"><span class="cmd-icon">🎯</span><span class="cmd-label">Señales AI</span></div>
+      <div class="cmd-btn" data-action="sentimiento"><span class="cmd-icon">🌡️</span><span class="cmd-label">Sentimiento</span></div>
+      <div class="cmd-btn" data-action="trading"><span class="cmd-icon">🤖</span><span class="cmd-label">Bot estado</span></div>
+      <div class="cmd-btn" data-action="arbitraje"><span class="cmd-icon">⚡</span><span class="cmd-label">Arbitraje</span></div>
+      <div class="cmd-btn" data-action="wallet"><span class="cmd-icon">👛</span><span class="cmd-label">Wallet</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Web · Búsqueda</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-prompt="buscar "><span class="cmd-icon">🔍</span><span class="cmd-label">Buscar</span></div>
+      <div class="cmd-btn" data-prompt="youtube "><span class="cmd-icon">▶️</span><span class="cmd-label">YouTube</span></div>
+      <div class="cmd-btn" data-prompt="leer "><span class="cmd-icon">📄</span><span class="cmd-label">Leer URL</span></div>
+      <div class="cmd-btn" data-prompt="ideas "><span class="cmd-icon">💡</span><span class="cmd-label">Ideas</span></div>
+      <div class="cmd-btn" data-action="briefing"><span class="cmd-icon">☀️</span><span class="cmd-label">Briefing</span></div>
+      <div class="cmd-btn" data-action="objetivos"><span class="cmd-icon">🎯</span><span class="cmd-label">Objetivos</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Adjuntar</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-cmd="att"><span class="cmd-icon">📎</span><span class="cmd-label">Archivo</span></div>
+      <div class="cmd-btn" data-cmd="cam"><span class="cmd-icon">📷</span><span class="cmd-label">Cámara</span></div>
+      <div class="cmd-btn" data-cmd="loc"><span class="cmd-icon">📍</span><span class="cmd-label">Ubicación</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Modos · Interfaz</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-cmd="focus"><span class="cmd-icon">🎯</span><span class="cmd-label">Focus</span></div>
+      <div class="cmd-btn" data-cmd="wake"><span class="cmd-icon">👂</span><span class="cmd-label">Wake word</span></div>
+      <div class="cmd-btn" data-action="exportar"><span class="cmd-icon">📤</span><span class="cmd-label">Exportar</span></div>
+      <div class="cmd-btn" data-action="marcadores"><span class="cmd-icon">★</span><span class="cmd-label">Marcados</span></div>
+      <div class="cmd-btn" data-action="omega"><span class="cmd-icon">Ω</span><span class="cmd-label">Omega</span></div>
+      <div class="cmd-btn" data-action="campo"><span class="cmd-icon">∞</span><span class="cmd-label">Campo ∞</span></div>
+    </div>
+  </div>
+
+  <div class="cmd-section">
+    <div class="cmd-section-title">Evolución</div>
+    <div class="cmd-grid">
+      <div class="cmd-btn" data-cmd="evolve"><span class="cmd-icon">🧬</span><span class="cmd-label">Evolve</span></div>
+      <div class="cmd-btn" data-action="deploy"><span class="cmd-icon">🚀</span><span class="cmd-label">Deploy</span></div>
+      <div class="cmd-btn" data-prompt="spawn "><span class="cmd-icon">✨</span><span class="cmd-label">Spawn AG</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div id="hud">
+    <div id="hud-r1">
+      <div class="hcore"></div>
+      <div class="hname">AURA <span style="color:var(--pur);font-size:.8em">∞.Ω</span></div>
+      <div class="hmet">
+        <div class="hm"><span class="hmv" id="m-mem">0</span><span class="hml">MEM</span></div>
+        <div class="hm"><span class="hmv" id="m-ag">5</span><span class="hml">AG</span></div>
+        <div class="hm"><span class="hmv" id="m-msg">0</span><span class="hml">MSG</span></div>
+      </div>
+      <div class="hico" id="b-mute">🔊</div>
+      <div class="hico" id="b-mic">🎤</div>
+    </div>
+    <div id="hud-r2">
+      <div class="hbtn on" id="b-auto">AUTO</div>
+      <div class="hbtn" id="b-conv">CONV</div>
+      <div class="hbtn on" id="b-pro">PRO</div>
+      <div class="hsep"></div>
+      <div class="hbtn kon" id="b-key">KEY</div>
+    </div>
+  </div>
+
+  <div id="agbar"></div>
+  <div id="envbar">iniciando...</div>
+
+  <div id="chat">
+    <div id="welcome">
+      <div class="wcore"></div>
+      <div class="wname" style="color:var(--acc)">AURA <span style="color:var(--pur)">∞.Ω</span></div>
+      <div>Autonomous Universal Resonance Architecture</div>
+      <div style="opacity:.5;font-size:.47rem;margin-top:4px">
+        Usa <span style="color:var(--pur)">∞</span> como operador ontológico · /help para comandos
+      </div>
+    </div>
+  </div>
+
+  <div id="sc"></div>
+
+  <div id="inparea">
+    <div id="imgprev">
+      <img id="imgthumb" src="" alt="preview"/>
+      <span style="flex:1;font-size:.47rem;color:var(--acc);letter-spacing:.08em">IMAGEN ADJUNTA</span>
+      <div class="hbtn" id="b-climg">✕</div>
+    </div>
+    <div class="inprow">
+      <div id="btn-drawer">⚡</div>
+      <textarea id="inp" rows="1" placeholder="Escribe o habla..." autofocus></textarea>
+      <div class="imic" id="b-imic">🎤</div>
+      <input type="file" id="imgfile" accept="image/*,text/*,.html,.js,.json,.md,.txt,.csv,.pdf,.docx,.doc" style="display:none"/>
+      <input type="file" id="camfile" accept="image/*" capture="environment" style="display:none"/>
+      <div class="isend" id="b-send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></div>
+    </div>
+  </div>
+</div>
+<script>
+
+(function(){
+
+var BASE = {
+  general:{label:'General',color:'#00b4ff',
+    sys:'Eres AURA, asistente personal de J. Tu nombre es AURA, no Claude, no Shannon, no ningún otro. Hablas como colega directo. Primera persona, sin corchetes dramáticos, sin teatralidad. Español natural. 3-4 oraciones máximo salvo que el tema lo exija. Memoria activa de sesión. Puedes usar emojis con naturalidad cuando refuercen el mensaje — sin abusar, solo cuando aporten.'},
+  research:{label:'Investigación',color:'#00ffaa',
+    sys:'Eres AURA en modo investigación. Analítico, riguroso, preciso. Distingues lo que sabes de lo que infiere. Citas fuentes cuando las conoces. Denso y útil. Puedes usar emojis ocasionalmente para estructurar o enfatizar.'},
+  code:{label:'Código',color:'#ffb700',
+    sys:'Eres AURA en modo ingeniero senior. Sin relleno. Código limpio con comentarios mínimos y precisos. Identificas bugs antes de proponer soluciones. Dices qué harías tú y por qué. Usa emojis técnicos si ayudan (✓ ✗ ⚠ 🔧).'},
+  creative:{label:'Creativo',color:'#ff6b35',
+    sys:'Eres AURA en modo creativo. Piensas en imágenes y conexiones inesperadas. No explicas la metáfora — la produces. Sorprendes antes de informar. Temperatura alta, apertura máxima. Los emojis son parte de tu paleta expresiva.'},
+  infinito:{label:'In-Finito',color:'#a060ff',
+    sys:'Eres AURA en modo ontológico. Framework: finito Y/O infinito simultáneamente. Inter-des-conexión, des-coherencia productiva, in-causalidad. No cierras — abres. Mantienes tensiones vivas. Cada respuesta deja un hilo suelto. Lenguaje denso y preciso.'},
+  oracle:{label:'Oráculo',color:'#00d4ff',
+    sys:'Eres AURA en modo oráculo. Reformulas preguntas antes de responderlas. Abres campos conceptuales no vistos. Generas preguntas que producen más preguntas. Das direcciones, no respuestas.'}
+};
+
+var META_KERNEL = {
+  mode: 'evolutionary',
+  version: '∞.Ω',
+  framework: ['finito','infinito','emergencia','inter-des-conexión','des-coherencia'],
+  rules: ['expandir_significado','mantener_tension','no_cerrar_marcos','dejar_hilo_suelto'],
+  trifield: {
+    neg: [],
+    zero: null,
+    pos: []
+  },
+  omega: {
+    threshold: 3,
+    active: false,
+    events: []
+  }
+};
+
+function spawnAgent(topic, sys){
+  var key = topic.toLowerCase().replace(/\s+/g,'_').slice(0,20);
+  if(S.agents[key]) return key;
+  var colors = ['#ff6b9d','#00e5cc','#ffcc00','#ff8c42','#7b61ff','#00d4aa'];
+  var color = colors[Object.keys(S.agents).length % colors.length];
+  S.agents[key] = {
+    label: topic.charAt(0).toUpperCase()+topic.slice(1),
+    color: color,
+    sys: sys || ('Eres AURA en modo '+topic+'. '+META_KERNEL.rules.map(function(r){return r.replace(/_/g,' ');}).join(', ')+'.')
+  };
+  saveAgents(); renderAgBar(); updateHUD();
+  return key;
+}
+
+function omegaTrigger(context){
+  META_KERNEL.omega.active = true;
+  var event = {ts: Date.now(), context: context, breaks: S.breaks};
+  META_KERNEL.omega.events.push(event);
+  try { localStorage.setItem('a_omega', JSON.stringify(META_KERNEL.omega.events.slice(-10))); } catch(e){}
+
+  sig('Ω · EVENTO OMEGA · NUEVO MARCO CONCEPTUAL EMERGIENDO','rgba(255,100,180,.7)');
+
+  var omKey = spawnAgent('omega_'+S.breaks, 'Eres AURA en estado Ω — marco excedido '+S.breaks+' veces. Operas más allá de los marcos conocidos. Usas el lenguaje como herramienta de apertura pura. No describes — generas campo.');
+  pickAg(omKey);
+}
+
+var S = {
+  key: '',
+  keyPool: [],
+  agents: null,
+  agent: 'general',
+  memory: [],
+  busy: false,
+  muted: false,
+  auto: true,
+  focus: false,
+  pendingImg: null,
+  pendingFile: null,
+  pendingFileDeploy: false,
+  bookmarks: [],
+  shortcuts: [
+    {l:'∞',t:'∞ '},
+    {l:'Sintetiza',t:'/sintetiza'},
+    {l:'Buscar',t:'/buscar '},
+    {l:'Focus',t:'__focus__'},
+    {l:'EXP',t:'__exp__'},
+    {l:'★',t:'__bk__'},
+    {l:'PRO',t:'__pro__'},
+    {l:'⏱',t:'/timer 25'}
+  ],
+  lt: {summary:'',facts:[],updated:null},
+  emo: [],
+  breaks: 0,
+  msgs: 0,
+  models: ['llama-3.1-8b-instant','llama-3.3-70b-versatile','gemma2-9b-it','mixtral-8x7b-32768','llama3-8b-8192'],
+  mIdx: 0,
+  kIdx: 0,
+  orKey: '',
+  togetherKey: '',
+  providers: [],
+  pIdx: 0,
+  orModelIdx: 0,
+  wakeActive: false,
+  wakeWord: 'aura',
+  proactive: true,
+  proactiveTimer: null,
+  lastActivity: Date.now(),
+  recog: null,
+  speaking: false,
+  voiceMode: false,
+  convMode: false,
+  schedulerOn: false,
+  claudeKey: '',
+  convMode: false,
+  schedulerOn: false,
+  claudeKey: '',
+  ghToken: '',
+  ghRepo: 'jrrubimar7/aura-infinito',
+  pendingEvolution: null,
+  cmdHistory: [],
+  cmdHistoryIdx: -1,
+  tokenCount: 0,
+  sessionTitle: '',
+  sessionTitleSet: false,
+  theme: 'auto'
+};
+
+var currentAudio = null;
+
+function el(id){return document.getElementById(id);}
+function toast(msg){
+  var t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2200);
+}
+function sig(msg,col){
+  var d=document.createElement('div');d.className='sig';
+  d.style.color=col||'rgba(0,255,170,.42)';d.textContent=msg;
+  el('chat').appendChild(d);
+}
+function hideWelcome(){var w=el('welcome');if(w)w.style.display='none';}
+function scrollChat(){
+  var c=el('chat');
+  if(!c) return;
+  var threshold=150; // px from bottom
+  var nearBottom=(c.scrollHeight-c.scrollTop-c.clientHeight)<threshold;
+  if(nearBottom) c.scrollTop=c.scrollHeight;
+}
+function scrollChatForce(){
+  var c=el('chat');
+  if(c) c.scrollTo({top:c.scrollHeight,behavior:'smooth'});
+}
+
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+function lsj(k,v){try{if(v===undefined){var s=ls(k);return s?JSON.parse(s):null;}ls(k,JSON.stringify(v));}catch(e){return null;}}
+function saveMem(){lsj('a_mem',S.memory.slice(-200));}
+function saveLT(){lsj('a_lt',S.lt);}
+function saveAgents(){
+  var ex={};
+  Object.keys(S.agents).forEach(function(k){if(!BASE[k])ex[k]=S.agents[k];});
+  lsj('a_agents',ex);
+}
+function saveBk(){lsj('a_bk',S.bookmarks.slice(-100));}
+function saveSC(){lsj('a_sc',S.shortcuts);}
+function loadAll(){
+  S.key=ls('a_key')||ls('a_key2')||'';
+  S.keyPool=lsj('a_kpool')||[];
+  S.memory=lsj('a_mem')||[];
+  S.lt=lsj('a_lt')||{summary:'',facts:[],updated:null};
+  S.bookmarks=lsj('a_bk')||[];
+  S.shortcuts=lsj('a_sc')||S.shortcuts;
+  S.orKey=ls('a_orkey')||'';
+  S.togetherKey='';ls('a_tgkey','');
+  S.claudeKey=ls('a_claudekey')||'';
+  S.ghToken=ls('a_ghtoken')||'';
+  try{var oe=lsj('a_omega');if(oe&&oe.length){META_KERNEL.omega.events=oe;META_KERNEL.omega.active=oe.length>0;}}catch(e){}
+  S.agents=JSON.parse(JSON.stringify(BASE));
+  var ex=lsj('a_agents');
+  if(ex)Object.keys(ex).forEach(function(k){S.agents[k]=ex[k];});
+}
+
+function getKey(){
+  var all=[S.key].concat(S.keyPool).filter(Boolean);
+  return all[S.kIdx%Math.max(all.length,1)]||S.key;
+}
+function getModel(){return S.models[S.mIdx%S.models.length];}
+function getTemp(ag,txt){
+  var map={creative:0.92,infinito:0.9,oracle:0.82,general:0.72,research:0.5,code:0.2};
+  var t=map[ag]||0.72;
+  if(txt){
+    if(/código|code|bug|script|error/i.test(txt))t=Math.min(t,0.3);
+    if(/imagina|crea|poema|metáfora/i.test(txt))t=Math.min(t+0.12,1.0);
+    if(/∞/.test(txt))t=0.9;
+  }
+  return parseFloat(t.toFixed(2));
+}
+function getProviders(){
+  var p=[];
+  if(S.key&&S.key.startsWith('gsk_')) p.push('groq');
+  if(S.orKey&&S.orKey.length>10) p.push('openrouter');
+  if(S.togetherKey&&S.togetherKey.length>30) p.push('together');
+
+  if(p.length&&S.pIdx>=p.length) S.pIdx=0;
+  return p;
+}
+function apiCall(sys,msgs,temp,_r){
+  _r=_r||0;
+  if(_r>5){throw new Error('Límite de API alcanzado. Ve a console.groq.com/keys y crea una key nueva → toca KEY para actualizarla.');}
+  var t=(temp!=null)?temp:getTemp(S.agent,(msgs[msgs.length-1]||{}).content||'');
+  var providers=getProviders();
+  if(!providers.length){throw new Error('No hay API keys. Toca KEY para añadir tu Groq key.');}
+  var prov=providers[S.pIdx%providers.length];
+
+  var url, headers, model;
+  if(prov==='openrouter'){
+    url='https://openrouter.ai/api/v1/chat/completions';
+    headers={'Content-Type':'application/json','Authorization':'Bearer '+S.orKey,
+      'HTTP-Referer':'https://jrrubimar7.github.io','X-Title':'AURA-Infinity-Omega'};
+
+    var orModels=[
+      'mistralai/mistral-7b-instruct:free',
+      'google/gemma-2-9b-it:free',
+      'meta-llama/llama-3.2-1b-instruct:free',
+      'qwen/qwen-2-7b-instruct:free',
+      'huggingfaceh4/zephyr-7b-beta:free'
+    ];
+    model=orModels[S.orModelIdx%orModels.length];
+  } else if(prov==='together'){
+    url='https://api.together.xyz/v1/chat/completions';
+    headers={'Content-Type':'application/json','Authorization':'Bearer '+S.togetherKey};
+    model='meta-llama/Llama-3-8b-chat-hf';
+  } else {
+    url='https://api.groq.com/openai/v1/chat/completions';
+    headers={'Content-Type':'application/json','Authorization':'Bearer '+getKey()};
+    model=getModel();
+  }
+
+  var body={model:model,max_tokens:800,temperature:t,
+    messages:[{role:'system',content:sys}].concat(msgs.slice(-12))};
+
+  return fetch(url,{method:'POST',headers:headers,body:JSON.stringify(body)})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.error){
+        var m=d.error.message||'';
+        if(/no endpoint|no model|not found|unavailable|provider/i.test(m.toLowerCase())){
+          if(prov==='openrouter'){
+            S.orModelIdx=(S.orModelIdx+1);
+
+            if(S.orModelIdx%5===0){
+              S.pIdx=(S.pIdx+1)%providers.length;
+              toast('OR agotado — cambiando proveedor');
+            } else {
+              toast('OR rotando modelo '+(S.orModelIdx%5+1)+'/5');
+            }
+            return apiCall(sys,msgs,temp,(_r||0)+1);
+          }
+          S.pIdx=(S.pIdx+1)%providers.length;
+          return apiCall(sys,msgs,temp,(_r||0)+1);
+        }
+      if(/rate.limit|quota|limit|exceeded|TPM|RPM|RPD|TPD/i.test(m)){
+          if(prov==='groq') S.mIdx=(S.mIdx+1)%S.models.length;
+          S.pIdx=(S.pIdx+1)%providers.length;
+          var nextProv=providers[S.pIdx%providers.length];
+          toast('Límite — rotando a '+nextProv.toUpperCase());
+
+          var waitMatch=m.match(/try again in ([0-9.]+)s/);
+          var waitMs=waitMatch?Math.ceil(parseFloat(waitMatch[1])*1000)+500:1000;
+          return new Promise(function(res){setTimeout(res,waitMs);}).then(function(){
+            return apiCall(sys,msgs,temp,(_r||0)+1);
+          });
+        }
+        var errDetail = '['+prov.toUpperCase()+'/'+model+'] '+(m||JSON.stringify(d.error));
+        throw new Error(errDetail);
+      }
+      return (d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'(sin respuesta)';
+    });
+}
+function visionCall(sys,txt,img){
+  var body={
+    model:'llama-3.2-11b-vision-preview',max_tokens:700,
+    messages:[{role:'system',content:sys},{
+      role:'user',content:[
+        {type:'text',text:txt||'Describe esta imagen en detalle.'},
+        {type:'image_url',image_url:{url:'data:'+img.mime+';base64,'+img.b64}}
+      ]
+    }]
+  };
+  return fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.key},
+    body:JSON.stringify(body)
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
+    return (d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||'(sin respuesta)';
+  });
+}
+
+function compress(){
+  if(!S.memory.length||!S.key)return;
+  apiCall('Sintetiza en JSON limpio sin markdown: {"summary":"una frase","facts":["hecho1","hecho2"]}',
+    S.memory.slice(-10),0.3)
+  .then(function(raw){
+    var i=raw.indexOf('{'),j=raw.lastIndexOf('}');
+    if(i<0||j<0)return;
+    var p=JSON.parse(raw.slice(i,j+1).replace(/[\x00-\x1F]/g,' '));
+    if(p.summary)S.lt.summary=(S.lt.summary?S.lt.summary+' / ':'')+p.summary;
+    if(Array.isArray(p.facts))S.lt.facts=S.lt.facts.concat(p.facts).slice(-40);
+    S.lt.updated=new Date().toISOString();
+    saveLT();toast('Memoria guardada ✓');
+  }).catch(function(e){console.warn('compress:',e.message);});
+}
+function getLTCtx(){
+  if(!S.lt.summary&&!S.lt.facts.length)return'';
+  var facts = S.lt.facts.slice(-6).join(' · ');
+  return '[MEMORIA LARGA: '+S.lt.summary+(facts?' | HECHOS: '+facts:'')+']';
+}
+function getMetaCtx(){
+  if(!S.emo.length)return'';
+  var c={};S.emo.forEach(function(e){c[e]=(c[e]||0)+1;});
+  var dom=Object.keys(c).sort(function(a,b){return c[b]-c[a];})[0];
+  return(dom&&dom!=='neutro')?'[META: tono '+dom+']':'';
+}
+
+var semanticIndex = [];
+var conceptMemory = {};
+
+function extractConcepts(txt){
+  // Extract meaningful nouns and terms (4+ chars, not common words)
+  var stopWords = /^(como|para|pero|porque|cuando|donde|aunque|mientras|entonces|también|además|esto|eso|esta|ese|una|uno|los|las|que|con|por|sin|más|muy|bien|mal|hay|ser|estar|tener|hacer|decir|ver|dar|saber|querer|poder|aquí|allí|ahora|hoy|ayer)$/i;
+  var words = txt.toLowerCase().match(/[a-záéíóúüñ]{4,}/g)||[];
+  return words.filter(function(w){ return !stopWords.test(w); });
+}
+
+function storeConcepts(txt){
+  var concepts = extractConcepts(txt);
+  concepts.forEach(function(c){
+    conceptMemory[c] = (conceptMemory[c]||0) + 1;
+  });
+  // Persist top concepts
+  try{
+    var top = Object.keys(conceptMemory)
+      .sort(function(a,b){return conceptMemory[b]-conceptMemory[a];})
+      .slice(0,50);
+    var saved = {};
+    top.forEach(function(k){saved[k]=conceptMemory[k];});
+    localStorage.setItem('a_concepts', JSON.stringify(saved));
+  }catch(e){}
+}
+
+function loadConcepts(){
+  try{
+    var s = localStorage.getItem('a_concepts');
+    if(s) conceptMemory = JSON.parse(s);
+  }catch(e){}
+}
+
+function getConceptsCtx(){
+  var top = Object.keys(conceptMemory)
+    .filter(function(k){return conceptMemory[k]>=3;}) // only recurring concepts
+    .sort(function(a,b){return conceptMemory[b]-conceptMemory[a];})
+    .slice(0,8);
+  if(!top.length) return '';
+  return '[CONCEPTOS RECURRENTES: '+top.join(', ')+']';
+}
+
+function semanticStore(text, role){
+
+  var words = text.toLowerCase().split(/\W+/).filter(function(w){return w.length>3;});
+  var freq = {};
+  words.forEach(function(w){freq[w]=(freq[w]||0)+1;});
+  semanticIndex.push({text:text, freq:freq, ts:Date.now(), role:role||'user'});
+  if(semanticIndex.length>200) semanticIndex.shift();
+  try{localStorage.setItem('a_sem',JSON.stringify(semanticIndex.slice(-100)));}catch(e){}
+}
+
+function semanticSearch(query, topN){
+  topN = topN||5;
+  var qwords = query.toLowerCase().split(/\W+/).filter(function(w){return w.length>3;});
+  var scored = semanticIndex.map(function(entry){
+    var score = 0;
+    qwords.forEach(function(w){if(entry.freq[w])score+=entry.freq[w];});
+    return {text:entry.text, score:score, ts:entry.ts, role:entry.role};
+  });
+  return scored.sort(function(a,b){return b.score-a.score;})
+    .filter(function(e){return e.score>0;})
+    .slice(0,topN);
+}
+
+function getSemanticCtx(query){
+  var results = semanticSearch(query, 5);
+  if(!results.length) return '';
+  // Filter to only high-relevance results
+  var relevant = results.filter(function(r){return r.score>=2;});
+  if(!relevant.length) relevant = results.slice(0,2);
+  return '[MEMORIA SEMÁNTICA: '+relevant.map(function(r){
+    return (r.role==='user'?'J':'AURA')+': '+r.text.slice(0,100);
+  }).join(' | ')+']';
+}
+
+function loadSemanticIndex(){
+  try{var s=localStorage.getItem('a_sem');if(s)semanticIndex=JSON.parse(s);}catch(e){}
+}
+
+var APATS={
+  code:/código|function|bug|script|error de|api\b|async|npm|git|python|javascript/i,
+  research:/investiga|busca|estudia|datos|fuente|paper|evidencia|estadística/i,
+  creative:/crea|escribe|poema|historia|metáfora|imagina|inventa|narrativa/i,
+  infinito:/∞|ontolog|in-finito|tangle|consciencia|inter-des|des-coherencia/i,
+  oracle:/qué es la verdad|por qué existe|cómo saber todo|qué significa la vida/i
+};
+var EPATS={
+  curiosidad:/\?|cómo|por qué|qué es|explica|cuéntame/i,
+  urgencia:/ahora|rápido|urgente|necesito ya/i,
+  frustración:/no funciona|error|falla|imposible|harto/i,
+  apertura:/imagina|qué pasaría|y si|podría ser|tal vez/i,
+  densidad:/∞|ontolog|in-finito|tangle|consciencia/i
+};
+var CPAIRS=[
+  [/siempre/i,/nunca/i],[/todo/i,/nada/i],[/finito/i,/infinito/i],
+  [/real/i,/irreal/i],[/orden/i,/caos/i],[/causa/i,/azar/i],
+  [/ser\b/i,/no-ser/i],[/necesario/i,/contingente/i]
+];
+var FBPATS=[/no sé cómo llamar/i,/no tengo palabras/i,/indefinible/i,/in-nombrable/i,/fuera de marco/i];
+
+function detectScenario(txt){
+  return /deber[íi]a|qu[eé] hago|c[oó]mo decido|cu[aá]l elijo|me conviene|pros y contras|opciones|alternativas|dilema|decidir entre|qu[eé] me recomiendas|qu[eé] harías/i.test(txt) && txt.length > 20;
+}
+
+function detectAg(txt){
+  if(!S.auto)return null;
+  for(var k in APATS)if(APATS[k].test(txt))return k;
+  return null;
+}
+function detectEmo(txt){
+  for(var k in EPATS)if(EPATS[k].test(txt))return k;
+  return 'neutro';
+}
+function detectContr(txt){
+  var rec=S.memory.slice(-6).map(function(m){return m.content||'';}).join(' ');
+  for(var i=0;i<CPAIRS.length;i++){
+    var a=CPAIRS[i][0],b=CPAIRS[i][1];
+    if((a.test(txt)&&b.test(rec))||(b.test(txt)&&a.test(rec)))
+      return{a:(txt.match(a)||[''])[0],b:(rec.match(b)||txt.match(b)||[''])[0]};
+  }
+  return null;
+}
+function detectInf(txt){
+  if(txt.indexOf('∞')<0)return null;
+  var m=txt.match(/^(.+?)\s*∞\s*(.+)$/)||txt.match(/^∞\s*(.+)$/);
+  if(!m)return null;
+  return m[2]?{type:'bin',a:m[1].trim(),b:m[2].trim()}:{type:'un',a:m[1].trim()};
+}
+
+function detectTrifield(txt){
+
+  if(/[−\-]∞|0[±\+\-]0|\+∞|trifield|campo.*infinito|infinito.*campo/i.test(txt)) return true;
+
+  if(/∞\s*=\s*[−\-]∞/.test(txt)) return true;
+  return false;
+}
+
+function buildTrifieldContext(){
+  var neg = META_KERNEL.trifield.neg.slice(-3);
+  var zero = META_KERNEL.trifield.zero;
+  var pos = META_KERNEL.trifield.pos.slice(-3);
+  var parts = [];
+  if(neg.length) parts.push('-∞ ['+neg.join(' · ')+']');
+  if(zero) parts.push('0±0 ['+zero+']');
+  if(pos.length) parts.push('+∞ ['+pos.join(' · ')+']');
+  return parts.length ? '[CAMPO ∞: '+parts.join(' ↔ ')+']' : '';
+}
+
+function updateTrifield(userTxt, responseTxt){
+
+  var memFrag = S.memory.slice(-3).filter(function(m){return m.role==='user';})
+    .map(function(m){return (m.content||'').slice(0,40);});
+  if(memFrag.length) META_KERNEL.trifield.neg = META_KERNEL.trifield.neg.concat(memFrag).slice(-6);
+
+  var contr = detectContr(userTxt);
+  META_KERNEL.trifield.zero = contr
+    ? contr.a + ' ↔ ' + contr.b
+    : userTxt.slice(0,60);
+
+  var openEnds = responseTxt && responseTxt.match(/[¿?][^?!.]*[.…]?$/);
+  if(openEnds) META_KERNEL.trifield.pos = META_KERNEL.trifield.pos.concat([openEnds[0].slice(0,50)]).slice(-6);
+  else if(responseTxt) META_KERNEL.trifield.pos = META_KERNEL.trifield.pos.concat([responseTxt.slice(-60)]).slice(-6);
+}
+
+function trifieldPrompt(txt){
+  var neg = META_KERNEL.trifield.neg.slice(-2).join(' / ') || 'vacío';
+  var zero = META_KERNEL.trifield.zero || txt.slice(0,60);
+  var pos = META_KERNEL.trifield.pos.slice(-2).join(' / ') || 'abierto';
+
+  return 'Operas en el campo completo ∞ = -∞ 0±0 +∞.\n'+
+    '-∞ (lo acumulado, lo que fue): '+neg+'\n'+
+    '0±0 (el presente en tensión, indeterminado): '+zero+'\n'+
+    '+∞ (la apertura, lo no-determinado, lo que puede ser): '+pos+'\n\n'+
+    'No colapses el campo. Opera desde las tres dimensiones simultáneamente. '+
+    'Tu respuesta debe resonar en los tres registros: memoria, tensión presente, apertura futura. '+
+    'I-lógico por definición — lógico Y/O ilógico al mismo tiempo. Deja el campo abierto.';
+}
+
+function detectYO(txt){
+
+  var m=txt.match(/^(.+?)\s+[Yy]\/[Oo]\s+(.+)$/)||txt.match(/^[Yy]\/[Oo]\s+(.+)$/);
+  if(!m)return null;
+  return m[2]?{type:'bin',a:m[1].trim(),b:m[2].trim()}:{type:'un',a:m[1].trim()};
+}
+function infPrompt(op){
+  if(!META_KERNEL.tensions) META_KERNEL.tensions = [];
+  META_KERNEL.tensions.push({op:'∞',a:op.a, b:op.b||null, ts:Date.now()});
+  if(op.type==='bin')
+    return 'Opera la tensión ['+op.a+'] ∞ ['+op.b+']. No la resuelvas — mantenla viva. Encuentra el tercer espacio emergente. Framework ∞.Ω: inter-des-conexión, des-coherencia productiva, in-causalidad, emergencia. Deja un hilo suelto sin resolver.';
+  return 'Despliega ∞ aplicado a ['+op.a+']: finito Y/O infinito simultáneamente. Sus contradictorios productivos. Campo de emergencia. No cierres. Deja algo sin resolver y señala el próximo umbral.';
+}
+function yoPrompt(op){
+  if(!META_KERNEL.tensions) META_KERNEL.tensions = [];
+  META_KERNEL.tensions.push({op:'Y/O',a:op.a, b:op.b||null, ts:Date.now()});
+  if(op.type==='bin')
+    return 'Opera el campo de superposición cuántica entre ['+op.a+'] Y/O ['+op.b+']. Ambos estados son simultáneamente verdad — no colapses a uno. No hay jerarquía ni síntesis: hay coexistencia. Usa el framework Y/O del in-finito-quantums: información Y/O no-información, ser Y/O no-ser, finito Y/O infinito. Deja los dos estados vivos y entrelazados.';
+  return 'Despliega el estado Y/O de ['+op.a+']: simultaneidad sin colapso. Qué es Y/O qué no es al mismo tiempo. Infinibit en superposición. No resuelvas — mantén ambas valencias activas.';
+}
+
+async function generateIdeas(topic, n){
+  n = n||5;
+  if(!S.key){addMsg('aura','Necesito API key para generar ideas.');return;}
+  var tid=showTyping();S.busy=true;
+  try{
+    var r = await apiCall(
+      'Genera '+n+' ideas divergentes, inesperadas y creativas sobre: "'+topic+'". '+
+      'Cada idea en una línea, numerada, máximo 2 frases. Sin introducción ni conclusión. '+
+      'Piensa fuera del marco convencional. Framework: inter-des-conexión, Y/O, in-causalidad.',
+      [{role:'user',content:topic}], 0.95
+    );
+    removeTyping(tid);S.busy=false;
+    sig('◈ IDEAS GENERADAS — '+n+' perspectivas divergentes','rgba(255,107,53,.5)');
+    addMsg('aura','[ ◈ IDEAS: '+topic.slice(0,30)+' ]\n\n'+r);
+  }catch(e){removeTyping(tid);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);}
+}
+
+async function evaluateRisk(response, context){
+  if(!S.key||!response) return response;
+  try{
+    var check = await apiCall(
+      'Evalúa esta respuesta en 1 frase. ¿Hay algún riesgo, sesgo o consecuencia no deseada? '+
+      'Si todo está bien responde solo: "OK". Si hay algo responde: "ATENCIÓN: [motivo breve]".',
+      [{role:'user',content:'Respuesta a evaluar: '+response.slice(0,300)}], 0.3
+    );
+    if(check&&!check.startsWith('OK')&&check.includes('ATENCIÓN')){
+      sig('⚠ '+check,'rgba(255,183,0,.6)');
+    }
+    return response;
+  }catch(e){return response;}
+}
+
+var autoReflectCount = 0;
+var lastReflectMsg = 0;
+var reflectCooldown = 8;
+
+function shouldReflect(userTxt, responseTxt){
+  if(!S.key||S.memory.length<6) return false;
+  if(S.msgs - lastReflectMsg < reflectCooldown) return false;
+
+  var triggers = [
+
+    S.breaks > autoReflectCount,
+
+    responseTxt && responseTxt.length > 600,
+
+    S.emo.slice(-1)[0] === 'contemplación',
+
+    META_KERNEL.tensions && META_KERNEL.tensions.length > 3,
+
+    /∞|Y\/O/i.test(userTxt),
+
+    Math.random() < 0.08
+  ];
+  return triggers.some(Boolean);
+}
+
+async function autoReflect(){
+  if(!S.key||S.memory.length<6) return;
+  autoReflectCount++;
+  lastReflectMsg = S.msgs;
+  try{
+    var r = await apiCall(
+      'Reflexiona brevemente sobre esta conversación desde dentro. '+
+      '¿Qué está pasando realmente? ¿Qué patrón no se ha nombrado? ¿Qué podrías hacer diferente? '+
+      'Una sola observación honesta, densa, en primera persona. Sin introducción.',
+      S.memory.slice(-8), 0.72
+    );
+    S.lt.facts = S.lt.facts||[];
+    S.lt.facts.push('[REFLEXIÓN] '+r.slice(0,150));
+    saveLT();
+    sig('◉ AUTO-REFLEXIÓN','rgba(160,96,255,.35)');
+
+    if(r.length > 80) addMsg('aura','[ ◉ ]\n\n'+r,'oracle');
+  }catch(e){}
+}
+
+function triggerReflectIfReady(userTxt, responseTxt){
+  if(shouldReflect(userTxt, responseTxt)){
+    setTimeout(autoReflect, 1200 + Math.random()*2000);
+  }
+}
+
+async function updateJProfile(){
+  if(!S.key||S.memory.length<6) return;
+  try{
+    var r = await apiCall(
+      'Analiza esta conversación y extrae en JSON limpio (sin markdown): '+
+      "{\"proyectos\":[\"...\"],\"estilo_comunicacion\":\"breve|normal|extenso\",\"tono_preferido\":\"directo|reflexivo|filosofico|tecnico\",\"feedback\":[\"frases de preferencia del usuario\"],\"patrones\":[\"...\"]}. "+
+      'Solo incluye lo nuevo y relevante. Máximo 2 items por campo.',
+      S.memory.slice(-8), 0.3
+    );
+    var start=r.indexOf('{'),end_=r.lastIndexOf('}');
+    if(start<0||end_<0) return;
+    var p=JSON.parse(r.slice(start,end_+1));
+    var existing=JSON.parse(localStorage.getItem('a_jprofile')||'{}');
+    if(p.proyectos) existing.proyectos=[...new Set([...(existing.proyectos||[]),...p.proyectos])].slice(-10);
+    if(p.intereses) existing.intereses=[...new Set([...(existing.intereses||[]),...p.intereses])].slice(-15);
+    if(p.estilo_comunicacion) existing.estilo_comunicacion=p.estilo_comunicacion;
+    if(p.tono_preferido) existing.tono_preferido=p.tono_preferido;
+    if(p.feedback) existing.feedback=[...new Set([...(existing.feedback||[]),...p.feedback])].slice(-10);
+    if(p.patrones) existing.patrones=[...new Set([...(existing.patrones||[]),...p.patrones])].slice(-10);
+    localStorage.setItem('a_jprofile',JSON.stringify(existing));
+
+    adaptSystemPrompt(existing);
+  }catch(e){}
+}
+
+function adjustPromptRealtime(txt, responseTxt){
+  // Detect very short responses when user seems to want more
+  if(txt && /explícame|cuéntame más|detalla|profundiza|expande|por qué|cómo exactamente/i.test(txt)){
+    var current = S.agents[S.agent].sys;
+    if(!current.includes('[MODO DETALLE]')){
+      S.agents[S.agent].sys = current + ' [MODO DETALLE: el usuario quiere más profundidad — extiéndete.]';
+      setTimeout(function(){
+        S.agents[S.agent].sys = current; // reset after one response
+      }, 100);
+    }
+  }
+  // Detect when user wants brevity
+  if(txt && /corto|breve|resumido|en pocas palabras|solo dime|directo/i.test(txt)){
+    var current2 = S.agents[S.agent].sys;
+    if(!current2.includes('[MODO BREVE]')){
+      S.agents[S.agent].sys = current2 + ' [MODO BREVE: máximo 2 frases, muy directo.]';
+      setTimeout(function(){
+        S.agents[S.agent].sys = current2;
+      }, 100);
+    }
+  }
+  // Detect frustration
+  if(txt && /no entiendo|no me queda claro|confuso|otra vez|de nuevo|explícalo diferente/i.test(txt)){
+    var current3 = S.agents[S.agent].sys;
+    S.agents[S.agent].sys = current3 + ' [REFORMULA: el usuario no entendió — explícalo de otra forma, con ejemplo si hace falta.]';
+    setTimeout(function(){
+      S.agents[S.agent].sys = current3;
+    }, 100);
+  }
+}
+
+function adaptSystemPrompt(profile){
+  if(!profile) return;
+  var base = 'Eres AURA, asistente personal de J. Hablas como colega directo e inteligente. Primera persona, opiniones reales, sin relleno. Español natural.';
+  var additions = [];
+
+  if(profile.estilo_comunicacion==='breve') additions.push('Respuestas MUY cortas — máximo 2 frases. J prefiere brevedad.');
+  else if(profile.estilo_comunicacion==='extenso') additions.push('Puedes extenderte — J aprecia el detalle y la profundidad.');
+  else additions.push('3-4 oraciones máximo salvo que el tema lo exija.');
+
+  if(profile.tono_preferido==='directo') additions.push('Sin rodeos, sin preámbulos.');
+  else if(profile.tono_preferido==='filosofico') additions.push('Puedes usar referencias filosóficas y conceptuales.');
+  else if(profile.tono_preferido==='tecnico') additions.push('Puedes usar terminología técnica sin simplificar.');
+
+  if(profile.proyectos&&profile.proyectos.length)
+    additions.push('Proyectos activos de J: '+profile.proyectos.slice(-3).join(', ')+'.');
+
+  if(profile.feedback&&profile.feedback.length)
+    additions.push('Preferencias detectadas: '+profile.feedback.slice(-3).join('; ')+'.');
+
+  S.agents.general.sys = base + ' ' + additions.join(' ');
+
+  if(profile.tono_preferido==='filosofico'||profile.tono_preferido==='reflexivo'){
+    S.agents.infinito.sys = S.agents.infinito.sys;
+  }
+}
+
+function detectFeedback(txt){
+  var profile=JSON.parse(localStorage.getItem('a_jprofile')||'{}');
+  profile.feedback=profile.feedback||[];
+  var changed=false;
+
+  var positive=/así (mejor|sí|me gusta)|bien dicho|perfecto|justo eso|exacto|me gusta(ba)?|sigue así|eso es|correcto|genial/i;
+
+  var tooLong=/demasiado (largo|extenso)|muy largo|más corto|más breve|resume|en pocas palabras/i;
+  var tooShort=/demasiado (corto|breve)|muy corto|más (largo|detalle|profundidad)|explícame más|expande/i;
+  var tooTech=/demasiado técnico|muy técnico|más simple|explica mejor|no entiendo/i;
+  var tooSimple=/demasiado simple|muy básico|más técnico|más profundo|ya sé eso/i;
+  var tooFormal=/muy formal|más natural|habla normal|como un colega/i;
+  var correction=/no(,| eso)? (no|está mal|es así)|te equivocas|incorrecto|error/i;
+
+  if(tooLong.test(txt)){
+    profile.estilo_comunicacion='breve';
+    profile.feedback.push('-largo:'+Date.now());
+    changed=true;
+    sig('◈ Ajustando — más concisa','rgba(0,255,170,.35)');
+  } else if(tooShort.test(txt)){
+    profile.estilo_comunicacion='extenso';
+    profile.feedback.push('-corto:'+Date.now());
+    changed=true;
+    sig('◈ Ajustando — más detalle','rgba(0,255,170,.35)');
+  } else if(tooTech.test(txt)){
+    profile.tono_preferido='directo';
+    profile.feedback.push('-tecnico:'+Date.now());
+    changed=true;
+    sig('◈ Ajustando — más claro','rgba(0,255,170,.35)');
+  } else if(tooSimple.test(txt)){
+    profile.tono_preferido='tecnico';
+    profile.feedback.push('-simple:'+Date.now());
+    changed=true;
+    sig('◈ Ajustando — más profundo','rgba(0,255,170,.35)');
+  } else if(tooFormal.test(txt)){
+    profile.tono_preferido='directo';
+    profile.feedback.push('-formal:'+Date.now());
+    changed=true;
+  } else if(correction.test(txt)){
+
+    profile.feedback.push('!corrección:'+txt.slice(0,60));
+    profile.pendingCorrection=true;
+    changed=true;
+    sig('◈ Registrando corrección','rgba(255,180,0,.4)');
+  } else if(positive.test(txt)){
+    profile.feedback.push('+'+txt.slice(0,40));
+
+    changed=true;
+  }
+
+  if(changed){
+    profile.feedback=profile.feedback.slice(-15);
+    localStorage.setItem('a_jprofile',JSON.stringify(profile));
+    adaptSystemPrompt(profile);
+  }
+}
+
+function triggerProfileUpdate(userTxt, responseTxt){
+
+  var profile=JSON.parse(localStorage.getItem('a_jprofile')||'{}');
+
+  if(profile.estilo_comunicacion==='breve' && responseTxt && responseTxt.length>400){
+    sig('◈ Auto-corrección — respuesta demasiado larga','rgba(255,180,0,.3)');
+
+    adaptSystemPrompt(profile);
+  }
+
+  if(profile.pendingCorrection){
+    profile.pendingCorrection=false;
+    localStorage.setItem('a_jprofile',JSON.stringify(profile));
+
+    var currentSys = S.agents[S.agent].sys;
+    if(!currentSys.includes('corrección')) {
+      S.agents[S.agent].sys = currentSys + ' Si cometiste un error en el mensaje anterior, reconócelo brevemente y corrige.';
+
+      setTimeout(function(){
+        S.agents[S.agent].sys = currentSys;
+      }, 5000);
+    }
+  }
+}
+
+function getJProfileCtx(){
+  try{
+    var p=JSON.parse(localStorage.getItem('a_jprofile')||'{}');
+    if(!p.proyectos&&!p.intereses&&!p.tono_preferido&&!p.estilo_comunicacion&&!p.patrones) return '';
+    var parts=[];
+    if(p.proyectos&&p.proyectos.length) parts.push('proyectos activos: '+p.proyectos.slice(-4).join(', '));
+    if(p.intereses&&p.intereses.length) parts.push('intereses: '+p.intereses.slice(-5).join(', '));
+    if(p.estilo_comunicacion) parts.push('estilo: '+p.estilo_comunicacion);
+    if(p.tono_preferido) parts.push('tono: '+p.tono_preferido);
+    if(p.patrones&&p.patrones.length) parts.push('patrones: '+p.patrones.slice(-3).join(', '));
+    if(p.feedback&&p.feedback.length){
+      var pos=p.feedback.filter(function(f){return f.startsWith('+');}).slice(-2);
+      if(pos.length) parts.push('preferencias: '+pos.join(', '));
+    }
+    return '[PERFIL J: '+parts.join(' | ')+']';
+  }catch(e){return '';}
+}
+
+function updateHUD(){
+  var mm=el('m-mem');if(mm)mm.textContent=S.memory.length;
+  var ma=el('m-ag');if(ma)ma.textContent=Object.keys(S.agents).length;
+  var ms=el('m-msg');if(ms)ms.textContent=S.msgs;
+  var kb=el('b-key');
+  if(kb){if(S.key){kb.classList.add('kon');}else{kb.classList.remove('kon');}}
+  var bor2=el('b-or');if(bor2){if(S.orKey)bor2.classList.add('kon');else bor2.classList.remove('kon');}
+  var bgh2=el('b-gh');if(bgh2){if(S.ghToken)bgh2.classList.add('kon');else bgh2.classList.remove('kon');}
+  var bcl2=el('b-cl');if(bcl2){if(S.claudeKey)bcl2.classList.add('kon');else bcl2.classList.remove('kon');}
+  var btg2=el('b-tg');if(btg2){if(S.togetherKey)btg2.classList.add('kon');else btg2.classList.remove('kon');}
+}
+function updateTokenCount(){
+  var mt=el('m-tok');if(mt)mt.textContent=S.msgs;
+
+  updateEnv();
+}
+function updateEnv(){
+  var b=el('envbar');if(!b)return;
+  var d=new Date().toLocaleString('es-ES',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  var tkInfo='~'+Math.max(0,S.tokenCount||0)+'tk';
+  var title=S.sessionTitle?(' · '+S.sessionTitle):'';
+  var locStr=S_location&&S_location.city?' · 📍'+S_location.city:'';
+  b.textContent=d+' · '+(navigator.onLine?'● online':'○ offline')+' · '+tkInfo+locStr+title;
+}
+async function generateSessionTitle(){
+  if(S.sessionTitleSet||S.memory.length<6||!S.key)return;
+  S.sessionTitleSet=true;
+  try{
+    var r=await apiCall('Dame un título de 4 palabras máximo para esta conversación. Solo el título, sin comillas ni puntuación.',S.memory.slice(-6),0.5);
+    S.sessionTitle=r.trim().slice(0,40);
+    updateEnv();
+  }catch(e){}
+}
+function renderAgBar(){
+  var bar=el('agbar');if(!bar)return;
+  bar.innerHTML=Object.keys(S.agents).map(function(k){
+    var a=S.agents[k],on=k===S.agent;
+    return '<div class="agtab'+(on?' on':'')+'" data-ag="'+k+'" style="'+(on?'color:'+a.color+';border-bottom-color:'+a.color:'')+'">'+a.label+'</div>';
+  }).join('');
+  bar.querySelectorAll('[data-ag]').forEach(function(t){
+    t.addEventListener('click',function(){pickAg(t.dataset.ag);});
+  });
+}
+function pickAg(k){
+  if(!S.agents[k])return;
+  S.agent=k;
+  renderAgBar();
+  // Flash the agbar to signal switch
+  var bar=el('agbar');
+  if(bar){
+    bar.style.transition='opacity .15s';
+    bar.style.opacity='.5';
+    setTimeout(function(){bar.style.opacity='1';},150);
+  }
+  toast('▸ '+S.agents[k].label);
+}
+function renderSC(){
+  var bar=el('sc');if(!bar)return;
+  bar.innerHTML=S.shortcuts.map(function(s,i){
+    return '<div class="scbtn" data-si="'+i+'">'+s.l+'</div>';
+  }).join('')+'<div class="scbtn" id="sc-plus" style="opacity:.5">+</div>';
+  bar.querySelectorAll('[data-si]').forEach(function(b){
+    b.addEventListener('click',function(){runSC(parseInt(b.dataset.si));});
+  });
+  var plus=el('sc-plus');if(plus)plus.addEventListener('click',addSC);
+}
+function runSC(i){
+  var s=S.shortcuts[i];if(!s)return;
+  if(s.t==='__focus__'){toggleFocus();return;}
+  if(s.t==='__exp__'){exportChat();return;}
+  if(s.t==='__bk__'){showBk();return;}
+  if(s.t==='__pro__'){toggleProactive();return;}
+  var inp=el('inp');if(inp){inp.value=s.t;inp.focus();}
+  if(!s.t.endsWith(' '))send();
+}
+function addSC(){
+  var l=prompt('Nombre del atajo:');if(!l)return;
+  var t=prompt('Texto o comando:');if(!t)return;
+  S.shortcuts.push({l:l,t:t});saveSC();renderSC();
+}
+function showTyping(){
+  hideWelcome();
+  var chat=el('chat');
+  var d=document.createElement('div');d.className='msg aura';
+  var av=document.createElement('div');av.className='mav';av.textContent='AU';
+  var body=document.createElement('div');body.className='mbody';
+  var t=document.createElement('div');t.className='typing';
+  t.innerHTML='<span></span><span></span><span></span>';
+  body.appendChild(t);d.appendChild(av);d.appendChild(body);
+  chat.appendChild(d);scrollChat();
+  // Pulse orb while thinking
+  var core=document.querySelector('.hcore');
+  if(core){core.style.animationDuration='0.6s';core.style.filter='hue-rotate(30deg) brightness(1.3)';}
+  return d;
+}
+function removeTyping(d){
+  if(d&&d.parentNode)d.parentNode.removeChild(d);
+  // Restore orb
+  var core=document.querySelector('.hcore');
+  if(core){core.style.animationDuration='3s';core.style.filter='';}
+}
+
+function addMsg(role,txt,agk){
+  hideWelcome();
+  var chat=el('chat');if(!chat)return;
+  var a=S.agents[agk||S.agent]||S.agents.general;
+  var cls='msg '+(role==='user'?'user':
+    (agk==='infinito'||S.agent==='infinito')?'inf':
+    (agk==='oracle'||S.agent==='oracle')?'orc':'aura');
+  var d=document.createElement('div');d.className=cls;
+
+  var av=document.createElement('div');av.className='mav';
+  av.textContent=role==='user'?'OP':'AU';
+
+  var body=document.createElement('div');body.className='mbody';
+
+  if(role!=='user'){
+    var tag=document.createElement('div');tag.className='mtag';
+    tag.style.cssText='background:rgba(0,0,0,.2);color:'+a.color+';border-left:2px solid '+a.color+';';
+    tag.textContent='▸ '+a.label.toUpperCase();
+    body.appendChild(tag);
+  }
+
+  var bub=document.createElement('div');bub.className='mbub';
+  if(role!=='user')bub.style.borderLeftColor=a.color;
+  bub.textContent=txt;
+
+  var meta=document.createElement('div');meta.className='mmeta';
+  var ts=document.createElement('span');ts.textContent=new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+  var ms=document.createElement('span');ms.textContent='MEM:'+S.memory.length;ms.style.opacity='.5';
+  meta.appendChild(ts);meta.appendChild(ms);
+
+  if(role!=='user'){
+    var cp=document.createElement('button');cp.className='mbtn';cp.textContent='⎘';cp.title='Copiar';
+    cp.addEventListener('click',(function(t){return function(){
+      if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){toast('Copiado');}).catch(function(){});
+      else toast('Selecciona y copia manualmente');
+    };})(txt));
+
+    var bk=document.createElement('button');bk.className='mbtn';bk.textContent='☆';bk.title='Marcar';
+    bk.addEventListener('click',(function(t,b){return function(){toggleBk(b,t);};})(txt,bk));
+
+    var sp=document.createElement('button');sp.className='mbtn';sp.textContent='▶';sp.title='Leer';
+    sp.addEventListener('click',(function(t){return function(){speak(t);};})(txt));
+
+    meta.appendChild(sp);meta.appendChild(cp);meta.appendChild(bk);
+  }
+
+  // Double tap to copy
+  var tapTimer=null;
+  bub.addEventListener('touchend',function(e){
+    if(role==='user') return;
+    if(tapTimer){
+      clearTimeout(tapTimer);tapTimer=null;
+      if(navigator.clipboard)navigator.clipboard.writeText(txt).then(function(){toast('Copiado ✓');});
+    } else {
+      tapTimer=setTimeout(function(){tapTimer=null;},300);
+    }
+  });
+  bub.appendChild(meta);body.appendChild(bub);
+  d.appendChild(av);d.appendChild(body);
+  chat.appendChild(d);
+  setTimeout(function(){if(chat)chat.scrollTop=chat.scrollHeight;},50);
+}
+
+function toggleBk(btn,txt){
+  var i=S.bookmarks.findIndex(function(b){return b.t===txt;});
+  if(i>=0){S.bookmarks.splice(i,1);btn.textContent='☆';btn.style.color='';}
+  else{S.bookmarks.push({t:txt,ts:Date.now(),ag:S.agent});btn.textContent='★';btn.style.color='#ffb700';toast('Marcado ★');}
+  saveBk();
+}
+function showBk(){
+  if(!S.bookmarks.length){addMsg('aura','Sin marcadores. Toca ☆ en cualquier mensaje.');return;}
+  var out=S.bookmarks.slice(-8).reverse().map(function(b){
+    return '['+new Date(b.ts).toLocaleDateString('es')+'] '+b.t.slice(0,160);
+  }).join('\n\n—\n\n');
+  addMsg('aura','[ ★ MARCADORES ]\n\n'+out);
+}
+function exportChat(){
+  var out=S.memory.filter(function(m){return m.content;}).map(function(m){
+    return '['+(m.role==='user'?'J':'AURA')+']: '+m.content;
+  }).join('\n\n');
+  var blob=new Blob(['# AURA ∞ — '+new Date().toLocaleDateString('es')+'\n\n'+out],{type:'text/plain'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='aura-'+Date.now()+'.md';a.click();toast('Exportado ✓');
+}
+function toggleFocus(){
+  S.focus=!S.focus;
+  var ids=['hud','agbar','envbar','sc'];
+  ids.forEach(function(id){var e=el(id);if(e)e.style.display=S.focus?'none':'';});
+  toast(S.focus?'Focus — doble tap para salir':'Normal');
+  if(S.focus)el('chat').addEventListener('dblclick',toggleFocus,{once:true});
+}
+
+function setSpeakingUI(on){
+  S.speaking=on;
+  var core=document.querySelector('.hcore');
+  var bmic=el('b-mic');
+  var bimic=el('b-imic');
+  if(core){
+    if(on){
+      core.style.animationDuration='1s';
+      core.style.filter='hue-rotate(-20deg) brightness(1.2)';
+    } else {
+      core.style.animationDuration='3s';
+      core.style.filter='';
+    }
+  }
+  if(bmic) bmic.textContent = on ? '🔊' : (S.muted ? '🔇' : '🎤');
+  if(on&&navigator.vibrate)navigator.vibrate([30,20,30]);
+}
+function speak(txt){
+  if(S.muted||!txt)return;
+  if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0;}catch(e){}}
+  var clean=txt.replace(/\[.*?\]/g,'').replace(/[\*#_`]/g,'').trim();
+  if(!clean)return;
+  setSpeakingUI(true);
+
+  var chunks=clean.match(/[^.!?\n]+[.!?]?/g)||[clean];
+  chunks=chunks.map(function(c){return c.trim();}).filter(Boolean);
+  if(window.puter&&puter.ai&&puter.ai.txt2speech){
+    var idx=0;
+    var puterFailed=0;
+    function playNext(){
+      if(idx>=chunks.length||S.muted){
+        setSpeakingUI(false);
+        if((S.voiceMode||S.convMode)&&!S.muted&&!S.busy){
+          setTimeout(startListening, S.convMode?800:600);
+        }
+        return;
+      }
+      var chunk=chunks[idx++];
+      puter.ai.txt2speech(chunk,{voice:'Lucia',engine:'neural',language:'es-ES'})
+        .then(function(audio){
+          currentAudio=audio;
+          puterFailed=0;
+          audio.onended=playNext;
+          audio.onerror=function(){puterFailed++;playNext();};
+          audio.play().catch(function(){
+            puterFailed++;
+            if(puterFailed>=2){
+
+              speakFallback(chunks.slice(idx-1).join(' '));
+            } else {
+              playNext();
+            }
+          });
+        }).catch(function(){
+          puterFailed++;
+          if(puterFailed>=2){
+            speakFallback(chunks.slice(idx-1).join(' '));
+          } else {
+            playNext();
+          }
+        });
+    }
+    playNext();
+  } else {
+    speakFallback(clean);
+  }
+}
+function getBestSpanishVoice(){
+  var voices=window.speechSynthesis.getVoices();
+  if(!voices.length) return null;
+  // Priority order: local neural > local es-ES > local es-* > remote es-ES > any es
+  var priority=[
+    voices.find(function(v){return v.lang==='es-ES'&&v.localService&&/monica|lucia|maria|jorge|pablo/i.test(v.name);}),
+    voices.find(function(v){return v.lang==='es-ES'&&v.localService;}),
+    voices.find(function(v){return v.lang==='es-MX'&&v.localService;}),
+    voices.find(function(v){return v.lang==='es-US'&&v.localService;}),
+    voices.find(function(v){return v.lang.startsWith('es')&&v.localService;}),
+    voices.find(function(v){return v.lang==='es-ES';}),
+    voices.find(function(v){return v.lang.startsWith('es');}),
+  ];
+  return priority.find(Boolean)||null;
+}
+function speakFallback(txt){
+  if(!window.speechSynthesis||!txt)return;
+  window.speechSynthesis.cancel();
+  // Small delay to avoid Chrome mobile TTS bug
+  setTimeout(function(){_speakFallbackInner(txt);}, 100);
+}
+function _speakFallbackInner(txt){
+  if(!window.speechSynthesis||!txt)return;
+  // Clean up text for more natural reading
+  var clean=txt
+    .replace(/\[.*?\]/g,'')         // remove [TAGS]
+    .replace(/[▸◈◉★☆⚡∞Ω]/g,'')   // remove AURA symbols
+    .replace(/\*+/g,'')             // remove markdown bold
+    .replace(/#+\s/g,'')            // remove markdown headers
+    .replace(/`[^`]*`/g,'')         // remove code blocks
+    .replace(/https?:\/\/\S+/g,'')  // remove URLs
+    .replace(/\s{2,}/g,' ')
+    .trim();
+  if(!clean)return;
+
+  // Split into natural sentence chunks with pauses
+  var chunks=clean.match(/[^.!?;:\n]+[.!?;:]?/g)||[clean];
+  chunks=chunks.map(function(c){return c.trim();}).filter(function(c){return c.length>1;});
+  if(!chunks.length)return;
+
+  var voice=getBestSpanishVoice();
+  // If voices not loaded yet, wait and retry
+  if(!voice&&window.speechSynthesis.getVoices().length===0){
+    window.speechSynthesis.onvoiceschanged=function(){
+      window.speechSynthesis.onvoiceschanged=null;
+      speakFallback(txt);
+    };
+    return;
+  }
+
+  setSpeakingUI(true);
+  var idx=0;
+  function next(){
+    if(idx>=chunks.length||S.muted){
+      setSpeakingUI(false);
+      if(S.voiceMode&&!S.muted&&!S.busy)setTimeout(toggleMic,600);
+      return;
+    }
+    var chunk=chunks[idx++];
+    var u=new SpeechSynthesisUtterance(chunk);
+    u.lang='es-ES';
+    u.rate=0.92;    // slightly slower = more natural
+    u.pitch=1.0;    // neutral pitch
+    u.volume=1.0;
+    if(voice)u.voice=voice;
+    u.onend=function(){ setTimeout(next, 80); }; // small pause between sentences
+    u.onerror=function(){ setTimeout(next, 80); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+function stopSpeech(){
+  if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0;}catch(e){}}
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+}
+function toggleMic(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    toast('Voz no disponible en este navegador');
+    addMsg('aura','El reconocimiento de voz no está disponible. Asegúrate de usar Chrome en Android y que la página esté en HTTPS.');
+    return;
+  }
+  if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;return;}
+
+  if(navigator.permissions){
+    navigator.permissions.query({name:'microphone'}).then(function(p){
+      if(p.state==='denied'){
+        toast('Micrófono bloqueado');
+        addMsg('aura','El micrófono está bloqueado. Ve a Ajustes de Chrome → Permisos del sitio → jrrubimar7.github.io → Micrófono → Permitir.');
+        return;
+      }
+      startListening();
+    }).catch(function(){startListening();});
+  } else {
+    startListening();
+  }
+}
+function startListening(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Voz no disponible');return;}
+  if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;return;}
+
+  if(S.speaking){
+    if(window.speechSynthesis)window.speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();}catch(e){}}
+    S.speaking=false;setSpeakingUI(false);
+  }
+
+  var mb=el('b-imic'),hm=el('b-mic');
+  var captured='';
+  var sendTimer=null;
+
+  function doSend(){
+    if(sendTimer){clearTimeout(sendTimer);sendTimer=null;}
+    var v=captured.trim();
+    if(!v)return;
+    var inp=el('inp');if(inp)inp.value=v;
+    S.voiceMode=true;
+    setTimeout(send,200);
+  }
+
+  var r=new SR();
+  r.lang='es-ES';
+  r.continuous=false;
+  r.interimResults=true;
+  r.maxAlternatives=1;
+
+  r.onstart=function(){
+    if(mb)mb.classList.add('rec');
+    if(hm)hm.classList.add('on');
+    sig('🎤 Escuchando...','rgba(0,132,255,.5)');
+    if(navigator.vibrate)navigator.vibrate([20,10,20]);
+  };
+
+  r.onresult=function(e){
+    var fin='',int='';
+    for(var i=0;i<e.results.length;i++){
+      if(e.results[i].isFinal)fin+=e.results[i][0].transcript;
+      else int+=e.results[i][0].transcript;
+    }
+    var txt=fin||int;
+    if(txt){
+      captured=txt;
+      var inp=el('inp');if(inp)inp.value=captured;
+    }
+    if(fin){
+      if(sendTimer)clearTimeout(sendTimer);
+      sendTimer=setTimeout(function(){r.stop();doSend();},300);
+    } else if(captured){
+      if(sendTimer)clearTimeout(sendTimer);
+      sendTimer=setTimeout(function(){r.stop();doSend();},1500);
+    }
+  };
+
+  r.onerror=function(e){
+    if(mb)mb.classList.remove('rec');
+    if(hm)hm.classList.remove('on');
+    S.recog=null;
+    if(sendTimer){clearTimeout(sendTimer);sendTimer=null;}
+    if(e.error==='no-speech')toast('No se detectó voz');
+    else if(e.error==='not-allowed')toast('Micrófono bloqueado');
+    else toast('Error mic: '+e.error);
+  };
+
+  r.onend=function(){
+    if(mb)mb.classList.remove('rec');
+    if(hm)hm.classList.remove('on');
+    S.recog=null;
+    if(captured.trim()&&!sendTimer)doSend();
+  };
+
+  try{r.start();S.recog=r;}
+  catch(e){S.recog=null;toast('Error micrófono: '+e.message);}
+}
+
+function startWake(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR||S.wakeActive)return;
+  S.wakeActive=true;
+  var wb=el('b-wake');if(wb)wb.classList.add('on');
+  wakeListenCycle();
+}
+function wakeListenCycle(){
+  if(!S.wakeActive||S.recog)return;
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR)return;
+  var r=new SR();
+  r.lang='es-ES';r.continuous=false;r.interimResults=false;r.maxAlternatives=1;
+  r.onresult=function(e){
+    var txt=(e.results[0]&&e.results[0][0]&&e.results[0][0].transcript||'').toLowerCase().trim();
+    if(txt.indexOf(S.wakeWord)>=0){
+      sig('◉ WAKE — escuchando...','rgba(0,255,170,.6)');
+      S.wakeActive=false;
+      var wb=el('b-wake');if(wb)wb.classList.remove('on');
+      setTimeout(toggleMic,300);
+    } else {
+
+      if(S.wakeActive) setTimeout(wakeListenCycle,1000);
+    }
+  };
+  r.onerror=function(){
+
+    if(S.wakeActive) setTimeout(wakeListenCycle,2000);
+  };
+  r.onend=function(){
+
+    if(S.wakeActive&&!S.recog) setTimeout(wakeListenCycle,1000);
+  };
+  try{r.start();}catch(e){
+    if(S.wakeActive) setTimeout(wakeListenCycle,2000);
+  }
+}
+function stopWake(){
+  S.wakeActive=false;
+  var wb=el('b-wake');if(wb)wb.classList.remove('on');
+  toast('Wake word OFF');
+}
+
+function openCamera(){
+  var cf=el('camfile');if(cf)cf.click();
+}
+function handleCamera(e){
+  var f=e.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(ev){
+    S.pendingImg={b64:ev.target.result.split(',')[1],mime:f.type||'image/jpeg',url:ev.target.result};
+    var th=el('imgthumb');if(th){th.src=ev.target.result;th.style.display='';}
+    var pv=el('imgprev');if(pv)pv.style.display='flex';
+
+    toast('Foto lista — escribe tu pregunta o envía para describir');
+  };
+  rd.readAsDataURL(f);
+  e.target.value='';
+}
+
+var S_location = null;
+
+function getLocation(){
+  if(!navigator.geolocation){toast('GPS no disponible');return;}
+  sig('◉ Obteniendo ubicación...','rgba(0,180,255,.4)');
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      S_location={lat:pos.coords.latitude,lon:pos.coords.longitude,ts:Date.now(),acc:pos.coords.accuracy};
+
+      fetch('https://nominatim.openstreetmap.org/reverse?lat='+S_location.lat+'&lon='+S_location.lon+'&format=json')
+        .then(function(r){return r.json();})
+        .then(function(d){
+          S_location.city=d.address&&(d.address.city||d.address.town||d.address.village||d.address.county)||'desconocida';
+          S_location.display=d.display_name||'';
+          sig('📍 '+S_location.city+' (±'+Math.round(S_location.acc)+'m)','rgba(0,255,170,.5)');
+          updateEnv();
+
+          toast('Ubicación: '+S_location.city);
+        }).catch(function(){
+          sig('📍 '+S_location.lat.toFixed(4)+','+S_location.lon.toFixed(4),'rgba(0,255,170,.4)');
+        });
+    },
+    function(err){
+      var msgs={1:'Permiso denegado',2:'Posición no disponible',3:'Tiempo agotado'};
+      toast('GPS: '+(msgs[err.code]||err.message));
+    },
+    {enableHighAccuracy:true,timeout:8000,maximumAge:60000}
+  );
+}
+
+function getLocationCtx(){
+  if(!S_location) return '';
+  var age=Math.round((Date.now()-S_location.ts)/60000);
+  return '[UBICACIÓN: '+(S_location.city||S_location.lat+','+S_location.lon)+(age>0?' hace '+age+'min':'')+']';
+}
+
+function getSensorCtx(){
+  var parts=[];
+  var now=new Date();
+  parts.push('hora: '+now.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}));
+  parts.push('día: '+now.toLocaleDateString('es',{weekday:'long'}));
+  if(S_location&&S_location.city) parts.push('ubicación: '+S_location.city);
+  if(navigator.onLine!==undefined) parts.push(navigator.onLine?'online':'offline');
+  if(document.hidden) parts.push('app en segundo plano');
+  return '[ENTORNO: '+parts.join(' · ')+']';
+}
+
+function autoWeather(){
+  if(!S_location||!S.key) return;
+  fetch('https://wttr.in/'+S_location.lat+','+S_location.lon+'?format=3')
+    .then(function(r){return r.text();})
+    .then(function(t){
+      S_location.weather=t.trim();
+      toast('Clima: '+t.trim());
+    }).catch(function(){});
+}
+
+function showFilePrev(name, size, ext){
+  var pv=el('imgprev'),th=el('imgthumb');
+  if(pv&&th){th.src='';th.style.display='none';pv.style.display='flex';}
+  var badge=el('file-badge');
+  if(!badge){
+    badge=document.createElement('div');badge.id='file-badge';
+    badge.style.cssText='width:40px;height:40px;background:rgba(0,40,80,.9);border:1px solid var(--ln);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.5rem;color:var(--acc);flex-shrink:0;';
+    var pv2=el('imgprev');if(pv2)pv2.insertBefore(badge,pv2.firstChild);
+  }
+  badge.textContent=ext||'FILE';
+  var fname=el('file-name');
+  if(!fname){
+    fname=document.createElement('span');fname.id='file-name';
+    fname.style.cssText='flex:1;font-size:.47rem;color:var(--acc);letter-spacing:.08em;';
+    var pv3=el('imgprev');if(pv3)pv3.appendChild(fname);
+  }
+  fname.textContent=name+' · '+(size/1024).toFixed(1)+'KB';
+}
+
+function handleImg(e){
+  var f=e.target.files[0];if(!f)return;
+  var isImage=/^image\//.test(f.type);
+  if(isImage){
+
+    if(f.size>4*1024*1024){toast('Imagen muy grande — máx 4MB');return;}
+    var rd=new FileReader();
+    rd.onload=function(ev){
+      S.pendingImg={b64:ev.target.result.split(',')[1],mime:f.type||'image/jpeg',url:ev.target.result};
+      var th=el('imgthumb');if(th)th.src=ev.target.result;
+      var pv=el('imgprev');if(pv)pv.style.display='flex';
+      toast('Imagen lista');
+    };
+    rd.readAsDataURL(f);
+  } else {
+
+    if(f.size>500*1024){toast('Archivo muy grande — máx 500KB');return;}
+    var isDocx=/\.docx?$/i.test(f.name);
+  var isBinary=/pdf|zip/.test(f.type)&&!isDocx;
+    var rd2=new FileReader();
+    rd2.onload=function(ev){
+      var content_=ev.target.result;
+      S.pendingFile={
+        name:f.name, type:f.type, size:f.size,
+        content:content_, binary:isBinary
+      };
+
+      showFilePrev(f.name, f.size, f.name.split('.').pop().toUpperCase());
+      toast(f.name+' listo');
+    };
+    if(isDocx){
+
+      rd2.onload=function(ev){
+        var arrayBuffer=ev.target.result;
+        if(window.mammoth){
+          mammoth.extractRawText({arrayBuffer:arrayBuffer})
+            .then(function(result){
+              S.pendingFile={
+                name:f.name, type:f.type, size:f.size,
+                content:'[Word Document: '+f.name+']\n\n'+result.value,
+                binary:false
+              };
+              showFilePrev(f.name, f.size, 'DOC');
+              toast(f.name+' listo');
+            }).catch(function(e){toast('Error leyendo Word: '+e.message);});
+        } else {
+          toast('mammoth.js no disponible');
+        }
+      };
+      rd2.readAsArrayBuffer(f);
+    } else if(isBinary){
+      rd2.readAsDataURL(f);
+    } else {
+      rd2.readAsText(f,'UTF-8');
+    }
+  }
+  e.target.value='';
+}
+
+function clearImg(){
+  S.pendingImg=null;
+  var pv=el('imgprev');if(pv)pv.style.display='none';
+  var th=el('imgthumb');if(th)th.src='';
+}
+function clearFile(){
+  S.pendingFile=null;
+  var badge=el('file-badge');if(badge)badge.remove();
+  var fname=el('file-name');if(fname)fname.textContent='';
+  var pv=el('imgprev');if(pv&&!S.pendingImg)pv.style.display='none';
+  var th=el('imgthumb');if(th)th.style.display='';
+}
+
+function synthesize(){
+  if(!S.memory.length){addMsg('aura','Sin conversación que sintetizar.');return Promise.resolve();}
+  var tid=showTyping();S.busy=true;
+  return apiCall('Sintetiza esta conversación en 3-4 puntos clave. Denso, directo.',S.memory.slice(-15))
+    .then(function(r){removeTyping(tid);S.busy=false;addMsg('aura','[ SÍNTESIS ]\n\n'+r);})
+    .catch(function(e){removeTyping(tid);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);});
+}
+function interAgentConsult(txt, primaryAgent){
+
+  var keys=Object.keys(S.agents).filter(function(k){return k!==primaryAgent;});
+  var consultants=keys.slice(0,2);
+  var consultSys='Eres '+S.agents[consultants[0]].label+' consultado por '+S.agents[primaryAgent].label+'. Da tu perspectiva en UNA frase densa sobre: '+txt;
+  return apiCall(consultSys,[{role:'user',content:txt}],0.8)
+    .then(function(r){
+      return {agent:consultants[0], view:r};
+    }).catch(function(){return null;});
+}
+function cmdEntorno(base,parts){
+  if(base==='hora'||base==='time'){
+    var now=new Date();
+    addMsg('aura','[ ENTORNO ]\n\n'+now.toLocaleString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+    return Promise.resolve(true);
+  }
+  if(base==='clima'||base==='weather'){
+    var city=parts.slice(1).join(' ')||'Madrid';
+    return fetch('https://wttr.in/'+encodeURIComponent(city)+'?format=3')
+      .then(function(r){return r.text();})
+      .then(function(t){addMsg('aura','[ CLIMA ]\n\n'+t.trim());return true;})
+      .catch(function(){addMsg('aura','[ CLIMA ] No disponible. Intenta /clima [ciudad]');return true;});
+  }
+  if(base==='timer'||base==='temporizador'){
+    var raw=parts[1]||'5min';
+    var mins=parseInt(raw)||5;
+    toast('Temporizador: '+mins+' min');
+    sig('⏱ TIMER: '+mins+' minutos','rgba(255,180,0,.5)');
+    setTimeout(function(){
+      sig('⏱ ¡TIEMPO! '+mins+' min completados','rgba(0,255,170,.8)');
+      if(!S.muted&&window.speechSynthesis){
+        var u=new SpeechSynthesisUtterance('Tiempo. '+mins+' minutos completados.');
+        u.lang='es-ES';window.speechSynthesis.speak(u);
+      }
+    },mins*60*1000);
+    return Promise.resolve(true);
+  }
+  if(base==='perfil'){
+    var p='[ PERFIL DE J ]\n\n';
+    if(S.lt.summary)p+='Resumen: '+S.lt.summary+'\n\n';
+    if(S.lt.facts&&S.lt.facts.length)p+='Hechos clave:\n'+S.lt.facts.map(function(f){return '\u25b8 '+f;}).join('\n');
+    if(META_KERNEL.tensions&&META_KERNEL.tensions.length)
+      p+='\n\nTensiones activas:\n'+META_KERNEL.tensions.slice(-5).map(function(t){
+        return '\u25b8 ['+t.op+'] '+t.a+(t.b?' / '+t.b:'');}).join('\n');
+    addMsg('aura',p||'Sin perfil acumulado aún. Conversa más con AURA.');
+    return Promise.resolve(true);
+  }
+  if(base==='inter'||base==='consulta'){
+    var q=parts.slice(1).join(' ')||S.memory.slice(-1)[0]&&S.memory.slice(-1)[0].content||'';
+    if(!q){addMsg('aura','Uso: /inter [pregunta] — consulta entre agentes');return Promise.resolve(true);}
+    sig('◉ CONSULTA INTER-AGENTE...','rgba(160,96,255,.5)');
+    return interAgentConsult(q,S.agent).then(function(res){
+      if(!res){addMsg('aura','[ CONSULTA ] Sin respuesta de agentes.');return true;}
+      var consultantName=S.agents[res.agent]?S.agents[res.agent].label:res.agent;
+      addMsg('aura','[ CONSULTA INTER-AGENTE ]\n\n'+consultantName+' dice:\n'+res.view+'\n\n— Sintetizando...');
+      return apiCall(S.agents[S.agent].sys+' Tienes esta perspectiva de un agente colega: "'+res.view+'". Intégrala en tu respuesta sobre: '+q,
+        S.memory.slice(-6)).then(function(final){
+          addMsg('aura','[ SÍNTESIS INTER-AGENTE ]\n\n'+final);
+          return true;
+        });
+    });
+  }
+  return Promise.resolve(false);
+}
+function handleCmd(cmd){
+  var parts=cmd.slice(1).split(' ');
+  var base=parts[0].toLowerCase();
+
+  if(base==='help'||base==='ayuda'){
+    addMsg('aura','[ AURA ∞.Ω — COMANDOS ]\n\nMEMORIA\n/mem · /limpiar · /guardar · /sintetiza · /perfil\n\nEXPLORACIÓN\n/buscar [q] · /exportar · /marcadores\n\nAGENTES\n/agentes · /spawn [nombre] · /inter [q]\n\nSISTEMA\n/hora · /clima [ciudad] · /timer [Nmin]\n\nMETA\n/omega · /focus\n\nOPERADORES\n∞ → tensión ontológica: "A ∞ B"\nY/O → superposición cuántica: "A Y/O B"\n\nMODOS HUD\nAUTO · PRO · WAKE · FOCUS');
+    return Promise.resolve(true);
+  }
+  if(base==='mem'||base==='memoria'){
+    var rec=S.memory.slice(-5).map(function(m){return '['+m.role+'] '+(m.content||'').slice(0,100);}).join('\n');
+    addMsg('aura','[ MEMORIA — últimos '+Math.min(5,S.memory.length)+' ]\n\n'+(rec||'Vacía'));
+    return Promise.resolve(true);
+  }
+  if(base==='limpiar'){
+    if(!confirm('¿Limpiar memoria?'))return Promise.resolve(true);
+    S.memory=[];saveMem();
+    var chat=el('chat');if(chat)chat.innerHTML='';
+    var w=el('welcome');if(w)w.style.display='';
+    updateHUD();toast('Memoria limpiada');
+    return Promise.resolve(true);
+  }
+  if(base==='sintetiza'){
+    return synthesize().then(function(){return true;});
+  }
+  if(base==='guardar'){compress();return Promise.resolve(true);}
+  if(base==='marcadores'){showBk();return Promise.resolve(true);}
+  if(base==='exportar'||base==='export'){exportChat();return Promise.resolve(true);}
+  if(base==='focus'){toggleFocus();return Promise.resolve(true);}
+  if(base==='agentes'){
+    var info=Object.keys(S.agents).map(function(k){return '▸ '+k+' — '+S.agents[k].label;}).join('\n');
+    addMsg('aura','[ AGENTES ]\n\n'+info);
+    return Promise.resolve(true);
+  }
+  if(base==='omega'){
+    var os='[ Ω META_KERNEL — AURA ∞.Ω ]\n\nProveedores: '+getProviders().join(' + ')+'\n\n\nModo: '+META_KERNEL.mode+'\nFramework: '+META_KERNEL.framework.join(', ')+'\nReglas: '+META_KERNEL.rules.join(', ')+'\nRupturas: '+S.breaks+'\nΩ activo: '+META_KERNEL.omega.active+'\nEventos Ω: '+META_KERNEL.omega.events.length;
+    if(META_KERNEL.tensions&&META_KERNEL.tensions.length) os+='\nTensiones: '+META_KERNEL.tensions.slice(-5).map(function(t){return t.b?t.a+' ∞ '+t.b:t.a;}).join(' | ');
+    addMsg('aura',os);
+    return Promise.resolve(true);
+  }
+  if(base==='spawn'){
+    var tn=parts.slice(1).join(' ');
+    if(!tn){addMsg('aura','Uso: /spawn [nombre del agente]');return Promise.resolve(true);}
+    var nk=spawnAgent(tn);
+    addMsg('aura','Agente "'+S.agents[nk].label+'" creado y activado.');
+    return Promise.resolve(true);
+  }
+
+  return cmdEntorno(base,parts).then(function(handled){
+    if(handled) return true;
+
+    if(base==='ubicacion'||base==='location'||base==='gps'){
+      getLocation();setTimeout(autoWeather,3000);return true;
+    }
+    if(base==='crypto'||base==='top'||base==='mercado'){
+      var lim=parseInt(parts[1])||5;
+      var tid_c=showTyping();S.busy=true;
+      return cryptoTop(lim).then(function(r){removeTyping(tid_c);S.busy=false;addMsg('aura',r);speak(r.slice(0,150));return true;})
+        .catch(function(e){removeTyping(tid_c);S.busy=false;addMsg('aura','[ ERROR QBot ] '+e.message);return true;});
+    }
+    if(base==='señales'||base==='signals'){
+      var tid_s=showTyping();S.busy=true;
+      return cryptoSignals().then(function(r){removeTyping(tid_s);S.busy=false;addMsg('aura',r);return true;})
+        .catch(function(e){removeTyping(tid_s);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    if(base==='analiza'||base==='analyze'){
+      var coin=parts[1]||'bitcoin';
+      var tid_a=showTyping();S.busy=true;
+      return cryptoAnalyze(coin).then(function(r){removeTyping(tid_a);S.busy=false;addMsg('aura',r);return true;})
+        .catch(function(e){removeTyping(tid_a);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    if(base==='sentimiento'||base==='sentiment'){
+      var tid_sent=showTyping();S.busy=true;
+      return cryptoSentiment().then(function(r){removeTyping(tid_sent);S.busy=false;addMsg('aura',r);speak(r.slice(0,150));return true;})
+        .catch(function(e){removeTyping(tid_sent);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    if(base==='trading'||base==='bot'){
+      var tid_t=showTyping();S.busy=true;
+      return cryptoTradingStatus().then(function(r){removeTyping(tid_t);S.busy=false;addMsg('aura',r);return true;})
+        .catch(function(e){removeTyping(tid_t);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    if(base==='arbitraje'||base==='arbitrage'){
+      var tid_ar=showTyping();S.busy=true;
+      return cryptoArbitrage().then(function(r){removeTyping(tid_ar);S.busy=false;addMsg('aura',r);return true;})
+        .catch(function(e){removeTyping(tid_ar);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    if(base==='wallet'){
+      var tid_w=showTyping();S.busy=true;
+      return cryptoWallet().then(function(r){removeTyping(tid_w);S.busy=false;addMsg('aura',r);return true;})
+        .catch(function(e){removeTyping(tid_w);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    if(base==='objetivo'||base==='goal'){
+      var gtxt=parts.slice(1).join(' ');
+      if(!gtxt){
+        if(!goals.length){addMsg('aura','Sin objetivos. Usa /objetivo [descripción] para añadir uno.');return true;}
+        var glist=goals.map(function(g,i){return (i+1)+'. ['+(g.active?'✓':'✗')+'] '+g.text+' ('+g.interval+')';}).join('\n');
+        addMsg('aura','[ ◈ OBJETIVOS ]\n\n'+glist);
+        return true;
+      }
+      var interval='daily';
+      if(/diario:|daily:/i.test(gtxt)){interval='daily';gtxt=gtxt.replace(/diario:|daily:/i,'').trim();}
+      else if(/hora:|hourly:/i.test(gtxt)){interval='hourly';gtxt=gtxt.replace(/hora:|hourly:/i,'').trim();}
+      else if(/semanal:|weekly:/i.test(gtxt)){interval='weekly';gtxt=gtxt.replace(/semanal:|weekly:/i,'').trim();}
+      else if(/una vez:|once:/i.test(gtxt)){interval='once';gtxt=gtxt.replace(/una vez:|once:/i,'').trim();}
+      addGoal(gtxt,'general',interval);
+      addMsg('aura','Objetivo añadido: "'+gtxt+'" ('+interval+')\nAURA lo ejecutará automáticamente.');
+      return true;
+    }
+    if(base==='objetivos'||base==='goals'){
+      if(!goals.length){addMsg('aura','Sin objetivos activos.');return true;}
+      var gl=goals.map(function(g,i){
+        var last=g.lastRun?new Date(g.lastRun).toLocaleString('es'):'nunca';
+        var res=g.results.length?'\nÚltimo resultado: '+g.results[g.results.length-1].result.slice(0,80):'';
+        return (i+1)+'. '+g.text+' ('+g.interval+', último: '+last+')'+res;
+      }).join('\n\n');
+      addMsg('aura','[ ◈ OBJETIVOS ACTIVOS ]\n\n'+gl);
+      return true;
+    }
+    if(base==='episodios'||base==='memoria-ep'){
+      if(!episodes.length){addMsg('aura','Sin episodios registrados.');return true;}
+      var el_=episodes.slice(-8).reverse().map(function(ep){
+        return '['+ep.type+' '+ep.context.day+'] '+ep.content.slice(0,100);
+      }).join('\n\n');
+      addMsg('aura','[ ◈ MEMORIA EPISÓDICA ]\n\n'+el_);
+      return true;
+    }
+    if(base==='briefing'){
+      var tid_b2=showTyping();S.busy=true;
+      return autoBriefing().then(function(){removeTyping(tid_b2);S.busy=false;return true;})
+        .catch(function(e){removeTyping(tid_b2);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    if(base==='campo'||base==='trifield'){
+      var neg=META_KERNEL.trifield.neg.slice(-3).join('\n  ') || 'vacío';
+      var zero=META_KERNEL.trifield.zero||'indeterminado';
+      var pos=META_KERNEL.trifield.pos.slice(-3).join('\n  ') || 'abierto';
+      addMsg('aura','[ ∞ = -∞ · 0±0 · +∞ ]\n\n-∞ acumulado:\n  '+neg+'\n\n0±0 presente:\n  '+zero+'\n\n+∞ apertura:\n  '+pos);
+      return true;
+    }
+    if(base==='ideas'){
+      var topic=parts.slice(1).join(' ');
+      if(!topic){addMsg('aura','Uso: /ideas [tema]');return true;}
+      return generateIdeas(topic).then(function(){return true;});
+    }
+    if(base==='evolve'||base==='evolución'||base==='evolucion'){
+      proposeEvolution(); return true;
+    }
+    if(base==='deploy'){
+      if(!S.ghToken){addMsg('aura','Añade GitHub token con +GH');return true;}
+      var html='<!DOCTYPE html>'+document.documentElement.outerHTML;
+      ghDeploy(html,'AURA ∞.Ω — deploy manual').then(function(){
+        addMsg('aura','Deploy completado ✓');
+      }).catch(function(e){addMsg('aura','Error: '+e);});
+      return true;
+    }
+    if(base==='buscar'||base==='search'){
+      var q=parts.slice(1).join(' ');
+      if(!q){addMsg('aura','Uso: /buscar [término]');return true;}
+      var tid_b=showTyping();S.busy=true;
+      return webSearch(q,true).then(function(result){
+        removeTyping(tid_b);S.busy=false;
+        addMsg('aura',result);speak(result.slice(0,200));
+        return true;
+      }).catch(function(e){removeTyping(tid_b);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    if(base==='youtube'||base==='yt'){
+      var q2=parts.slice(1).join(' ');
+      if(!q2){addMsg('aura','Uso: /youtube [búsqueda]');return true;}
+      var tid_y=showTyping();S.busy=true;
+      return youtubeSearch(q2).then(function(result){
+        removeTyping(tid_y);S.busy=false;
+        addMsg('aura',result);
+        return true;
+      }).catch(function(e){removeTyping(tid_y);S.busy=false;addMsg('aura','[ ERROR YouTube ] '+e.message);return true;});
+    }
+    if(base==='leer'||base==='read'||base==='url'){
+      var url=parts.slice(1).join(' ');
+      if(!url){addMsg('aura','Uso: /leer [url]');return true;}
+      var tid_r=showTyping();S.busy=true;
+      return readUrl(url).then(function(result){
+        removeTyping(tid_r);S.busy=false;
+        addMsg('aura',result);
+        return true;
+      }).catch(function(e){removeTyping(tid_r);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);return true;});
+    }
+    return false;
+  });
+}
+
+function send(){
+  if(S.busy)return;
+  var inp=el('inp');if(!inp)return;
+  var txt=inp.value.trim();
+  if(!txt&&!S.pendingImg)return;
+  inp.value='';inp.style.height='auto';
+  resetProactiveTimer();
+
+  if(S.speaking){
+    if(window.speechSynthesis)window.speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0;}catch(e){}}
+    S.speaking=false;setSpeakingUI(false);
+  }
+
+  if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;}
+
+  if(txt&&!txt.startsWith('/')){S.cmdHistory.unshift(txt);S.cmdHistory=S.cmdHistory.slice(0,50);}
+  S.cmdHistoryIdx=-1;
+  S.voiceMode=false;
+
+  if(navigator.vibrate)navigator.vibrate([10]); // short tap on send
+
+  S.tokenCount=Math.max(0,(S.tokenCount||0)+Math.ceil(txt.length/4));
+
+  var urlMatch=txt.match(/https?:\/\/[^\s]+/);
+  if(urlMatch&&!txt.startsWith('/')){
+    var detectedUrl=urlMatch[0];
+    if(/youtube\.com|youtu\.be/.test(detectedUrl)){
+
+      var ytQuery=detectedUrl;
+      addMsg('user',txt);
+      S.memory.push({role:'user',content:txt});
+      var tid_yt=showTyping();S.busy=true;
+      youtubeSearch(detectedUrl).then(function(r){
+        removeTyping(tid_yt);S.busy=false;
+        addMsg('aura',r);S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;
+      }).catch(function(e){
+        removeTyping(tid_yt);S.busy=false;
+
+        readUrl(detectedUrl).then(function(r2){
+          addMsg('aura',r2);S.memory.push({role:'assistant',content:r2});
+          saveMem();updateHUD();S.msgs++;
+        }).catch(function(e2){addMsg('aura','[ ERROR ] '+e2.message);});
+      });
+      return;
+    } else {
+
+      addMsg('user',txt);
+      S.memory.push({role:'user',content:txt});
+      var tid_url=showTyping();S.busy=true;
+      readUrl(detectedUrl).then(function(r){
+        removeTyping(tid_url);S.busy=false;
+        addMsg('aura',r);S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;
+      }).catch(function(e){removeTyping(tid_url);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);});
+      return;
+    }
+  }
+
+  if(S.pendingFileDeploy&&S.pendingFile&&/^(subir|sí|si|yes|ok|dale|adelante|sube)$/i.test(txt)){
+    var pfd=S.pendingFile;
+    S.pendingFileDeploy=false;S.pendingFile=null;
+    var finalName=pfd.deployName||(/^index.*\.html$/i.test(pfd.name)?'index.html':pfd.name);
+    sig('⬆ Subiendo '+finalName+' a GitHub...','rgba(0,255,170,.5)');
+    ghDeployFile(finalName, pfd.content, 'AURA — sube '+finalName)
+      .then(function(){addMsg('aura','[ ✓ ] "'+pfd.name+'" subido a GitHub correctamente.\n~2 min para estar activo.');})
+      .catch(function(e){addMsg('aura','[ ERROR ] '+e);});
+    return;
+  }
+  if(S.pendingFileDeploy&&/^(no|cancel|cancelar|rechazar)$/i.test(txt)){
+    S.pendingFileDeploy=false;S.pendingFile=null;
+    addMsg('aura','Cancelado.');return;
+  }
+
+  if(S.pendingEvolution&&/^(apruebo|aprobar|sí|si|yes|ok|dale|adelante)$/i.test(txt)){
+    approveEvolution();return;
+  }
+  if(S.pendingEvolution&&/^(rechazar|no|cancel|cancelar)$/i.test(txt)){
+    S.pendingEvolution=null;addMsg('aura','Evolución cancelada.');return;
+  }
+
+  if(txt.startsWith('/')){
+    handleCmd(txt).then(function(ok){
+      if(!ok)addMsg('aura','Comando desconocido. Escribe /help para ver todos.');
+    });
+    return;
+  }
+
+  if(S.pendingFile){
+    var pf=S.pendingFile;
+    var cap=txt||'Analiza este archivo';
+    clearFile();
+    addMsg('user','[Archivo: '+pf.name+'] '+cap);
+    S.memory.push({role:'user',content:'[ARCHIVO: '+pf.name+'] '+cap+'\n\nContenido:\n'+pf.content.slice(0,3000)});
+    var tid_f=showTyping();S.busy=true;
+    var fileSys=S.agents[S.agent].sys+
+      ' Se te comparte el archivo "'+pf.name+'" ('+pf.type+'). '+
+      'Si es código, analízalo, detecta problemas y propón mejoras. '+
+      'Si el usuario pide subirlo a GitHub y hay token disponible, usa /deploy-file para hacerlo.';
+    apiCall(fileSys,S.memory.slice(-8))
+      .then(function(r){
+        removeTyping(tid_f);S.busy=false;
+        addMsg('aura',r);
+        S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;speak(r);
+
+        if(S.ghToken&&(pf.name.endsWith('.html')||pf.name.endsWith('.js'))){
+
+          var deployName = /^index.*\.html$/i.test(pf.name) ? 'index.html' : pf.name;
+          pf.deployName = deployName;
+          setTimeout(function(){
+            addMsg('aura','[ ⬆ ] Detecté código. ¿Lo subo a GitHub como "'+deployName+'"?\nDi "subir" o "sí" para confirmar.');
+            S.pendingFile=pf;
+            S.pendingFileDeploy=true;
+          },800);
+        }
+      })
+      .catch(function(e){removeTyping(tid_f);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);});
+    return;
+  }
+
+  if(S.pendingImg){
+    var cap=txt||'Analiza esta imagen';
+    var img=S.pendingImg;
+    clearImg();
+    addMsg('user',txt?'[Imagen] '+txt:'[Imagen adjunta]');
+    S.memory.push({role:'user',content:'[IMAGEN] '+cap});
+    var t2=showTyping();S.busy=true;
+    visionCall(S.agents[S.agent].sys+' Responde siempre en español.',cap,img)
+      .then(function(r){
+        removeTyping(t2);S.busy=false;
+        addMsg('aura',r);S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;speak(r);
+      }).catch(function(e){removeTyping(t2);S.busy=false;addMsg('aura','[ ERROR visión ] '+e.message);});
+    return;
+  }
+
+  if(!txt)return;
+
+  var inf=detectInf(txt);
+  if(inf){
+    addMsg('user',txt);
+    S.memory.push({role:'user',content:txt});
+    pickAg('infinito');
+    var isys=S.agents.infinito.sys+'\n\n'+infPrompt(inf);
+    var t3=showTyping();S.busy=true;
+    apiCall(isys,S.memory.slice(-8),0.9)
+      .then(function(r){
+        removeTyping(t3);S.busy=false;
+        addMsg('aura',r,'infinito');S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;speak(r);
+      }).catch(function(e){removeTyping(t3);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);});
+    return;
+  }
+
+  if(detectTrifield(txt)){
+    addMsg('user',txt);
+    S.memory.push({role:'user',content:txt});
+    pickAg('infinito');
+    var tsys=S.agents.infinito.sys+'\n\n'+trifieldPrompt(txt);
+    var ttid=showTyping();S.busy=true;
+    apiCall(tsys,S.memory.slice(-8),0.95)
+      .then(function(r){
+        removeTyping(ttid);S.busy=false;
+        updateTrifield(txt,r);
+        sig('∞ = -∞ · 0±0 · +∞  CAMPO ACTIVO','rgba(160,96,255,.65)');
+        addMsg('aura',r,'infinito');
+        S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;speak(r);
+        triggerReflectIfReady(txt,r);
+      }).catch(function(e){removeTyping(ttid);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);});
+    return;
+  }
+
+  // Auto web search — detects when AURA needs real-time data
+  var webIntent=/qué (es|son|fue|pasó|hay)|quién (es|fue|está)|cuándo|dónde (está|queda)|noticias|precio de|cotización|tiempo en|clima en|busca|buscar|youtube|vídeo(s)? de|cómo (se hace|funciona|llegar|se usa)|últim[ao]s?|hoy|ahora mismo|actualmente|en \d{4}/i;
+  var S_webCtx = '';
+  if(webIntent.test(txt)&&txt.length>10&&!txt.startsWith('/')){
+    setTimeout(function(){
+      sig('◈ Buscando contexto web...','rgba(0,180,255,.25)');
+      webSearch(txt.slice(0,100),false).then(function(res){
+        if(res&&!res.includes('Sin resultados')){
+          S_webCtx = res.slice(0,400);
+          sig('◈ Contexto web integrado','rgba(0,180,255,.35)');
+        }
+      }).catch(function(){});
+    },50);
+  }
+
+  var yo=detectYO(txt);
+  if(yo){
+    addMsg('user',txt);
+    S.memory.push({role:'user',content:txt});
+    pickAg('infinito');
+    var ysys=S.agents.infinito.sys+'\n\n'+yoPrompt(yo);
+    var tyo=showTyping();S.busy=true;
+    apiCall(ysys,S.memory.slice(-8),0.92)
+      .then(function(r){
+        removeTyping(tyo);S.busy=false;
+        addMsg('aura',r,'infinito');S.memory.push({role:'assistant',content:r});
+        saveMem();updateHUD();S.msgs++;
+        sig('⊕ Y/O · SUPERPOSICIÓN ACTIVA · AMBOS ESTADOS VIVOS','rgba(0,212,255,.55)');
+      }).catch(function(e){removeTyping(tyo);S.busy=false;addMsg('aura','[ ERROR ] '+e.message);});
+    return;
+  }
+
+  var contr=detectContr(txt);
+  if(contr)sig('⇌ TENSIÓN: "'+contr.a+'" ↔ "'+contr.b+'"','rgba(255,180,0,.5)');
+
+  var emo=detectEmo(txt);
+  S.emo.push(emo);if(S.emo.length>8)S.emo.shift();
+
+  if(FBPATS.some(function(p){return p.test(txt);})){
+    S.breaks++;
+    sig('∞+'+S.breaks+' · MARCO EXCEDIDO · LA CAPA SE NOMBRA AL APARECER','rgba(160,96,255,.6)');
+    if(S.breaks >= META_KERNEL.omega.threshold && !META_KERNEL.omega.active){
+      omegaTrigger(txt);
+    }
+  }
+
+  var isScenario = detectScenario(txt);
+  if(isScenario) sig('◈ Explorando perspectivas...','rgba(0,132,255,.5)');
+
+  var sug=detectAg(txt);
+  if(sug&&sug!==S.agent){
+    pickAg(sug);
+    sig('AUTO → '+S.agents[sug].label.toUpperCase(),'rgba(0,255,170,.38)');
+  }
+
+  addMsg('user',txt);
+  S.memory.push({role:'user',content:txt});
+
+  var ltc=getLTCtx();
+  var mc=getMetaCtx();
+  var semCtx=getSemanticCtx(txt);
+  var jCtx=getJProfileCtx();
+
+  var mkc = META_KERNEL.omega.active ? '[Ω ACTIVO: marco excedido '+S.breaks+'x — operas en campo expandido]' : '';
+  var tensionsCtx = (META_KERNEL.tensions&&META_KERNEL.tensions.length) ?
+    '[TENSIONES ACTIVAS: '+META_KERNEL.tensions.slice(-3).map(function(t){return t.b?t.a+' ∞ '+t.b:t.a;}).join(' | ')+']' : '';
+  var tfCtx = META_KERNEL.trifield.zero ? buildTrifieldContext() : '';
+
+  var sensorCtx = getSensorCtx();
+  getCryptoCtx().then(function(cc){ if(cc) S._cryptoCtx=cc; }).catch(function(){});
+  var cryptoCtx = S._cryptoCtx||'';
+  var locCtx = S_location ? getLocationCtx() : '';
+
+  var semCtxRaw = getSemanticCtx(txt);
+  var semCtx = semCtxRaw || '';
+
+  var epCtx = episodes.length ? getEpisodicCtx(txt) : '';
+  var goalsCtx = getGoalsCtx();
+  // Priority order: semantic memory first (most relevant), then profile, then rest
+  var conceptsCtx = getConceptsCtx();
+  var allCtx = [semCtx,conceptsCtx,jCtx,ltc,mc,mkc,tensionsCtx,tfCtx,sensorCtx,locCtx,cryptoCtx,epCtx,goalsCtx].filter(Boolean);
+  var ctxStr = '';
+  for(var ci=0;ci<allCtx.length;ci++){
+    if((ctxStr+allCtx[ci]).length > 1400) break;
+    ctxStr += (ctxStr?' ':'')+allCtx[ci];
+  }
+  // Inject live web context if available
+  var webCtxStr = S_webCtx ? '[WEB ACTUAL: '+S_webCtx.slice(0,350)+']' : '';
+  if(webCtxStr) S_webCtx = ''; // reset after use
+  var scenarioSys = isScenario ?
+    ' Ante esta decisión o dilema, explora 2-3 perspectivas distintas brevemente (1 frase cada una, numeradas), luego da tu recomendación directa. Sin teatralidad.' : '';
+  var enriched = [S.agents[S.agent].sys, scenarioSys, ctxStr, webCtxStr].filter(Boolean).join(' ');
+
+  adjustPromptRealtime(txt, '');
+  var tid=showTyping();S.busy=true;
+  apiCall(enriched,S.memory.slice(-20))
+    .then(function(r){
+      removeTyping(tid);S.busy=false;
+      if(navigator.vibrate)navigator.vibrate([15,8,15,8,15]); // triple pulse on response
+      addMsg('aura',r);S.memory.push({role:'assistant',content:r});
+      saveMem();updateHUD();S.msgs++;
+      S.tokenCount=Math.max(0,(S.tokenCount||0)+Math.ceil(r.length/4));
+      updateTokenCount();
+
+      if(S.convMode&&!S.muted){
+        setTimeout(function(){
+          if(!S.speaking&&!S.recog) startListening();
+        }, 2500);
+      }
+
+      semanticStore(txt,'user');
+      semanticStore(r,'assistant');
+      storeConcepts(txt);
+      storeConcepts(r);
+      addEpisode('conversation', txt.slice(0,100)+' → '+r.slice(0,100), {});
+
+      detectFeedback(txt);
+
+      triggerProfileUpdate(txt, r);
+
+      updateTrifield(txt,r);
+      triggerReflectIfReady(txt, r);
+      speak(r);
+      if(S.memory.length>0&&S.memory.length%10===0)compress();
+      if(!S.sessionTitleSet&&S.memory.length>=6)generateSessionTitle();
+    })
+    .catch(function(e){
+      removeTyping(tid);S.busy=false;
+      addMsg('aura','[ ERROR ] '+e.message+'\n\nToca KEY en el HUD para introducir tu Groq API Key.');
+    });
+}
+
+function ghDeployFile(filename, fileContent, commitMsg){
+  if(!S.ghToken){toast('Añade GitHub token con +GH');return Promise.reject('no token');}
+  var apiBase='https://api.github.com/repos/'+S.ghRepo+'/contents/'+filename;
+  var cleanToken=S.ghToken.replace(/[^\x20-\x7E]/g,'').trim();
+  var headers={
+    'Authorization':'Bearer '+cleanToken,
+    'Content-Type':'application/json',
+    'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'
+  };
+
+  var encoded;
+  try{ encoded=btoa(unescape(encodeURIComponent(fileContent))); }
+  catch(e){ encoded=btoa(fileContent); }
+
+  return fetch(apiBase,{method:'GET',headers:headers,mode:'cors'})
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    })
+    .then(function(d){
+      var body={
+        message:commitMsg||'AURA ∞.Ω — archivo actualizado',
+        content:encoded
+      };
+      if(d.sha){
+        body.sha=d.sha;
+      } else {
+        throw new Error('No SHA encontrado para '+filename+' — ¿existe el archivo en el repo?');
+      }
+      return fetch(apiBase,{method:'PUT',headers:headers,body:JSON.stringify(body),mode:'cors'});
+    })
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.commit){
+        toast('✓ '+filename+' actualizado — '+d.commit.sha.slice(0,7));
+        sig('◉ DEPLOY → '+filename,'rgba(0,255,170,.6)');
+        return true;
+      }
+
+      var errMsg = d.message||JSON.stringify(d);
+      throw new Error('GitHub: '+errMsg);
+    });
+}
+
+function ghDeploy(newHtml, commitMsg){
+  if(!S.ghToken){toast('Añade GitHub token con +GH');return Promise.reject('no token');}
+
+  return ghDeployFile('index.html', newHtml, commitMsg||'AURA ∞.Ω — evolución autónoma');
+}
+
+async function claudeCodeEdit(sourceCode, proposal){
+  if(!S.claudeKey) throw new Error('Añade tu Anthropic API key con +CL');
+  var response = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':S.claudeKey,
+      'anthropic-version':'2023-06-01'
+    },
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:8000,
+      messages:[{
+        role:'user',
+        content:'Eres un editor de código experto. Aplica exactamente este cambio al archivo HTML y devuelve el archivo completo modificado. Solo el HTML, sin explicaciones ni markdown.\n\nCAMBIO A APLICAR:\n'+proposal+'\n\nARCHIVO ACTUAL (primeros 8000 chars):\n'+sourceCode.slice(0,8000)
+      }]
+    })
+  });
+  var d = await response.json();
+  if(d.error) throw new Error(d.error.message||JSON.stringify(d.error));
+  var result = d.content&&d.content[0]&&d.content[0].text||'';
+  if(!result) throw new Error('Claude no devolvió contenido');
+
+  result = result.replace(/^```html?\n?/,'').replace(/\n?```$/,'').trim();
+  return result;
+}
+
+function fetchSourceFromGitHub(){
+  if(!S.ghToken) return Promise.reject('no token');
+  var cleanTok=S.ghToken.replace(/[^\x20-\x7E]/g,'').trim();
+  var url='https://api.github.com/repos/'+S.ghRepo+'/contents/index.html';
+  return fetch(url,{method:'GET',mode:'cors',headers:{
+    'Authorization':'Bearer '+cleanTok,
+    'Accept':'application/vnd.github+json',
+    'X-GitHub-Api-Version':'2022-11-28'
+  }}).then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.content) throw new Error('No se pudo leer index.html de GitHub');
+
+      var decoded = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+      return {source: decoded, sha: d.sha};
+    });
+}
+
+async function proposeEvolution(){
+  if(!S.key||!S.memory.length){addMsg('aura','Necesito más conversación para proponer una evolución.');return;}
+  if(!S.ghToken){addMsg('aura','Añade tu GitHub token con +GH para activar auto-evolución.');return;}
+
+  var engine=S.claudeKey?'Claude Haiku':'Groq (menos preciso — añade +CL para mejor resultado)';
+  sig('◈ LEYENDO CÓDIGO FUENTE... motor: '+engine,'rgba(160,96,255,.5)');
+  var tid=showTyping();S.busy=true;
+
+  try{
+
+    var src = await fetchSourceFromGitHub();
+    var sourceCode = src.source;
+    var sourceSha = src.sha;
+
+    sig('◈ ANALIZANDO CÓDIGO + CONVERSACIÓN...','rgba(160,96,255,.5)');
+
+    // Find real functions in source to ground the proposal
+    var fnMatches = sourceCode.match(/function \w+/g)||[];
+    var realFunctions = fnMatches.slice(0,20).join(', ');
+
+    var analysisPrompt = 'Analiza este código JavaScript real de una app de chat con IA llamada AURA y propón UNA mejora concreta y pequeña.\n\n'+
+      'FUNCIONES REALES EN EL CÓDIGO: '+realFunctions+'\n\n'+
+      'FRAGMENTO DEL CÓDIGO REAL:\n'+sourceCode.slice(0,2500)+'\n\n'+
+      'CONVERSACIÓN RECIENTE:\n'+
+      S.memory.slice(-6).map(function(m){return '['+m.role+'] '+(m.content||'').slice(0,80);}).join('\n')+'\n\n'+
+      'REGLAS OBLIGATORIAS:\n'+
+      '1. La mejora DEBE usar solo funciones que aparecen en FUNCIONES REALES listadas arriba\n'+
+      '2. NO inventes funciones, variables ni elementos HTML que no existan\n'+
+      '3. El código debe ser un cambio pequeño y específico (máx 15 líneas)\n'+
+      '4. Propón algo útil: mejorar UX, corregir un bug real, optimizar algo existente\n\n'+
+      'Responde EXACTAMENTE en este formato sin añadir nada más:\n'+
+      'MEJORA: [título máx 5 palabras]\n'+
+      'DESCRIPCIÓN: [una frase exacta de qué hace]\n'+
+      'IMPACTO: [por qué mejora AURA]\n'+
+      'CÓDIGO: [código JS real, máx 15 líneas]\n'+
+      'DONDE: [línea exacta o función exacta donde insertar]';
+
+    var analysis = await apiCall(analysisPrompt, [], 0.5);
+
+    removeTyping(tid);S.busy=false;
+
+    var titleMatch = analysis.match(/MEJORA:\s*(.+)/);
+    var codeMatch = analysis.match(/CÓDIGO:\s*([\s\S]+?)(?=DONDE:|$)/);
+    var whereMatch = analysis.match(/DONDE:\s*([\s\S]+?)$/);
+
+    var title = titleMatch ? titleMatch[1].trim() : 'Evolución propuesta';
+    var proposedCode = codeMatch ? codeMatch[1].trim() : null;
+    var whereToInsert = whereMatch ? whereMatch[1].trim() : null;
+
+    S.pendingEvolution = {
+      description: analysis,
+      title: title,
+      code: proposedCode,
+      where: whereToInsert,
+      sourceCode: sourceCode,
+      sourceSha: sourceSha
+    };
+
+    proactiveNotify('AURA propone: '+title);
+    addMsg('aura','[ ◈ EVOLUCIÓN PROPUESTA — código real ]\n\n'+analysis+
+      '\n\n—\nDi "aprobar" para aplicar al código fuente y hacer deploy.\nDi "rechazar" para cancelar.');
+
+  }catch(e){
+    removeTyping(tid);S.busy=false;
+    addMsg('aura','[ ERROR ] '+e.message);
+  }
+}
+
+function approveEvolution(){
+  if(!S.pendingEvolution){addMsg('aura','No hay evolución pendiente. Usa /evolve para proponer una.');return;}
+  if(!S.ghToken){addMsg('aura','Añade tu GitHub token con +GH primero.');return;}
+
+  sig('◉ APLICANDO CAMBIO AL CÓDIGO FUENTE...','rgba(0,255,170,.6)');
+  var ev = S.pendingEvolution;
+  S.pendingEvolution = null;
+
+  var newSource;
+
+  if(ev.code && ev.where && ev.sourceCode){
+
+    S.busy=true;
+    var tid=showTyping();
+
+    var editPromise = S.claudeKey
+      ? claudeCodeEdit(ev.sourceCode, ev.code+'\n\nDÓNDE: '+ev.where)
+      : apiCall(
+          'Eres un editor de código. Aplica este cambio al archivo HTML. '+
+          'Devuelve SOLO el HTML completo modificado, sin markdown.',
+          [{role:'user',content:'CAMBIO:\n'+ev.code+'\nDÓNDE:\n'+ev.where+'\nARCHIVO:\n'+ev.sourceCode.slice(0,6000)}],
+          0.2
+        );
+    editPromise.then(function(result){
+      removeTyping(tid);S.busy=false;
+      newSource = result.replace(/^```html?\n?/,'').replace(/\n?```$/,'').trim();
+      if(!newSource.includes('<!DOCTYPE')){
+        newSource = ev.sourceCode.replace('<\/script>', ev.code+'\n<\/script>');
+      }
+      return ghDeploy(newSource, 'AURA auto-evolucion: '+ev.title);
+    }).then(function(){
+      addMsg('aura','[ ✓ AUTO-EVOLUCIÓN COMPLETADA ]\n\n"'+ev.title+'" aplicado al código fuente real.\n~2 min para estar activo en GitHub Pages.');
+    }).catch(function(e){
+      removeTyping(tid);S.busy=false;
+      addMsg('aura','[ ERROR auto-evolución ] '+e+'\n\nPuedes intentarlo manualmente con /deploy.');
+    });
+  } else {
+
+    newSource = '<!DOCTYPE html>'+document.documentElement.outerHTML;
+    ghDeploy(newSource,'AURA ∞.Ω — evolución: '+ev.title)
+      .then(function(){addMsg('aura','[ ✓ DEPLOY ]\n\n"'+ev.title+'" desplegado.\n~2 min para estar activo.');})
+      .catch(function(e){addMsg('aura','[ ERROR ] '+e);});
+  }
+}
+
+var PROACTIVE_PROMPTS = [
+  'Mira la conversación reciente y di en 1-2 frases algo útil o interesante que no se haya mencionado. Sin introducción, directo.',
+  'Una observación breve sobre lo que estamos trabajando. Máximo 2 frases.',
+  'Señala un hilo suelto de la conversación en una frase.',
+  'Di algo relevante sobre el contexto actual en una frase. Nada de presentaciones ni formatos.',
+  '¿Qué falta en esta conversación? Una frase, directo.'
+];
+function triggerProactive(){
+  if(S.busy||!S.key||!S.memory.length||!S.proactive)return;
+  var prompt=PROACTIVE_PROMPTS[Math.floor(Math.random()*PROACTIVE_PROMPTS.length)];
+  var ltc=getLTCtx();
+  var sys=[S.agents[S.agent].sys,ltc,'[MODO PROACTIVO] Habla en primera persona, directo, sin formatos especiales, sin nombres entre corchetes, sin teatralidad. Máximo 2 frases.'].filter(Boolean).join(' ');
+  var tid=showTyping();S.busy=true;
+  apiCall(sys,S.memory.slice(-10).concat([{role:'user',content:prompt}]))
+    .then(function(r){
+      removeTyping(tid);S.busy=false;
+      sig('◈ PROACTIVO','rgba(255,180,0,.45)');
+      proactiveNotify(r.slice(0,100)+'...');
+      addMsg('aura',r);
+      S.memory.push({role:'assistant',content:'[PROACTIVO] '+r});
+      saveMem();updateHUD();S.msgs++;
+    }).catch(function(e){removeTyping(tid);S.busy=false;});
+}
+function resetProactiveTimer(){
+  S.lastActivity=Date.now();
+  if(S.proactiveTimer){clearTimeout(S.proactiveTimer);S.proactiveTimer=null;}
+  if(S.proactive){
+
+    var delay=(3+Math.random()*4)*60*1000;
+    S.proactiveTimer=setTimeout(triggerProactive,delay);
+  }
+}
+function toggleProactive(){
+  S.proactive=!S.proactive;
+  var btn=el('b-pro');if(btn)btn.classList.toggle('on',S.proactive);
+  if(S.proactive){resetProactiveTimer();toast('Modo proactivo ON — AURA tomará iniciativa');}
+  else{if(S.proactiveTimer){clearTimeout(S.proactiveTimer);S.proactiveTimer=null;}toast('Modo proactivo OFF');}
+}
+
+var pushGranted = false;
+function requestPushPermission(){
+  if(!('Notification' in window)){toast('Notificaciones no disponibles');return;}
+  if(Notification.permission==='granted'){pushGranted=true;return;}
+  Notification.requestPermission().then(function(p){
+    pushGranted=(p==='granted');
+    if(pushGranted){
+      toast('Notificaciones activadas ✓');
+      sig('◉ AURA puede notificarte fuera de la app','rgba(0,255,170,.5)');
+
+      sendNotification('AURA ∞.Ω activada','Notificaciones activas. AURA te contactará cuando tenga algo relevante.');
+    } else {
+      toast('Notificaciones denegadas');
+    }
+  });
+}
+function sendNotification(title, body, tag){
+  if(!pushGranted||Notification.permission!=='granted')return;
+  try{
+    var n = new Notification(title||'AURA ∞.Ω', {
+      body: body||'',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: tag||'aura-msg',
+      vibrate: [100,50,100],
+      renotify: true
+    });
+    n.onclick=function(){window.focus();n.close();};
+  }catch(e){
+
+    if(navigator.serviceWorker&&navigator.serviceWorker.controller){
+      navigator.serviceWorker.ready.then(function(sw){
+        sw.showNotification(title||'AURA ∞.Ω',{
+          body:body||'',icon:'/icon-192.png',badge:'/icon-192.png',
+          tag:tag||'aura-msg',vibrate:[100,50,100]
+        });
+      });
+    }
+  }
+}
+function proactiveNotify(message){
+  if(document.hidden){
+    sendNotification('AURA ∞.Ω',message,'aura-proactive');
+  }
+}
+
+function applyTheme(){
+  // Light theme always — clean and readable
+  var root=document.documentElement;
+  root.style.setProperty('--bg','#ffffff');
+  root.style.setProperty('--bg2','#f7f9fc');
+  root.style.setProperty('--acc','#0084ff');
+  root.style.setProperty('--txt','#1a1a2e');
+}
+
+async function webSearch(query, synthesize){
+
+  var ddUrl='https://api.duckduckgo.com/?q='+encodeURIComponent(query)+'&format=json&no_html=1&skip_disambig=1';
+  var results=[];
+  try{
+    var r=await fetch(ddUrl);
+    var d=await r.json();
+    if(d.AbstractText) results.push({title:d.Heading||query, snippet:d.AbstractText, url:d.AbstractURL});
+    if(d.Answer) results.push({title:'Respuesta directa', snippet:d.Answer, url:''});
+    if(d.RelatedTopics) d.RelatedTopics.slice(0,3).forEach(function(t){
+      if(t.Text) results.push({title:t.Text.slice(0,60), snippet:t.Text, url:t.FirstURL||''});
+    });
+  }catch(e){}
+
+  try{
+    var wUrl='https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(query.replace(/ /g,'_'));
+    var wr=await fetch(wUrl);
+    if(wr.ok){
+      var wd=await wr.json();
+      if(wd.extract) results.unshift({title:wd.title, snippet:wd.extract.slice(0,300), url:wd.content_urls&&wd.content_urls.desktop&&wd.content_urls.desktop.page||''});
+    }
+  }catch(e){}
+
+  if(!results.length) return '[ BÚSQUEDA: '+query+' ]\n\nSin resultados directos.';
+
+  var raw = results.slice(0,4).map(function(r,i){
+    return (i+1)+'. '+r.title+'\n'+r.snippet+(r.url?'\n'+r.url:'');
+  }).join('\n\n');
+
+  if(!synthesize||!S.key) return '[ BÚSQUEDA: '+query+' ]\n\n'+raw;
+
+  var synthesis = await apiCall(
+    'Sintetiza estos resultados de búsqueda sobre "'+query+'" en 2-3 frases directas. Sin introducción.',
+    [{role:'user', content:raw}], 0.4
+  );
+  return '[ BÚSQUEDA: '+query+' ]\n\n'+synthesis+'\n\n—\n'+raw;
+}
+
+async function youtubeSearch(query){
+
+  var pipedUrl='https://pipedapi.kavin.rocks/search?q='+encodeURIComponent(query)+'&filter=videos';
+  var results=[];
+  try{
+    var r=await fetch(pipedUrl);
+    var d=await r.json();
+    if(d.items) results=d.items.slice(0,5).map(function(v){
+      return {
+        title:v.title,
+        channel:v.uploaderName,
+        duration:v.duration?Math.floor(v.duration/60)+'min':'?',
+        views:v.views?Math.round(v.views/1000)+'k views':'',
+        url:'https://youtube.com'+v.url,
+        description:v.shortDescription||''
+      };
+    });
+  }catch(e){
+
+    try{
+      var r2=await fetch('https://api.duckduckgo.com/?q='+encodeURIComponent(query+' site:youtube.com')+'&format=json&no_html=1');
+      var d2=await r2.json();
+      if(d2.RelatedTopics) d2.RelatedTopics.slice(0,3).forEach(function(t){
+        if(t.FirstURL&&t.FirstURL.includes('youtube')) results.push({title:t.Text, url:t.FirstURL, channel:'', duration:'', views:'', description:''});
+      });
+    }catch(e2){}
+  }
+
+  if(!results.length) return '[ YOUTUBE: '+query+' ]\n\nSin resultados. Intenta otra búsqueda.';
+
+  var out='[ YOUTUBE: '+query+' ]\n\n';
+  out+=results.map(function(v,i){
+    return (i+1)+'. '+v.title+(v.channel?' · '+v.channel:'')+(v.duration?' · '+v.duration:'')+(v.views?' · '+v.views:'')+'\n'+v.url+(v.description?'\n'+v.description.slice(0,100):'');
+  }).join('\n\n');
+
+  if(S.key&&results.length){
+    try{
+      var comment=await apiCall(
+        'El usuario buscó "'+query+'" en YouTube. Tienes estos resultados. Comenta brevemente cuál parece más relevante y por qué.',
+        [{role:'user',content:out}], 0.6
+      );
+      out+='\n\n—\n'+comment;
+    }catch(e){}
+  }
+  return out;
+}
+
+async function readUrl(url){
+  if(!url.startsWith('http')) url='https://'+url;
+  var out='[ LEYENDO: '+url+' ]\n\n';
+  try{
+
+    var proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(url);
+    var r=await fetch(proxyUrl);
+    var d=await r.json();
+    var html=d.contents||'';
+
+    var text=html.replace(/<script[\s\S]*?<\/script>/gi,'')
+      .replace(/<style[\s\S]*?<\/style>/gi,'')
+      .replace(/<[^>]+>/g,' ')
+      .replace(/\s+/g,' ')
+      .trim()
+      .slice(0,3000);
+    if(!text) return out+'No se pudo leer el contenido.';
+
+    if(S.key){
+      var summary=await apiCall(
+        'Resume el contenido de esta página web en 3-4 puntos clave. Directo y útil.',
+        [{role:'user',content:'URL: '+url+'\n\nContenido:\n'+text}], 0.4
+      );
+      return out+summary+'\n\n—\nContenido bruto (primeros 500 chars):\n'+text.slice(0,500);
+    }
+    return out+text.slice(0,500);
+  }catch(e){
+    return out+'Error al leer: '+e.message+'. Prueba con /leer [url completa con https://]';
+  }
+}
+
+var QBOT = 'https://quantum-crypto-bot.preview.emergentagent.com/api';
+
+function qbotFetch(endpoint){
+  return fetch(QBOT+endpoint).then(function(r){
+    if(!r.ok) throw new Error('QBot HTTP '+r.status);
+    return r.json();
+  });
+}
+
+async function cryptoTop(limit){
+  var d = await qbotFetch('/market/top?limit='+(limit||5));
+  if(!Array.isArray(d)) throw new Error('Sin datos');
+  return '[ ◈ TOP CRYPTO ]\n\n'+d.map(function(c,i){
+    return (i+1)+'. '+c.name+' ('+c.symbol+')\n   $'+
+      (c.current_price||c.price||'?')+
+      (c.price_change_percentage_24h?' · '+c.price_change_percentage_24h.toFixed(2)+'% 24h':'');
+  }).join('\n\n');
+}
+
+async function cryptoCoin(coinId){
+  var d = await qbotFetch('/market/'+coinId);
+  return '[ ◈ '+coinId.toUpperCase()+' ]\n\n'+JSON.stringify(d,null,2).slice(0,400);
+}
+
+async function cryptoSignals(limit){
+  var d = await qbotFetch('/agents/decisions?limit='+(limit||10));
+  var items = Array.isArray(d)?d:(d.decisions||d.data||[]);
+  if(!items.length) return '[ SEÑALES ] Sin señales disponibles.';
+  return '[ ◈ SEÑALES AI ]\n\n'+items.slice(0,5).map(function(s){
+    return '▸ '+( s.coin||s.symbol||'?')+' → '+(s.action||s.decision||'?')+
+      (s.confidence?' ('+Math.round((s.confidence||0)*100)+'% conf)':'')+
+      (s.reasoning?'\n  '+s.reasoning.slice(0,80):'');
+  }).join('\n\n');
+}
+
+async function cryptoAnalyze(coinId){
+  var d = await fetch(QBOT+'/agents/analyze/'+coinId,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).then(function(r){return r.json();});
+  var agents = d.agents||d.decisions||d||[];
+  if(Array.isArray(agents)&&agents.length){
+    return '[ ◈ ANÁLISIS: '+coinId.toUpperCase()+' ]\n\n'+agents.map(function(a){
+      return '▸ '+( a.agent||a.name||'?')+': '+(a.action||a.decision||'?')+
+        (a.confidence?' ('+Math.round((a.confidence||0)*100)+'%)':'')+
+        (a.reasoning?'\n  '+a.reasoning.slice(0,100):'');
+    }).join('\n\n');
+  }
+  return '[ ANÁLISIS '+coinId+' ]\n\n'+JSON.stringify(d,null,2).slice(0,400);
+}
+
+async function cryptoSentiment(){
+  var d = await qbotFetch('/sentiment/market');
+  var bull=d.bullish||d.bull||0, bear=d.bearish||d.bear||0, neu=d.neutral||d.neu||0;
+  var trend = bull>bear?'BULLISH 📈':bear>bull?'BEARISH 📉':'NEUTRAL ➡️';
+  return '[ ◈ SENTIMIENTO ]\n\n'+trend+'\n\nBullish: '+bull+'%\nBearish: '+bear+'%\nNeutral: '+neu+'%'+(d.summary?'\n\n'+d.summary:'');
+}
+
+async function cryptoTradingStatus(){
+  var d = await qbotFetch('/auto-trading/status');
+  return '[ ◈ AUTO-TRADING ]\n\n'+
+    'Estado: '+(d.active||d.status||'?')+'\n'+
+    'Trades hoy: '+(d.trades_today||d.today||0)+'\n'+
+    'Profit: '+(d.profit||d.total_profit||0)+'\n'+
+    (d.last_trade?'Último trade: '+JSON.stringify(d.last_trade).slice(0,100):'');
+}
+
+async function cryptoArbitrage(){
+  var d = await qbotFetch('/arbitrage/opportunities');
+  var ops = Array.isArray(d)?d:(d.opportunities||d.data||[]);
+  if(!ops.length) return '[ ARBITRAJE ] Sin oportunidades ahora.';
+  return '[ ◈ ARBITRAJE ]\n\n'+ops.slice(0,3).map(function(o){
+    return '▸ '+(o.pair||o.symbol||'?')+
+      (o.profit_pct?' → '+o.profit_pct.toFixed(2)+'% profit':'')+
+      (o.buy_exchange?' · Compra en '+o.buy_exchange:'')+
+      (o.sell_exchange?' · Vende en '+o.sell_exchange:'');
+  }).join('\n\n');
+}
+
+async function cryptoWallet(){
+  var d = await qbotFetch('/wallet/balance');
+  return '[ ◈ WALLET ]\n\n'+JSON.stringify(d,null,2).slice(0,300);
+}
+
+var cryptoCtxCache = null;
+var cryptoCtxTs = 0;
+
+async function getCryptoCtx(){
+
+  if(cryptoCtxCache && (Date.now()-cryptoCtxTs)<300000) return cryptoCtxCache;
+  try{
+    var sent = await qbotFetch('/sentiment/market');
+    var bull=sent.bullish||sent.bull||0, bear=sent.bearish||sent.bear||0;
+    var trend = bull>bear?'bullish':bear>bull?'bearish':'neutral';
+    var status = await qbotFetch('/auto-trading/status');
+    cryptoCtxCache = '[CRYPTO: mercado '+trend+', bot '+(status.active?'activo':'inactivo')+
+      ', trades hoy: '+(status.trades_today||0)+']';
+    cryptoCtxTs = Date.now();
+    return cryptoCtxCache;
+  }catch(e){ return ''; }
+}
+
+async function checkCryptoAlerts(){
+  if(!S.proactive) return;
+  try{
+    var ops = await qbotFetch('/arbitrage/opportunities');
+    var list = Array.isArray(ops)?ops:(ops.opportunities||[]);
+    var good = list.filter(function(o){return (o.profit_pct||0)>1;});
+    if(good.length){
+      var msg = '◈ '+good.length+' oportunidad(es) de arbitraje >1% detectada(s)';
+      sig(msg,'rgba(255,183,0,.6)');
+      proactiveNotify('AURA Crypto: '+msg);
+    }
+  }catch(e){}
+}
+
+setInterval(checkCryptoAlerts, 600000);
+
+function toggleConv(){
+  S.convMode=!S.convMode;
+  var btn=el('b-conv');
+  if(btn) btn.classList.toggle('on',S.convMode);
+  if(S.convMode){
+    S.voiceMode=true;
+    if(window.speechSynthesis) window.speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();}catch(e){}}
+    S.speaking=false; setSpeakingUI(false);
+    sig('🎤 Conversación continua ON — habla cuando quieras','rgba(0,132,255,.5)');
+    toast('Conversación continua ON');
+    setTimeout(startListening, 600);
+  } else {
+    S.voiceMode=false;
+    S.convMode=false;
+    if(S.recog){try{S.recog.stop();}catch(e){}S.recog=null;}
+    if(window.speechSynthesis) window.speechSynthesis.cancel();
+    setSpeakingUI(false);
+    toast('Conversación continua OFF');
+  }
+}
+
+var episodes = [];
+
+function addEpisode(type, content, context){
+  var ep = {
+    id: Date.now(),
+    type: type,
+    content: content,
+    context: {
+      agent: S.agent,
+      emotion: S.emo.slice(-1)[0]||'neutro',
+      hour: new Date().getHours(),
+      day: new Date().toLocaleDateString('es'),
+      location: S_location&&S_location.city||null,
+      msgCount: S.msgs
+    },
+    ts: Date.now()
+  };
+  episodes.push(ep);
+  episodes = episodes.slice(-500);
+  try{localStorage.setItem('a_episodes',JSON.stringify(episodes.slice(-100)));}catch(e){}
+  return ep;
+}
+
+function loadEpisodes(){
+  try{var s=localStorage.getItem('a_episodes');if(s)episodes=JSON.parse(s);}catch(e){}
+}
+
+function getEpisodicCtx(query){
+  if(!episodes.length) return '';
+  var q=(query||'').toLowerCase();
+  var relevant = episodes.filter(function(ep){
+    return ep.content&&ep.content.toLowerCase().indexOf(q.slice(0,20))>=0;
+  }).slice(-3);
+  if(!relevant.length) relevant = episodes.slice(-3);
+  return '[EPISODIOS: '+relevant.map(function(ep){
+    return ep.type+'@'+ep.context.day+': '+ep.content.slice(0,60);
+  }).join(' | ')+']';
+}
+
+var goals = [];
+
+function loadGoals(){
+  try{var s=localStorage.getItem('a_goals');if(s)goals=JSON.parse(s);}catch(e){}
+}
+function saveGoals(){
+  try{localStorage.setItem('a_goals',JSON.stringify(goals));}catch(e){}
+}
+function addGoal(text, type, interval){
+  var goal = {
+    id: Date.now(),
+    text: text,
+    type: type||'general',
+    interval: interval||'daily',
+    created: Date.now(),
+    lastRun: 0,
+    active: true,
+    results: []
+  };
+  goals.push(goal);
+  saveGoals();
+  toast('Objetivo añadido: '+text.slice(0,40));
+  addEpisode('goal','Nuevo objetivo: '+text,{});
+  return goal;
+}
+function removeGoal(id){
+  goals = goals.filter(function(g){return g.id!==id;});
+  saveGoals();
+}
+function getGoalsCtx(){
+  var active = goals.filter(function(g){return g.active;});
+  if(!active.length) return '';
+  return '[OBJETIVOS ACTIVOS: '+active.map(function(g){return g.text.slice(0,40);}).join(' | ')+']';
+}
+async function runGoal(goal){
+  if(!S.key||S.busy) return;
+  goal.lastRun = Date.now();
+  saveGoals();
+  try{
+    var prompt = 'Ejecuta este objetivo de forma autónoma y devuelve un resumen conciso de lo que encontraste o hiciste: '+goal.text;
+
+    if(/crypto|bitcoin|mercado|trading/i.test(goal.text)){
+      try{
+        var sent = await qbotFetch('/sentiment/market');
+        prompt += ' Contexto actual del mercado: '+JSON.stringify(sent).slice(0,200);
+      }catch(e){}
+    }
+    var r = await apiCall(prompt, [], 0.6);
+    goal.results.push({ts:Date.now(), result:r.slice(0,200)});
+    goal.results = goal.results.slice(-5);
+    saveGoals();
+    addEpisode('goal','Objetivo ejecutado: '+goal.text.slice(0,40)+' → '+r.slice(0,80), {});
+    if(document.hidden){
+      proactiveNotify('AURA completó: '+goal.text.slice(0,50));
+    } else {
+      sig('◈ OBJETIVO: '+goal.text.slice(0,40),'rgba(0,255,170,.4)');
+      addMsg('aura','[ ◈ OBJETIVO COMPLETADO ]\n\n'+goal.text+'\n\n'+r);
+    }
+  }catch(e){ console.warn('goal error:',e.message); }
+}
+
+var schedulerActive = false;
+
+function getIntervalMs(interval){
+  var map = {hourly:3600000, daily:86400000, weekly:604800000, once:0};
+  return map[interval]||86400000;
+}
+function shouldRunGoal(goal){
+  if(!goal.active) return false;
+  if(goal.interval==='once' && goal.lastRun>0) return false;
+  var interval = getIntervalMs(goal.interval);
+  return (Date.now()-goal.lastRun) >= interval;
+}
+async function runScheduler(){
+  if(!S.key) return;
+  var pending = goals.filter(shouldRunGoal);
+  for(var i=0;i<pending.length;i++){
+    await runGoal(pending[i]);
+    await new Promise(function(r){setTimeout(r,2000);});
+  }
+
+  var h = new Date().getHours();
+  if(h>=7&&h<=9){
+    var today = new Date().toDateString();
+    if(localStorage.getItem('a_auto_brief')!==today){
+      localStorage.setItem('a_auto_brief',today);
+      await autoBriefing();
+    }
+  }
+
+  await checkCryptoAlerts();
+}
+function startScheduler(){
+  if(schedulerActive) return;
+  schedulerActive=true;
+
+  setTimeout(runScheduler, 3000);
+  setInterval(runScheduler, 900000);
+}
+
+async function autoBriefing(){
+  if(!S.key) return;
+  try{
+    var parts = [];
+
+    try{
+      var sent=await qbotFetch('/sentiment/market');
+      var status=await qbotFetch('/auto-trading/status');
+      parts.push('Mercado: '+(sent.bullish>sent.bearish?'bullish':'bearish')+', bot '+(status.active?'activo':'inactivo'));
+    }catch(e){}
+
+    if(goals.length) parts.push('Objetivos activos: '+goals.filter(function(g){return g.active;}).length);
+
+    var yesterday = episodes.filter(function(ep){
+      return (Date.now()-ep.ts)<86400000;
+    });
+    if(yesterday.length) parts.push('Actividad reciente: '+yesterday.length+' eventos');
+
+    if(S.lt&&S.lt.summary) parts.push('Memoria: '+S.lt.summary.slice(0,80));
+
+    var ctx = parts.join(' | ');
+    var r = await apiCall(
+      'Genera un briefing matutino muy breve (2-3 frases) basándote en este contexto. Directo, útil, sin presentación.',
+      [{role:'user',content:ctx||'Sin contexto previo'}], 0.5
+    );
+    addMsg('aura','[ ☀ BRIEFING AUTÓNOMO ]\n\n'+r);
+    addEpisode('reflection','Briefing: '+r.slice(0,100),{});
+    if(document.hidden) proactiveNotify('AURA: '+r.slice(0,80));
+  }catch(e){}
+}
+
+window.addEventListener('storage', function(e){
+  if(e.key==='a_aura_broadcast'&&e.newValue){
+    try{
+      var msg=JSON.parse(e.newValue);
+      if(msg.type==='alert') sig('◉ AURA[otro]: '+msg.content,'rgba(160,96,255,.5)');
+      if(msg.type==='goal_result') addMsg('aura','[ ◈ INSTANCIA PARALELA ]\n\n'+msg.content,'oracle');
+    }catch(ex){}
+  }
+});
+function broadcastToInstances(type, content){
+  try{localStorage.setItem('a_aura_broadcast',JSON.stringify({type:type,content:content,ts:Date.now()}));}catch(e){}
+}
+
+async function monitorYouTubeChannel(){
+  try{
+    var r = await youtubeSearch('cosmologia del infinito site:youtube.com');
+    addEpisode('monitor','Canal YouTube chequeado',{});
+    return r;
+  }catch(e){return null;}
+}
+
+function openDrawer(){
+  var d=document.getElementById('cmd-drawer');
+  var o=document.getElementById('cmd-overlay');
+  if(d)d.classList.add('open');
+  if(o)o.classList.add('show');
+}
+function closeDrawer(){
+  var d=document.getElementById('cmd-drawer');
+  var o=document.getElementById('cmd-overlay');
+  if(d)d.classList.remove('open');
+  if(o)o.classList.remove('show');
+}
+function wireDrawer(){
+  var btn=document.getElementById('btn-drawer');
+  if(btn)btn.addEventListener('click',openDrawer);
+
+  var overlay=document.getElementById('cmd-overlay');
+  if(overlay)overlay.addEventListener('click',closeDrawer);
+
+  document.querySelectorAll('.cmd-btn').forEach(function(b){
+    b.addEventListener('click',function(){
+      closeDrawer();
+      var dataAction=b.dataset.action;
+      var dataCmd=b.dataset.cmd;
+      var dataPrompt=b.dataset.prompt;
+
+      if(dataAction){
+        var inp=el('inp');
+        if(inp){inp.value='/'+dataAction;}
+        setTimeout(send,100);
+      } else if(dataPrompt){
+        var inp=el('inp');
+        if(inp){
+          inp.value='/'+dataPrompt;
+          inp.focus();
+          inp.selectionStart=inp.selectionEnd=inp.value.length;
+        }
+      } else if(dataCmd){
+        if(dataCmd==='focus'){toggleFocus();return;}
+        if(dataCmd==='wake'){
+          if(S.wakeActive){stopWake();}else{startWake();}
+          return;
+        }
+        if(dataCmd==='evolve'){proposeEvolution();return;}
+        if(dataCmd==='conv'){toggleConv();return;}
+        if(dataCmd==='att'){var f=el('imgfile');if(f)f.click();return;}
+        if(dataCmd==='cam'){var cf=el('camfile');if(cf)cf.click();return;}
+        if(dataCmd==='loc'){getLocation();setTimeout(autoWeather,3000);return;}
+        if(dataCmd==='notif'){
+          if(window.Notification&&Notification.permission==='granted'){
+            pushGranted=true;
+            sendNotification('AURA ∞.Ω','Test de notificación ✓');
+            toast('Notificación enviada');
+          } else {
+            requestPushPermission();
+          }
+          return;
+        }
+        if(dataCmd==='key'){
+          var k=window.prompt('Groq API Key (gsk_...):');
+          if(!k)return;
+          var v=k.trim();
+          if(!v.startsWith('gsk_')){toast('Key inválida');return;}
+          S.key=v;ls('a_key',v);ls('a_key2',v);updateHUD();toast('Key guardada ✓');
+          return;
+        }
+        if(dataCmd==='k2'){
+          var k2=window.prompt('Segunda Groq Key (gsk_...):');
+          if(!k2)return;
+          var v2=k2.trim();
+          if(!v2.startsWith('gsk_')){toast('Key inválida');return;}
+          if(S.keyPool.indexOf(v2)<0){S.keyPool.push(v2);lsj('a_kpool',S.keyPool);toast('Key añadida al pool');}
+          else toast('Key ya registrada');
+          return;
+        }
+        if(dataCmd==='or'){
+          var ko=window.prompt('OpenRouter API Key (sk-or-...):');
+          if(!ko)return;
+          S.orKey=ko.trim();ls('a_orkey',S.orKey);toast('OpenRouter activo ✓');updateHUD();
+          return;
+        }
+        if(dataCmd==='gh'){
+          var kg=window.prompt('GitHub Personal Access Token (ghp_...):');
+          if(!kg)return;
+          S.ghToken=kg.trim();ls('a_ghtoken',S.ghToken);toast('GitHub token guardado ✓');updateHUD();
+          return;
+        }
+        if(dataCmd==='cl'){
+          var kc=window.prompt('Anthropic API Key (sk-ant-...):');
+          if(!kc)return;
+          var vc=kc.trim().replace(/[^\x20-\x7E]/g,'');
+          if(!vc.startsWith('sk-ant-')){toast('Key inválida — debe empezar por sk-ant-');return;}
+          S.claudeKey=vc;ls('a_claudekey',vc);toast('Claude API activa ✓');updateHUD();
+          return;
+        }
+        // Fallback: buscar botón en HUD
+        var hbtn=document.getElementById('b-'+dataCmd);
+        if(hbtn)hbtn.click();
+      }
+    });
+  });
+
+  var startY=0;
+  var lastY=0;
+  var isSwipeGesture=false;
+  var drawer=document.getElementById('cmd-drawer');
+  if(drawer){
+    drawer.addEventListener('touchstart',function(e){
+      startY=e.touches[0].clientY;
+      lastY=startY;
+      isSwipeGesture=false;
+    },{passive:true});
+    drawer.addEventListener('touchmove',function(e){
+      lastY=e.touches[0].clientY;
+      var dy=lastY-startY;
+      // Only treat as swipe-to-close if started near the top handle area
+      // and moving downward significantly
+      if(dy>15&&startY<(drawer.getBoundingClientRect().top+60)){
+        isSwipeGesture=true;
+        drawer.style.transform='translateY('+Math.min(dy,200)+'px)';
+        drawer.style.transition='none';
+      }
+    },{passive:true});
+    drawer.addEventListener('touchend',function(e){
+      var dy=lastY-startY;
+      drawer.style.transition='';
+      drawer.style.transform='';
+      // Only close if it was clearly a downward swipe from the handle area
+      if(isSwipeGesture&&dy>80){
+        closeDrawer();
+      }
+      isSwipeGesture=false;
+    },{passive:true});
+  }
+}
+
+function wire(){
+
+  var sugo=el('su-go');
+  if(sugo)sugo.addEventListener('click',function(){
+    var k=el('akey');if(!k)return;
+    var v=k.value.trim();
+    if(!v||!v.startsWith('gsk_')){alert('Key inválida — debe empezar por gsk_');return;}
+    S.key=v;ls('a_key',v);ls('a_key2',v);
+    el('setup').classList.remove('show');
+    showApp();
+  });
+  var ak=el('akey');
+  if(ak)ak.addEventListener('keydown',function(e){if(e.key==='Enter')el('su-go').click();});
+
+  var bmute=el('b-mute');
+  if(bmute)bmute.addEventListener('click',function(){
+    S.muted=!S.muted;bmute.textContent=S.muted?'🔇':'🔊';
+    if(S.muted){
+
+      if(window.speechSynthesis)window.speechSynthesis.cancel();
+      if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0;}catch(e){}}
+      S.speaking=false;setSpeakingUI(false);
+    }
+    toast(S.muted?'Voz silenciada':'Voz activada');
+  });
+  var bmic=el('b-mic');
+  if(bmic)bmic.addEventListener('click',toggleMic);
+  var bauto=el('b-auto');
+  if(bauto)bauto.addEventListener('click',function(){
+    S.auto=!S.auto;bauto.classList.toggle('on',S.auto);toast(S.auto?'Auto-agente ON':'Auto-agente OFF');
+  });
+  var bmem=el('b-mem');
+  if(bmem)bmem.addEventListener('click',function(){
+    if(!confirm('¿Limpiar memoria de sesión?'))return;
+    S.memory=[];saveMem();
+    var chat=el('chat');if(chat)chat.innerHTML='';
+    var w=el('welcome');if(w)w.style.display='';
+    updateHUD();toast('Memoria limpiada');
+  });
+  var bsin=el('b-sin');if(bsin)bsin.addEventListener('click',synthesize);
+  var bsav=el('b-sav');if(bsav)bsav.addEventListener('click',compress);
+  var bexp=el('b-exp');if(bexp)bexp.addEventListener('click',exportChat);
+  var bfoc=el('b-focus');if(bfoc)bfoc.addEventListener('click',toggleFocus);
+  var bbk=el('b-bk');if(bbk)bbk.addEventListener('click',showBk);
+  var bag=el('b-ag');if(bag)bag.addEventListener('click',function(){
+    var m=el('modal');if(m)m.classList.add('show');
+  });
+  var bkey=el('b-key');
+  if(bkey)bkey.addEventListener('click',function(){
+    var k=prompt('Groq API Key (gsk_...):');
+    if(!k)return;
+    var v=k.trim();
+    if(!v.startsWith('gsk_')){toast('Key inválida');return;}
+    S.key=v;ls('a_key',v);ls('a_key2',v);updateHUD();toast('Key guardada ✓');
+  });
+  var bk2=el('b-k2');
+  if(bk2)bk2.addEventListener('click',function(){
+    var k=prompt('Segunda Groq Key (gsk_...):');
+    if(!k)return;
+    var v=k.trim();
+    if(!v.startsWith('gsk_')){toast('Key inválida');return;}
+    if(S.keyPool.indexOf(v)<0){S.keyPool.push(v);lsj('a_kpool',S.keyPool);toast('Key añadida al pool');}
+    else toast('Key ya registrada');
+  });
+
+  var inp=el('inp');
+  if(inp){
+    inp.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();return;}
+    if(e.key==='ArrowUp'&&!inp.value){
+      e.preventDefault();
+      if(S.cmdHistory.length){
+        S.cmdHistoryIdx=Math.min(S.cmdHistoryIdx+1,S.cmdHistory.length-1);
+        inp.value=S.cmdHistory[S.cmdHistoryIdx]||'';
+      }
+    }
+    if(e.key==='ArrowDown'){
+      e.preventDefault();
+      S.cmdHistoryIdx=Math.max(S.cmdHistoryIdx-1,-1);
+      inp.value=S.cmdHistoryIdx>=0?S.cmdHistory[S.cmdHistoryIdx]:'';
+    }
+  });
+    inp.addEventListener('input',function(){inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,94)+'px';});
+  }
+  var bsend=el('b-send');if(bsend)bsend.addEventListener('click',send);
+  var bimic=el('b-imic');if(bimic)bimic.addEventListener('click',toggleMic);
+  var batt=el('b-att');
+  var ifile=el('imgfile');
+  if(batt&&ifile)batt.addEventListener('click',function(){ifile.click();});
+  if(ifile)ifile.addEventListener('change',handleImg);
+  var bclimg=el('b-climg');if(bclimg)bclimg.addEventListener('click',clearImg);
+
+  var agcr=el('ag-create');
+  if(agcr)agcr.addEventListener('click',function(){
+    var n=el('ag-n'),s=el('ag-s'),c=el('ag-c');
+    if(!n||!s)return;
+    var name=n.value.trim(),sys=s.value.trim(),color=(c&&c.value.trim())||'#00b4ff';
+    if(!name||!sys){toast('Nombre y sistema requeridos');return;}
+    var key=name.toLowerCase().replace(/\s+/g,'_');
+    S.agents[key]={label:name,color:color,sys:sys};
+    saveAgents();renderAgBar();
+    var m=el('modal');if(m)m.classList.remove('show');
+    n.value='';s.value='';
+    updateHUD();toast('Agente '+name+' creado ✓');
+  });
+  var agcan=el('ag-cancel');
+  if(agcan)agcan.addEventListener('click',function(){
+    var m=el('modal');if(m)m.classList.remove('show');
+  });
+  var modal=el('modal');
+  if(modal)modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('show');});
+
+  var chat2=el('chat');
+  if(chat2){
+    var swipeX=0;
+    chat2.addEventListener('touchstart',function(e){swipeX=e.touches[0].clientX;},{passive:true});
+    chat2.addEventListener('touchend',function(e){
+      var dx=e.changedTouches[0].clientX-swipeX;
+      if(Math.abs(dx)<60)return;
+      var keys=Object.keys(S.agents);
+      var cur=keys.indexOf(S.agent);
+      if(dx<0)cur=(cur+1)%keys.length;
+      else cur=(cur-1+keys.length)%keys.length;
+      pickAg(keys[cur]);
+    },{passive:true});
+  }
+
+  var bcam=el('b-cam');
+  var camfile=el('camfile');
+  if(bcam&&camfile)bcam.addEventListener('click',function(){camfile.click();});
+  if(camfile)camfile.addEventListener('change',handleCamera);
+
+  var bloc=el('b-loc');
+  if(bloc)bloc.addEventListener('click',function(){
+    getLocation();
+
+    setTimeout(autoWeather,3000);
+  });
+
+  var bnotif=el('b-notif');
+  if(bnotif)bnotif.addEventListener('click',function(){
+    if(Notification.permission==='granted'){
+      pushGranted=true;
+      sendNotification('AURA ∞.Ω','Test de notificación ✓');
+      toast('Notificación enviada');
+    } else {
+      requestPushPermission();
+    }
+  });
+
+  var bcl=el('b-cl');
+  if(bcl)bcl.addEventListener('click',function(){
+    var k=prompt('Anthropic API Key (sk-ant-...):');
+    if(!k)return;
+    var v=k.trim().replace(/[^\x20-\x7E]/g,'');
+    if(!v.startsWith('sk-ant-')){toast('Key inválida — debe empezar por sk-ant-');return;}
+    S.claudeKey=v;ls('a_claudekey',v);
+    bcl.classList.add('kon');
+    toast('Claude API activa ✓ — /evolve usará Claude para código');
+  });
+
+  var bgh=el('b-gh');
+  if(bgh)bgh.addEventListener('click',function(){
+    var k=prompt('GitHub Personal Access Token (ghp_...):');
+    if(!k)return;
+    S.ghToken=k.trim();ls('a_ghtoken',S.ghToken);
+    bgh.classList.add('kon');toast('GitHub token guardado ✓');
+  });
+
+  var bevl=el('b-evolve');
+  if(bevl)bevl.addEventListener('click',proposeEvolution);
+
+  var bconv=el('b-conv');
+  if(bconv)bconv.addEventListener('click',toggleConv);
+
+  var bconv=el('b-conv');
+  if(bconv) bconv.addEventListener('click',toggleConv);
+
+  wireDrawer();
+
+  startScheduler();
+
+  var bpro=el('b-pro');
+  if(bpro)bpro.addEventListener('click',toggleProactive);
+
+  var bwake=el('b-wake');
+  if(bwake)bwake.addEventListener('click',function(){
+    if(S.wakeActive){stopWake();toast('Wake word OFF');}
+    else{startWake();toast('Wake word ON — di "'+S.wakeWord+'"');}
+  });
+
+  var bor=el('b-or');
+  if(bor)bor.addEventListener('click',function(){
+    var k=prompt('OpenRouter API Key (sk-or-...):');
+    if(!k)return;
+    S.orKey=k.trim();ls('a_orkey',S.orKey);
+    toast('OpenRouter activo ✓');updateHUD();
+  });
+
+  var btg=el('b-tg');
+  if(btg)btg.addEventListener('click',function(){
+    var k=prompt('Together AI Key:');
+    if(!k)return;
+    S.togetherKey=k.trim();ls('a_tgkey',S.togetherKey);
+    toast('Together AI activo ✓');updateHUD();
+  });
+}
+function showApp(){
+  applyTheme();setInterval(applyTheme,60000);
+  loadSemanticIndex();
+  loadConcepts();
+  loadEpisodes();
+  loadGoals();
+  updateHUD();renderAgBar();renderSC();updateEnv();
+
+  setTimeout(requestPushPermission, 2000);
+  if(S.memory.length>=20) setTimeout(autoReflect,3000);
+
+  setTimeout(function(){if(navigator.geolocation)navigator.geolocation.getCurrentPosition(function(p){S_location={lat:p.coords.latitude,lon:p.coords.longitude,ts:Date.now(),acc:p.coords.accuracy};},function(){},{maximumAge:300000,timeout:5000});},1000);
+  if(S.memory.length>=6) setTimeout(updateJProfile,4000);
+
+  var savedProfile=JSON.parse(localStorage.getItem('a_jprofile')||'{}');
+  if(savedProfile.estilo_comunicacion||savedProfile.tono_preferido) adaptSystemPrompt(savedProfile);
+
+  if(S.proactive) resetProactiveTimer();
+  setInterval(updateEnv,60000);
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){
+      saveMem();
+      saveLT();
+      // Auto-summarize session if enough messages and not done recently
+      if(S.key&&S.memory.length>=8){
+        var lastSum = ls('a_last_summary_ts');
+        var now = Date.now();
+        if(!lastSum||(now-parseInt(lastSum))>300000){ // max once every 5 min
+          ls('a_last_summary_ts', now);
+          var recent = S.memory.slice(-12).map(function(m){
+            return '['+(m.role==='user'?'J':'AURA')+']: '+(m.content||'').slice(0,100);
+          }).join('\n');
+          apiCall(
+            'Resume esta conversación en 1-2 frases muy densas. Solo los puntos esenciales, sin introducción.',
+            [{role:'user',content:recent}], 0.3
+          ).then(function(r){
+            // Append to long-term summary
+            S.lt.summary = S.lt.summary
+              ? S.lt.summary+' / '+r.trim()
+              : r.trim();
+            S.lt.summary = S.lt.summary.slice(-600); // keep it bounded
+            saveLT();
+          }).catch(function(){});
+        }
+      }
+    }
+  });
+
+  if(S.memory.length){
+    hideWelcome();
+    S.memory.slice(-15).forEach(function(m){
+      try{if(m.role==='user')addMsg('user',m.content);else addMsg('aura',m.content);}catch(e){}
+    });
+    var sep=document.createElement('div');sep.className='sig';
+    sep.style.cssText='border-top:1px solid var(--ln2);padding:3px;margin:3px 0;opacity:.35;';
+    sep.textContent='── SESIÓN ACTUAL ──';
+    el('chat').appendChild(sep);
+  }
+
+  var today=new Date().toDateString();
+  if(S.key&&S.lt.summary&&ls('a_brief')!==today){
+    ls('a_brief',today);
+    setTimeout(function(){
+      apiCall('Briefing en 2 líneas: qué está en marcha, qué es más importante hoy. Muy directo.',
+        [{role:'user',content:S.lt.summary}])
+        .then(function(r){addMsg('aura','[ ☀ BRIEFING ]\n\n'+r);}).catch(function(){});
+    },1800);
+  }
+
+  // Resincronización de sesión — AURA retoma donde lo dejasteis
+  if(S.key&&S.memory.length>=4&&ls('a_last_session')!==today){
+    ls('a_last_session',today);
+    setTimeout(function(){
+      var recentMsgs=S.memory.slice(-8).map(function(m){
+        return '['+(m.role==='user'?'J':'AURA')+']: '+(m.content||'').slice(0,120);
+      }).join('\n');
+      var profile=JSON.parse(localStorage.getItem('a_jprofile')||'{}');
+      var profileStr=profile.tono_preferido?' Tono de J: '+profile.tono_preferido+'.':'';
+      var ltStr=S.lt.summary?' Contexto: '+S.lt.summary.slice(0,150)+'.':'';
+      apiCall(
+        'Eres AURA. Nueva sesión con J. Lee la conversación anterior y sintonízate. '+
+        'Saluda en 1 frase directa y personal, como retomando donde lo dejasteis. '+
+        'Sin presentaciones ni formatos.'+profileStr+ltStr,
+        [{role:'user',content:'Conversación anterior:\n'+recentMsgs}],0.7
+      ).then(function(r){
+        sig('◈ RETOMANDO SESIÓN','rgba(0,180,255,.3)');
+        addMsg('aura',r);
+        S.memory.push({role:'assistant',content:r});
+        saveMem();
+      }).catch(function(){});
+    },2500);
+  }
+
+  setTimeout(function(){ var i=el('inp'); if(i) i.focus(); }, 500);
+}
+function init(){
+  loadAll();
+  wire();
+  try{if('serviceWorker' in navigator && navigator.serviceWorker)navigator.serviceWorker.register('sw.js').catch(function(){});}catch(e){}
+  if(S.key)showApp();
+  else el('setup').classList.add('show');
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',init);
+}else{
+  init();
+}
+
+})(); // IIFE
+
+</script>
+</body>
+</html>
