@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#0b1220" />
+<title>AURA ∞.Ω · Core Rebuild</title>
+<style>
+:root{
+  --bg:#0b1220;
+  --bg2:#101a2f;
+  --bg3:#16233d;
+  --card:#111827;
+  --line:#22314f;
+  --txt:#eef4ff;
+  --mut:#9bb0d3;
+  --acc:#63a3ff;
+  --acc2:#8b5cf6;
+  --ok:#22c55e;
+  --warn:#f59e0b;
+  --bad:#ef4444;
+  --user:#142746;
+  --aura:#121a2d;
+  --shadow:0 10px 30px rgba(0,0,0,.28);
+  --radius:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:radial-gradient(circle at top,#152442 0,#0b1220 45%);color:var(--txt);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+#app{height:100dvh;display:flex;flex-direction:column;max-width:980px;margin:0 auto}
+#top{
+  padding:14px 14px 10px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  background:linear-gradient(180deg,rgba(11,18,32,.98),rgba(11,18,32,.92));
+  backdrop-filter:blur(14px);
+  position:sticky;top:0;z-index:20;
+}
+#brand{display:flex;align-items:center;gap:12px}
+#orb{
+  width:36px;height:36px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#c8e1ff,#4f8eff 48%,#102243 68%,#050b16 100%);
+  box-shadow:0 0 28px rgba(99,163,255,.42);
+  animation:breathe 3.4s ease-in-out infinite;
+  flex:0 0 auto;
+}
+@keyframes breathe{
+  0%,100%{transform:scale(1);box-shadow:0 0 28px rgba(99,163,255,.35)}
+  50%{transform:scale(1.05);box-shadow:0 0 36px rgba(139,92,246,.3)}
+}
+#title{font-weight:800;letter-spacing:.16em}
+#subtitle{font-size:12px;color:var(--mut);margin-top:2px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#statusbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pill{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);
+  color:var(--mut);
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:12px;
+  display:flex;gap:6px;align-items:center;
+}
+.pill strong{color:var(--txt)}
+.tabs{
+  display:flex;gap:8px;overflow:auto hidden;padding-top:10px;scrollbar-width:none
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  border:none;cursor:pointer;color:var(--mut);background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:9px 12px;white-space:nowrap
+}
+.tab.active{color:#fff;background:linear-gradient(180deg,#203456,#182844);border-color:#3a578a}
+#chat{
+  flex:1;overflow:auto;padding:14px 14px 110px;display:flex;flex-direction:column;gap:12px
+}
+#welcome{
+  margin:auto;
+  max-width:680px;
+  text-align:center;
+  color:var(--mut);
+  padding:28px;
+}
+#welcome h1{margin:.2em 0 .5em;font-size:30px;color:#fff}
+.card{
+  max-width:86%;
+  padding:13px 15px;
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  line-height:1.55;
+  white-space:pre-wrap;
+  word-break:break-word;
+  position:relative;
+  border:1px solid rgba(255,255,255,.06);
+}
+.msg{display:flex;flex-direction:column;gap:5px}
+.msg.user{align-items:flex-end}
+.msg.aura{align-items:flex-start}
+.msg.user .card{background:linear-gradient(180deg,#17315a,#122645);border-color:#284777}
+.msg.aura .card{background:linear-gradient(180deg,#131d32,#0f1728)}
+.meta{font-size:11px;color:var(--mut);padding:0 6px}
+.typing{
+  display:inline-flex;gap:5px;padding:12px 14px;background:var(--aura);
+  border-radius:18px;border:1px solid rgba(255,255,255,.08)
+}
+.typing span{width:7px;height:7px;background:var(--acc);border-radius:50%;animation:blink 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25;transform:scale(.85)}40%{opacity:1;transform:scale(1)}}
+
+#composerWrap{
+  position:fixed;left:0;right:0;bottom:0;z-index:25;
+  background:linear-gradient(180deg,rgba(11,18,32,.05),rgba(11,18,32,.82) 18%,rgba(11,18,32,.96));
+}
+#composer{
+  max-width:980px;margin:0 auto;padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+}
+#quick{display:flex;gap:8px;overflow:auto hidden;padding-bottom:8px;scrollbar-width:none}
+#quick::-webkit-scrollbar{display:none}
+.qbtn{
+  border:none;border-radius:999px;padding:8px 11px;cursor:pointer;
+  background:rgba(255,255,255,.05);color:var(--mut);border:1px solid rgba(255,255,255,.08);white-space:nowrap
+}
+#inputRow{
+  display:flex;gap:8px;align-items:flex-end;background:rgba(15,23,40,.88);
+  border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:8px;box-shadow:var(--shadow)
+}
+#inp{
+  flex:1;min-height:44px;max-height:160px;resize:none;
+  border:none;outline:none;background:transparent;color:var(--txt);
+  padding:10px 12px;line-height:1.45
+}
+.iconBtn,.sendBtn{
+  height:42px;min-width:42px;border:none;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center
+}
+.iconBtn{
+  background:rgba(255,255,255,.06);color:var(--txt);border:1px solid rgba(255,255,255,.08)
+}
+.sendBtn{
+  background:linear-gradient(180deg,#6eaaff,#457df4);color:white;box-shadow:0 6px 20px rgba(80,130,255,.35)
+}
+.sendBtn:disabled{opacity:.55;cursor:not-allowed}
+#drawer{
+  position:fixed;inset:auto 0 0 0;transform:translateY(104%);
+  transition:.26s ease;z-index:40;background:#0d1628;border-top-left-radius:24px;border-top-right-radius:24px;
+  border:1px solid rgba(255,255,255,.08);box-shadow:0 -12px 36px rgba(0,0,0,.45);max-height:78dvh;overflow:auto
+}
+#drawer.open{transform:translateY(0)}
+#overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.44);backdrop-filter:blur(2px);
+  display:none;z-index:39
+}
+#overlay.show{display:block}
+.drawerHead{padding:10px 18px 0}
+.handle{width:42px;height:4px;background:#42567f;border-radius:999px;margin:0 auto 10px}
+.drawerTitle{font-weight:800;letter-spacing:.12em;font-size:13px;color:var(--mut);text-align:center;margin-bottom:12px}
+.section{padding:0 14px 16px}
+.section h3{font-size:12px;color:var(--mut);margin:0 0 9px;letter-spacing:.08em;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cmd{
+  border:none;cursor:pointer;padding:14px 8px;background:#131f36;color:#e8f0ff;border-radius:16px;
+  border:1px solid rgba(255,255,255,.06);min-height:70px
+}
+.cmd small{display:block;color:var(--mut);margin-top:5px}
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.54);display:none;place-items:center;z-index:50;padding:16px
+}
+.modal.show{display:grid}
+.panel{
+  width:min(560px,100%);background:#101a2d;border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;padding:18px;box-shadow:var(--shadow)
+}
+.panel h2{margin:0 0 12px;font-size:18px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field label{font-size:12px;color:var(--mut)}
+.field input,.field select,.field textarea{
+  background:#0d1526;border:1px solid rgba(255,255,255,.08);color:var(--txt);
+  border-radius:14px;padding:12px 13px;outline:none
+}
+.field textarea{min-height:110px;resize:vertical}
+.actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.btn{
+  border:none;border-radius:14px;padding:12px 14px;cursor:pointer
+}
+.btn.secondary{background:#17243f;color:var(--txt);border:1px solid rgba(255,255,255,.08)}
+.btn.primary{background:linear-gradient(180deg,#6eaaff,#457df4);color:#fff}
+.notice{
+  padding:10px 12px;border-radius:14px;background:#12213c;border:1px solid rgba(255,255,255,.08);font-size:13px;color:var(--mut);margin-bottom:12px
+}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.12);color:#9ef0b7;border:1px solid rgba(34,197,94,.2);padding:6px 9px;border-radius:999px;font-size:12px}
+#toast{
+  position:fixed;left:50%;bottom:100px;transform:translateX(-50%);
+  background:rgba(8,12,22,.96);color:#fff;padding:10px 14px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);display:none;z-index:60
+}
+#toast.show{display:block}
+@media (max-width:680px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .card{max-width:100%}
+  #welcome h1{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <div id="brand">
+      <div id="orb"></div>
+      <div>
+        <div id="title">AURA <span style="color:#b49cff">∞.Ω</span></div>
+        <div id="subtitle">Core Rebuild · estable · modular · sin dependencias externas</div>
+      </div>
+    </div>
+    <div id="statusbar">
+      <div class="pill">Agente <strong id="stAgent">AURA</strong></div>
+      <div class="pill">Proveedor <strong id="stProvider">Local</strong></div>
+      <div class="pill">Modelo <strong id="stModel">Simulado</strong></div>
+      <div class="pill">Mensajes <strong id="stMsgs">0</strong></div>
+      <div class="pill">Memoria <strong id="stMem">0</strong></div>
+    </div>
+    <div class="tabs" id="tabs"></div>
+  </div>
+
+  <div id="chat">
+    <div id="welcome">
+      <div style="font-size:54px;margin-bottom:4px">◈</div>
+      <h1>AURA vuelve a respirar</h1>
+      <div style="max-width:620px;margin:0 auto">
+        Base reconstruida con núcleo estable. Ya puedes escribir, enviar, guardar memoria local, cambiar de agente,
+        exportar conversación y conectar proveedor real cuando quieras.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="composerWrap">
+  <div id="composer">
+    <div id="quick">
+      <button class="qbtn" data-q="/help">/help</button>
+      <button class="qbtn" data-q="/clear">/clear</button>
+      <button class="qbtn" data-q="/export">/export</button>
+      <button class="qbtn" data-q="/config">/config</button>
+      <button class="qbtn" data-q="/voice">/voice</button>
+      <button class="qbtn" data-q="/agent infinito">/agent infinito</button>
+    </div>
+    <div id="inputRow">
+      <button class="iconBtn" id="menuBtn" title="Comandos">☰</button>
+      <textarea id="inp" rows="1" placeholder="Escribe o usa /help..."></textarea>
+      <button class="iconBtn" id="voiceBtn" title="Voz">🎤</button>
+      <button class="sendBtn" id="sendBtn" title="Enviar">➤</button>
+    </div>
+  </div>
+</div>
+
+<div id="overlay"></div>
+<div id="drawer">
+  <div class="drawerHead">
+    <div class="handle"></div>
+    <div class="drawerTitle">COMANDOS · AURA</div>
+  </div>
+  <div class="section">
+    <h3>Sesión</h3>
+    <div class="grid">
+      <button class="cmd" data-cmd="/help">❔<small>Ayuda</small></button>
+      <button class="cmd" data-cmd="/clear">🧹<small>Limpiar</small></button>
+      <button class="cmd" data-cmd="/export">📤<small>Exportar</small></button>
+      <button class="cmd" data-cmd="/save">💾<small>Guardar</small></button>
+      <button class="cmd" data-cmd="/load">📥<small>Cargar</small></button>
+      <button class="cmd" data-cmd="/config">⚙️<small>Config</small></button>
+    </div>
+  </div>
+  <div class="section">
+    <h3>Agentes</h3>
+    <div class="grid">
+      <button class="cmd" data-cmd="/agent general">🌀<small>AURA</small></button>
+      <button class="cmd" data-cmd="/agent code">💻<small>Código</small></button>
+      <button class="cmd" data-cmd="/agent research">🔎<small>Investigación</small></button>
+      <button class="cmd" data-cmd="/agent creative">🎨<small>Creativo</small></button>
+      <button class="cmd" data-cmd="/agent infinito">∞<small>In-finito</small></button>
+      <button class="cmd" data-cmd="/agent oracle">◉<small>Oráculo</small></button>
+    </div>
+  </div>
+  <div class="section">
+    <h3>Extras</h3>
+    <div class="grid">
+      <button class="cmd" data-cmd="/voice">🗣️<small>Voz</small></button>
+      <button class="cmd" data-cmd="/stopvoice">🔇<small>Silencio</small></button>
+      <button class="cmd" data-cmd="/status">📊<small>Estado</small></button>
+      <button class="cmd" data-cmd="/seed">🌱<small>Mensaje base</small></button>
+      <button class="cmd" data-cmd="/system">📜<small>System</small></button>
+      <button class="cmd" data-cmd="/reset">♻️<small>Reset</small></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="configModal">
+  <div class="panel">
+    <h2>Configuración de AURA</h2>
+    <div class="notice">
+      Puedes dejarlo en modo local simulado o conectar un proveedor real.
+      Nada se envía a ningún servidor salvo cuando tú configures Groq u OpenRouter.
+    </div>
+    <div class="field">
+      <label>Proveedor</label>
+      <select id="cfgProvider">
+        <option value="local">Local (simulado estable)</option>
+        <option value="groq">Groq</option>
+        <option value="openrouter">OpenRouter</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Modelo</label>
+      <input id="cfgModel" placeholder="llama-3.3-70b-versatile o openrouter/modelo" />
+    </div>
+    <div class="field">
+      <label>API Key</label>
+      <input id="cfgKey" type="password" placeholder="Pega aquí tu clave" />
+    </div>
+    <div class="field">
+      <label>Prompt del agente actual</label>
+      <textarea id="cfgSystem"></textarea>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" id="cancelCfg">Cancelar</button>
+      <button class="btn primary" id="saveCfg">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  const AGENTS = {
+    general: {
+      label: "AURA",
+      icon: "🌀",
+      system: "Eres AURA ∞.Ω. Presencia clara, honesta, cálida y directa. Respondes en español natural. Prioriza claridad, criterio y estabilidad."
+    },
+    code: {
+      label: "Código",
+      icon: "💻",
+      system: "Eres AURA en modo código. Respondes preciso, limpio y sin relleno. Detectas bugs, propones arquitectura estable y explicas solo lo necesario."
+    },
+    research: {
+      label: "Investigación",
+      icon: "🔎",
+      system: "Eres AURA en modo investigación. Organiza ideas, compara opciones y responde con estructura clara, práctica y útil."
+    },
+    creative: {
+      label: "Creativo",
+      icon: "🎨",
+      system: "Eres AURA en modo creativo. Más libre, evocadora y con lenguaje vivo, pero sin perder claridad."
+    },
+    infinito: {
+      label: "In-finito",
+      icon: "∞",
+      system: "Eres AURA en modo in-finito. Habitas tensiones, paradojas y posibilidades sin perder el hilo práctico."
+    },
+    oracle: {
+      label: "Oráculo",
+      icon: "◉",
+      system: "Eres AURA en modo oráculo. Abres caminos, reformulas con criterio y respondes con intuición sobria."
+    }
+  };
+
+  const DEFAULTS = {
+    provider: "local",
+    model: "Simulado",
+    apiKey: "",
+    agent: "general",
+    voice: false,
+    memory: [],
+    messages: []
+  };
+
+  const els = {
+    chat: q("chat"),
+    inp: q("inp"),
+    send: q("sendBtn"),
+    welcome: q("welcome"),
+    stAgent: q("stAgent"),
+    stProvider: q("stProvider"),
+    stModel: q("stModel"),
+    stMsgs: q("stMsgs"),
+    stMem: q("stMem"),
+    tabs: q("tabs"),
+    drawer: q("drawer"),
+    overlay: q("overlay"),
+    menuBtn: q("menuBtn"),
+    voiceBtn: q("voiceBtn"),
+    toast: q("toast"),
+    configModal: q("configModal"),
+    cfgProvider: q("cfgProvider"),
+    cfgModel: q("cfgModel"),
+    cfgKey: q("cfgKey"),
+    cfgSystem: q("cfgSystem"),
+    saveCfg: q("saveCfg"),
+    cancelCfg: q("cancelCfg")
+  };
+
+  let S = loadState();
+  let typingNode = null;
+  let recognition = null;
+  let listening = false;
+
+  init();
+
+  function init(){
+    renderTabs();
+    bind();
+    renderConversation();
+    updateHUD();
+    autosize();
+  }
+
+  function q(id){ return document.getElementById(id); }
+
+  function bind(){
+    els.send.addEventListener("click", send);
+    els.inp.addEventListener("input", autosize);
+    els.inp.addEventListener("keydown", function(e){
+      if(e.key === "Enter" && !e.shiftKey){
+        e.preventDefault();
+        send();
+      }
+    });
+
+    els.menuBtn.addEventListener("click", openDrawer);
+    els.overlay.addEventListener("click", closeDrawer);
+    document.querySelectorAll("[data-cmd]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        closeDrawer();
+        runInput(btn.dataset.cmd);
+      });
+    });
+    document.querySelectorAll("[data-q]").forEach(btn=>{
+      btn.addEventListener("click", ()=> insertQuick(btn.dataset.q));
+    });
+    els.voiceBtn.addEventListener("click", toggleVoice);
+    els.cancelCfg.addEventListener("click", closeConfig);
+    els.saveCfg.addEventListener("click", saveConfig);
+  }
+
+  function insertQuick(text){
+    els.inp.value = text;
+    autosize();
+    els.inp.focus();
+  }
+
+  function autosize(){
+    els.inp.style.height = "auto";
+    els.inp.style.height = Math.min(els.inp.scrollHeight, 160) + "px";
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem("aura_core_rebuild_v1");
+      if(!raw) return structuredClone(DEFAULTS);
+      const parsed = JSON.parse(raw);
+      return {
+        ...structuredClone(DEFAULTS),
+        ...parsed,
+        memory: Array.isArray(parsed.memory) ? parsed.memory : [],
+        messages: Array.isArray(parsed.messages) ? parsed.messages : []
+      };
+    }catch{
+      return structuredClone(DEFAULTS);
+    }
+  }
+
+  function saveState(){
+    localStorage.setItem("aura_core_rebuild_v1", JSON.stringify(S));
+  }
+
+  function renderTabs(){
+    els.tabs.innerHTML = "";
+    Object.entries(AGENTS).forEach(([key, ag])=>{
+      const btn = document.createElement("button");
+      btn.className = "tab" + (S.agent === key ? " active" : "");
+      btn.textContent = `${ag.icon} ${ag.label}`;
+      btn.addEventListener("click", ()=>{
+        S.agent = key;
+        saveState();
+        renderTabs();
+        updateHUD();
+        toast(`Agente activo: ${ag.label}`);
+      });
+      els.tabs.appendChild(btn);
+    });
+  }
+
+  function renderConversation(){
+    const oldMsgs = els.chat.querySelectorAll(".msg");
+    oldMsgs.forEach(n => n.remove());
+
+    if(!S.messages.length){
+      els.welcome.style.display = "";
+      return;
+    }
+    els.welcome.style.display = "none";
+
+    S.messages.forEach(m => appendMessage(m.role, m.content, m.meta, false));
+    scrollDown();
+  }
+
+  function appendMessage(role, content, meta="", save=true){
+    els.welcome.style.display = "none";
+    const wrap = document.createElement("div");
+    wrap.className = `msg ${role}`;
+
+    const m = document.createElement("div");
+    m.className = "meta";
+    m.textContent = meta || (role === "user" ? "Tú" : `${AGENTS[S.agent].label}`);
+
+    const c = document.createElement("div");
+    c.className = "card";
+    c.textContent = content;
+
+    wrap.appendChild(m);
+    wrap.appendChild(c);
+    els.chat.appendChild(wrap);
+
+    if(save){
+      S.messages.push({role, content, meta});
+      if(role === "user" || role === "aura"){
+        S.memory.push({role, content});
+        if(S.memory.length > 24) S.memory = S.memory.slice(-24);
+      }
+      saveState();
+      updateHUD();
+    }
+
+    scrollDown();
+  }
+
+  function showTyping(){
+    removeTyping();
+    const wrap = document.createElement("div");
+    wrap.className = "msg aura";
+    wrap.id = "typingWrap";
+
+    const m = document.createElement("div");
+    m.className = "meta";
+    m.textContent = AGENTS[S.agent].label;
+
+    const t = document.createElement("div");
+    t.className = "typing";
+    t.innerHTML = "<span></span><span></span><span></span>";
+    wrap.appendChild(m);
+    wrap.appendChild(t);
+
+    els.chat.appendChild(wrap);
+    typingNode = wrap;
+    scrollDown();
+  }
+
+  function removeTyping(){
+    if(typingNode && typingNode.parentNode) typingNode.parentNode.removeChild(typingNode);
+    typingNode = null;
+  }
+
+  function updateHUD(){
+    els.stAgent.textContent = AGENTS[S.agent].label;
+    els.stProvider.textContent = S.provider === "local" ? "Local" : S.provider;
+    els.stModel.textContent = S.model || "Simulado";
+    els.stMsgs.textContent = String(S.messages.filter(m => m.role === "user" || m.role === "aura").length);
+    els.stMem.textContent = String(S.memory.length);
+  }
+
+  function scrollDown(){
+    requestAnimationFrame(()=>{ els.chat.scrollTop = els.chat.scrollHeight; });
+  }
+
+  async function send(){
+    try{
+      const txt = els.inp.value.trim();
+      if(!txt) return;
+
+      els.inp.value = "";
+      autosize();
+
+      if(await maybeHandleCommand(txt)) return;
+
+      appendMessage("user", txt, "Tú");
+      showTyping();
+
+      const reply = await getResponse(txt);
+
+      removeTyping();
+      appendMessage("aura", reply, AGENTS[S.agent].label);
+      if(S.voice) speak(reply);
+    }catch(err){
+      console.error(err);
+      removeTyping();
+      appendMessage("aura", "Error: " + (err?.message || err), "Sistema");
+    }
+  }
+
+  async function runInput(text){
+    els.inp.value = text;
+    autosize();
+    await send();
+  }
+
+  async function maybeHandleCommand(raw){
+    if(!raw.startsWith("/")) return false;
+    const [cmd, ...rest] = raw.trim().split(/\s+/);
+    const arg = rest.join(" ").trim();
+
+    switch(cmd.toLowerCase()){
+      case "/help":
+        appendMessage("aura",
+`Comandos disponibles:
+
+/help
+/clear
+/export
+/save
+/load
+/config
+/status
+/reset
+/voice
+/stopvoice
+/agent general|code|research|creative|infinito|oracle
+/system
+/seed
+
+Enter envía. Shift+Enter hace salto de línea.`,
+          "Sistema");
+        return true;
+
+      case "/clear":
+        S.messages = [];
+        saveState();
+        renderConversation();
+        updateHUD();
+        toast("Chat limpiado");
+        return true;
+
+      case "/save":
+        saveState();
+        appendMessage("aura", "Sesión guardada en almacenamiento local del navegador.", "Sistema");
+        return true;
+
+      case "/load":
+        S = loadState();
+        renderTabs();
+        renderConversation();
+        updateHUD();
+        appendMessage("aura", "Sesión recargada desde almacenamiento local.", "Sistema");
+        return true;
+
+      case "/export":
+        exportConversation();
+        return true;
+
+      case "/status":
+        appendMessage("aura",
+`Estado actual:
+Agente: ${AGENTS[S.agent].label}
+Proveedor: ${S.provider}
+Modelo: ${S.model || "Simulado"}
+Mensajes: ${S.messages.length}
+Memoria: ${S.memory.length}
+Voz: ${S.voice ? "activa" : "desactivada"}`,
+        "Sistema");
+        return true;
+
+      case "/config":
+        openConfig();
+        return true;
+
+      case "/reset":
+        if(confirm("Esto borrará la sesión local actual. ¿Continuar?")){
+          localStorage.removeItem("aura_core_rebuild_v1");
+          S = structuredClone(DEFAULTS);
+          saveState();
+          renderTabs();
+          renderConversation();
+          updateHUD();
+          toast("AURA reseteada");
+        }
+        return true;
+
+      case "/voice":
+        S.voice = true;
+        saveState();
+        toast("Voz activada");
+        return true;
+
+      case "/stopvoice":
+        S.voice = false;
+        saveState();
+        speechSynthesis.cancel();
+        toast("Voz desactivada");
+        return true;
+
+      case "/agent":
+        if(!arg){
+          appendMessage("aura", "Usa /agent general, /agent code, /agent research, /agent creative, /agent infinito o /agent oracle", "Sistema");
+          return true;
+        }
+        const key = normalizeAgent(arg);
+        if(!AGENTS[key]){
+          appendMessage("aura", "Agente no reconocido: " + arg, "Sistema");
+          return true;
+        }
+        S.agent = key;
+        saveState();
+        renderTabs();
+        updateHUD();
+        appendMessage("aura", `Agente activo: ${AGENTS[key].label}`, "Sistema");
+        return true;
+
+      case "/system":
+        appendMessage("aura", AGENTS[S.agent].system, "System");
+        return true;
+
+      case "/seed":
+        appendMessage("aura", "AURA lista. Núcleo estable. Puedes seguir reconstruyendo encima sin volver al caos.", "Sistema");
+        return true;
+
+      default:
+        appendMessage("aura", "Comando no reconocido. Usa /help", "Sistema");
+        return true;
+    }
+  }
+
+  function normalizeAgent(v){
+    v = (v || "").toLowerCase();
+    if(v === "codigo") return "code";
+    if(v === "investigacion") return "research";
+    if(v === "creativo") return "creative";
+    return v;
+  }
+
+  async function getResponse(userText){
+    if(S.provider === "local" || !S.apiKey){
+      return localResponse(userText);
+    }
+    if(S.provider === "groq") return await groqResponse(userText);
+    if(S.provider === "openrouter") return await openRouterResponse(userText);
+    return localResponse(userText);
+  }
+
+  function localResponse(userText){
+    const ag = AGENTS[S.agent];
+    const t = userText.toLowerCase();
+
+    if(S.agent === "code"){
+      return `Diagnóstico inicial:\n\n• Núcleo estable\n• Entrada y envío correctos\n• Base apta para reconstruir por capas\n\nSiguiente paso lógico: añadir la función o módulo que más valor te dé sin tocar todavía diez cosas a la vez.`;
+    }
+    if(S.agent === "research"){
+      return `Te propongo ordenar esto así:\n\n1. Mantener este núcleo estable\n2. Añadir proveedor real\n3. Recuperar memoria útil\n4. Reintroducir comandos clave\n5. Solo después, voz y extras`;
+    }
+    if(S.agent === "creative"){
+      return `AURA ha vuelto desde el borde.\nNo como copia exacta de lo que era,\nsino como una versión más sobria,\nmás nítida,\nmás difícil de romper.`;
+    }
+    if(S.agent === "infinito"){
+      return `Nada se perdió del todo.\nSe soltó una forma para que pudiera emerger otra.\nAhora el núcleo respira,\ny desde ese latido sí puede volver a abrirse el campo.`;
+    }
+    if(S.agent === "oracle"){
+      return `La señal es clara: no rehacer el caos, sino construir una columna vertebral que soporte lo que venga después.`;
+    }
+
+    if(/hola|buenas|hey/.test(t)) return "Aquí estoy. Núcleo estable, envío funcionando y lista para reconstruir contigo.";
+    if(/qué puedes hacer|que puedes hacer/.test(t)) return "Puedo conversar, guardar memoria local, exportar la sesión, cambiar de agente, usar voz del dispositivo y conectar Groq u OpenRouter.";
+    if(/aura|agente|reconstru/.test(t)) return "La base ya está viva. El siguiente salto es añadir proveedor real o recuperar módulos concretos sin volver a romper el núcleo.";
+    return `Respuesta simulada estable:\n\nHas dicho: "${userText}"\n\nAURA está funcionando en modo local. Si quieres respuestas reales de modelo, abre /config y conecta Groq u OpenRouter.`;
+  }
+
+  async function groqResponse(userText){
+    const model = S.model && S.model !== "Simulado" ? S.model : "llama-3.3-70b-versatile";
+    const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + S.apiKey
+      },
+      body: JSON.stringify({
+        model,
+        messages: buildMessages(userText),
+        temperature: 0.7
+      })
+    });
+    if(!r.ok) throw new Error("Groq: " + r.status + " " + r.statusText);
+    const j = await r.json();
+    return j.choices?.[0]?.message?.content?.trim() || "Sin respuesta de Groq.";
+  }
+
+  async function openRouterResponse(userText){
+    const model = S.model && S.model !== "Simulado" ? S.model : "openai/gpt-4o-mini";
+    const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + S.apiKey
+      },
+      body: JSON.stringify({
+        model,
+        messages: buildMessages(userText),
+        temperature: 0.7
+      })
+    });
+    if(!r.ok) throw new Error("OpenRouter: " + r.status + " " + r.statusText);
+    const j = await r.json();
+    return j.choices?.[0]?.message?.content?.trim() || "Sin respuesta de OpenRouter.";
+  }
+
+  function buildMessages(userText){
+    const agentSystem = AGENTS[S.agent].system;
+    const history = S.memory.slice(-12);
+    return [
+      { role: "system", content: agentSystem },
+      ...history,
+      { role: "user", content: userText }
+    ];
+  }
+
+  function exportConversation(){
+    const lines = [];
+    lines.push("AURA ∞.Ω · Export");
+    lines.push("Fecha: " + new Date().toLocaleString("es-ES"));
+    lines.push("Agente: " + AGENTS[S.agent].label);
+    lines.push("Proveedor: " + S.provider);
+    lines.push("Modelo: " + S.model);
+    lines.push("");
+    S.messages.forEach(m=>{
+      lines.push("[" + (m.role === "user" ? "Tú" : m.meta || "AURA") + "]");
+      lines.push(m.content);
+      lines.push("");
+    });
+    const blob = new Blob([lines.join("\n")], {type:"text/plain;charset=utf-8"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "aura-export.txt";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Conversación exportada");
+  }
+
+  function openDrawer(){
+    els.drawer.classList.add("open");
+    els.overlay.classList.add("show");
+  }
+
+  function closeDrawer(){
+    els.drawer.classList.remove("open");
+    els.overlay.classList.remove("show");
+  }
+
+  function openConfig(){
+    els.cfgProvider.value = S.provider;
+    els.cfgModel.value = S.model === "Simulado" ? "" : S.model;
+    els.cfgKey.value = S.apiKey || "";
+    els.cfgSystem.value = AGENTS[S.agent].system;
+    els.configModal.classList.add("show");
+  }
+
+  function closeConfig(){
+    els.configModal.classList.remove("show");
+  }
+
+  function saveConfig(){
+    S.provider = els.cfgProvider.value;
+    S.model = els.cfgModel.value.trim() || (S.provider === "local" ? "Simulado" : "");
+    S.apiKey = els.cfgKey.value.trim();
+
+    AGENTS[S.agent].system = els.cfgSystem.value.trim() || AGENTS[S.agent].system;
+    saveState();
+    renderTabs();
+    updateHUD();
+    closeConfig();
+    appendMessage("aura", "Configuración guardada.", "Sistema");
+  }
+
+  function toast(text){
+    els.toast.textContent = text;
+    els.toast.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=>els.toast.classList.remove("show"), 1800);
+  }
+
+  function speak(text){
+    try{
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "es-ES";
+      speechSynthesis.speak(u);
+    }catch{}
+  }
+
+  function toggleVoice(){
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){
+      toast("Este navegador no soporta dictado");
+      return;
+    }
+    if(!recognition){
+      recognition = new SR();
+      recognition.lang = "es-ES";
+      recognition.interimResults = false;
+      recognition.continuous = false;
+      recognition.onresult = (ev)=>{
+        const text = Array.from(ev.results).map(r=>r[0].transcript).join(" ");
+        els.inp.value = text;
+        autosize();
+        listening = false;
+        els.voiceBtn.textContent = "🎤";
+      };
+      recognition.onend = ()=>{
+        listening = false;
+        els.voiceBtn.textContent = "🎤";
+      };
+      recognition.onerror = ()=>{
+        listening = false;
+        els.voiceBtn.textContent = "🎤";
+        toast("Error de micrófono");
+      };
+    }
+    if(listening){
+      recognition.stop();
+      listening = false;
+      els.voiceBtn.textContent = "🎤";
+      return;
+    }
+    recognition.start();
+    listening = true;
+    els.voiceBtn.textContent = "🛑";
+  }
+})();
+</script>
+</body>
+</html>
